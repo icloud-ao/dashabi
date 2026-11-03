@@ -4,6 +4,7 @@
     "title": "Web安全基础 单元测试题库",
     "desc": "by 奥利奥",
     "subject": "Web安全基础",
+    "semesterGroup": "history",
     "tags": [
       "简答无答案",
       "单元测试",
@@ -27,6 +28,7 @@
     "title": "网络与信息安全三次单元测试题库",
     "desc": "by 奥利奥",
     "subject": "网络与信息安全",
+    "semesterGroup": "history",
     "tags": [
       "单元测试合集",
       "期末",
@@ -49,6 +51,7 @@
     "title": "网络与信息安全三次单元测试题库",
     "desc": "by 奥利奥",
     "subject": "网络与信息安全",
+    "semesterGroup": "history",
     "tags": [
       "单元测试合集",
       "无多选",
@@ -72,6 +75,7 @@
     "title": "恶意代码期末复习题",
     "desc": "作者：奥利奥",
     "subject": "恶意代码",
+    "semesterGroup": "history",
     "tags": [
       "期末",
       "自测",
@@ -94,6 +98,7 @@
     "title": "线性代数",
     "desc": "线性代数期末复习计算题与解答",
     "subject": "线性代数",
+    "semesterGroup": "history",
     "tags": [
       "线性代数",
       "期末",
@@ -117,6 +122,7 @@
     "title": "马克思主义基本原理 单元测试题库",
     "desc": "马克思主义基本原理三次单元测试题",
     "subject": "马克思主义基本原理",
+    "semesterGroup": "history",
     "tags": [
       "马克思主义基本原理",
       "单元测试",

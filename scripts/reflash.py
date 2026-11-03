@@ -4,11 +4,12 @@
 扫描 data/questions/ 目录下的题库 JSON，自动生成 data/list.json。
 
 用法：
-  在项目根目录运行：python scripts/generate-list.py
+  在项目根目录运行：python scripts/reflash.py
 
 题库文件建议在 meta 中写：
-  id, title, desc, subject, tags,
+  id, title, desc, subject, semesterGroup, tags,
   shuffleOptions, shuffleJudge, shuffleQuestions, durationMinutes, enabled
+semesterGroup 默认是 current（本学期题库），历史题库使用 history。
 没有写的字段会自动用默认值。
 """
 from __future__ import annotations
@@ -90,6 +91,9 @@ def make_item(path: Path) -> Dict[str, Any]:
     title = str(meta.get("title") or qid)
     desc = str(meta.get("desc") or meta.get("description") or "")
     subject = str(meta.get("subject") or "")
+    semester_group = meta.get("semesterGroup", "current")
+    if semester_group not in ("current", "history"):
+        raise SystemExit(f"题库 {path.name} 的 meta.semesterGroup 必须是 current 或 history")
 
     rel_file = "./" + path.relative_to(ROOT).as_posix()
 
@@ -98,6 +102,7 @@ def make_item(path: Path) -> Dict[str, Any]:
         "title": title,
         "desc": desc,
         "subject": subject,
+        "semesterGroup": semester_group,
         "tags": normalize_tags(meta.get("tags")),
         "file": rel_file,
         "shuffleOptions": as_bool(meta.get("shuffleOptions"), True),
