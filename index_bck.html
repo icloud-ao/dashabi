@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>奥利奥の练习场</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png?v=2">
+<style>
+:root{
+  --bg:#070a12;
+  --bg2:#0b1020;
+  --card:#111827;
+  --card2:#0f172a;
+  --glass:rgba(15,23,42,.72);
+  --text:#eef2ff;
+  --muted:#94a3b8;
+  --soft:#cbd5e1;
+  --border:rgba(148,163,184,.18);
+  --border2:rgba(148,163,184,.28);
+  --blue:#60a5fa;
+  --blue2:#2563eb;
+  --green:#34d399;
+  --amber:#fbbf24;
+  --red:#fb7185;
+  --violet:#a78bfa;
+  --shadow:0 24px 80px rgba(0,0,0,.38);
+  --radius:24px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  color:var(--text);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",Arial,sans-serif;
+  line-height:1.55;
+  background:
+    radial-gradient(circle at 10% -10%, rgba(96,165,250,.24), transparent 34%),
+    radial-gradient(circle at 84% 8%, rgba(167,139,250,.22), transparent 32%),
+    radial-gradient(circle at 50% 100%, rgba(52,211,153,.13), transparent 36%),
+    linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
+  min-height:100vh;
+}
+a{color:inherit;text-decoration:none}
+button,input{font:inherit}
+.shell{max-width:1180px;margin:0 auto;padding:24px 18px 64px}
+.hero{
+  position:relative;
+  overflow:hidden;
+  border:1px solid var(--border);
+  border-radius:32px;
+  background:linear-gradient(135deg,rgba(17,24,39,.92),rgba(15,23,42,.68));
+  box-shadow:var(--shadow);
+  padding:28px;
+}
+.hero:before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(96,165,250,.18), transparent 26%),
+    radial-gradient(circle at 94% 20%, rgba(167,139,250,.18), transparent 30%);
+  pointer-events:none;
+}
+.hero-inner{position:relative;display:grid;grid-template-columns:1.25fr .75fr;gap:22px;align-items:stretch}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(96,165,250,.3);background:rgba(37,99,235,.12);color:#bfdbfe;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:800;letter-spacing:.3px}
+h1{font-size:clamp(30px,5vw,54px);line-height:1.05;margin:16px 0 12px;letter-spacing:-1.8px}
+.lead{max-width:760px;color:var(--soft);font-size:15px;margin:0}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;align-items:center}
+.btn{
+  appearance:none;
+  border:1px solid var(--border2);
+  color:var(--text);
+  background:rgba(15,23,42,.72);
+  border-radius:15px;
+  padding:11px 14px;
+  cursor:pointer;
+  font-weight:850;
+  font-size:13px;
+  transition:.16s ease;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.btn:hover{transform:translateY(-1px);border-color:rgba(226,232,240,.35);background:rgba(30,41,59,.76)}
+.btn:active{transform:translateY(0)}
+.btn.primary{border-color:rgba(96,165,250,.55);background:linear-gradient(135deg,rgba(37,99,235,.86),rgba(96,165,250,.58));color:white}
+.btn.subtle{background:rgba(255,255,255,.05)}
+.stats-card{
+  min-height:230px;
+  border:1px solid var(--border);
+  border-radius:26px;
+  background:rgba(2,6,23,.35);
+  padding:18px;
+  display:grid;
+  gap:12px;
+  align-content:space-between;
+}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{border:1px solid var(--border);border-radius:18px;background:rgba(15,23,42,.55);padding:14px}
+.stat .num{font-size:28px;font-weight:950;letter-spacing:-.8px}
+.stat .label{font-size:12px;color:var(--muted);margin-top:2px}
+.hint{border:1px solid rgba(52,211,153,.24);background:rgba(16,185,129,.08);border-radius:18px;padding:13px;color:#bbf7d0;font-size:12px}
+.panel{margin-top:20px;border:1px solid var(--border);border-radius:26px;background:rgba(15,23,42,.54);box-shadow:0 16px 50px rgba(0,0,0,.18);padding:16px}
+.toolbar{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center}
+.search-wrap{position:relative}
+.search-wrap:before{content:"⌕";position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:900}
+.input{width:100%;border:1px solid var(--border);background:rgba(2,6,23,.35);color:var(--text);outline:none;border-radius:16px;padding:13px 14px 13px 38px;font-size:14px}
+.input:focus{border-color:rgba(96,165,250,.65);box-shadow:0 0 0 4px rgba(96,165,250,.14)}
+.tabs{display:flex;gap:8px;overflow:auto;padding:2px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap;border:1px solid var(--border);background:rgba(2,6,23,.25);color:var(--muted);border-radius:999px;padding:10px 12px;cursor:pointer;font-size:13px;font-weight:800}
+.tab.active{color:#dbeafe;border-color:rgba(96,165,250,.48);background:rgba(37,99,235,.18)}
+.list-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:18px 4px 10px;color:var(--muted);font-size:13px}
+.list-head strong{color:var(--text)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.card{
+  position:relative;
+  overflow:hidden;
+  border:1px solid var(--border);
+  background:linear-gradient(180deg,rgba(17,24,39,.76),rgba(15,23,42,.68));
+  border-radius:var(--radius);
+  padding:18px;
+  min-height:278px;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 18px 50px rgba(0,0,0,.18);
+  transition:.18s ease;
+}
+.card:before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--blue),var(--violet),var(--green));opacity:.82}
+.card:hover{transform:translateY(-3px);border-color:rgba(226,232,240,.3);box-shadow:0 24px 70px rgba(0,0,0,.28)}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+.badge{width:44px;height:44px;flex:0 0 auto;border:1px solid rgba(96,165,250,.28);border-radius:16px;background:linear-gradient(135deg,rgba(96,165,250,.2),rgba(167,139,250,.14));display:flex;align-items:center;justify-content:center;font-weight:950;color:#dbeafe}
+.card h2{font-size:18px;line-height:1.25;margin:0;letter-spacing:-.4px}
+.desc{color:var(--muted);font-size:13px;margin:0 0 14px;min-height:42px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.pill{border:1px solid var(--border);background:rgba(2,6,23,.26);border-radius:999px;padding:5px 8px;font-size:12px;color:var(--muted)}
+.pill strong{color:var(--text);font-weight:900}.pill.good{border-color:rgba(52,211,153,.28);color:#bbf7d0}.pill.blue{border-color:rgba(96,165,250,.28);color:#bfdbfe}.pill.warn{border-color:rgba(251,191,36,.28);color:#fde68a}
+.progress-row{margin-top:auto;padding-top:8px}.progress-info{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px;margin-bottom:8px}.progress{height:9px;border-radius:999px;background:rgba(148,163,184,.12);overflow:hidden}.bar{height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--blue));border-radius:inherit}
+.card-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px}.open{flex:1;border:1px solid rgba(96,165,250,.54);background:linear-gradient(135deg,rgba(37,99,235,.72),rgba(96,165,250,.42));border-radius:15px;padding:11px 12px;text-align:center;font-size:13px;font-weight:950;color:white}.open:hover{filter:brightness(1.08)}.id-text{font-size:11px;color:var(--muted);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.empty,.error,.loading{border:1px dashed var(--border);border-radius:22px;padding:26px;text-align:center;color:var(--muted);background:rgba(15,23,42,.34);margin-top:12px}.error{text-align:left;border-color:rgba(251,113,133,.46);color:#fecdd3;background:rgba(127,29,29,.16)}code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;color:#bfdbfe}.footer{color:var(--muted);font-size:12px;margin:18px 4px 0;border-top:1px solid var(--border);padding-top:14px}.footer b{color:var(--soft)}
+@media(max-width:980px){.hero-inner{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.toolbar{grid-template-columns:1fr auto}}
+@media(max-width:680px){.shell{padding:14px 12px 46px}.hero{border-radius:24px;padding:20px}.panel{border-radius:22px;padding:12px}.toolbar{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.stats-card{min-height:auto}.card{min-height:250px}.list-head{align-items:flex-start;flex-direction:column}.hero-actions .btn{width:100%}.tabs{padding-bottom:2px}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <span class="eyebrow">超级无敌练习场 · 期末刷题</span>
+        <h1 id="pageTitle">选择你的场地</h1>
+        <p class="lead">选择一个场地进入练习。作答进度保存在当前本地浏览器。</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#sets">查看题库</a>
+          <button class="btn subtle" id="btnReloadTop" type="button">刷新列表</button>
+          <a class="btn subtle" href="#sets">选择题库进入</a>
+        </div>
+      </div>
+      <aside class="stats-card" aria-label="题库统计">
+        <div class="stat-grid">
+          <div class="stat"><div class="num" id="statSets">-</div><div class="label">可用题库</div></div>
+          <div class="stat"><div class="num" id="statQuestions">-</div><div class="label">题目总数</div></div>
+          <div class="stat"><div class="num" id="statAnswered">-</div><div class="label">本机已答</div></div>
+          <div class="stat"><div class="num" id="statSubjects">-</div><div class="label">科目分类</div></div>
+        </div>
+
+      </aside>
+    </div>
+  </section>
+
+  <section class="panel" id="sets">
+    <div class="toolbar">
+      <div class="search-wrap">
+        <input class="input" id="searchInput" placeholder="搜索题库名称、描述、科目、标签，例如：计网 / Java / 期末" autocomplete="off" />
+      </div>
+      <div class="tabs" id="subjectTabs"><button class="tab active" data-subject="">全部</button></div>
+      <button class="btn" id="btnReload" type="button">刷新</button>
+    </div>
+    <div class="list-head">
+      <div><strong id="resultCount">0</strong> 套题库</div>
+      <div id="sortNote">按题库文件列表显示</div>
+    </div>
+    <div id="listBox" class="grid"></div>
+    <div id="messageBox"></div>
+    <div class="footer">
+      版权归属@奥利奥利奥    </div>
+  </section>
+</div>
+<script>
+const LIST_URL = "./data/list.json";
+let allSets = [];
+let activeSubject = "";
+
+const $ = (id) => document.getElementById(id);
+function esc(s){return String(s ?? "").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[m]));}
+function readJSON(key, fallback){try{return JSON.parse(localStorage.getItem(key) || "")}catch{return fallback}}
+function itemInitial(item){const s = item.subject || item.title || item.id || "题"; return String(s).trim().slice(0,1).toUpperCase();}
+function progressFor(item, total){
+  const answers = readJSON(`quiz_answers_${item.id}`, {});
+  const answered = Object.values(answers).filter(v => Array.isArray(v) ? v.some(x=>String(x||"").trim()) : String(v||"").trim()).length;
+  const t = Number(total || item.total || 0);
+  const pct = t ? Math.min(100, Math.round(answered * 100 / t)) : 0;
+  return {answered,total:t,pct};
+}
+function countFromData(data){
+  const single = data.single?.length || 0;
+  const multi = data.multi?.length || 0;
+  const judge = data.judge?.length || 0;
+  const blank = data.blank?.length || data.fill?.length || 0;
+  const matching = data.matching?.length || 0;
+  const short = data.short?.length || 0;
+  const caseQ = data.case?.length || data.cases?.length || 0;
+  const calculation = data.calculation?.length || 0;
+  const mixed = data.questions?.length || 0;
+  if (mixed) return {single:0,multi:0,judge:0,blank:0,matching:0,short:0,caseQ:0,calculation:0,total:mixed,mixed:true};
+  return {single,multi,judge,blank,matching,short,caseQ,calculation,total:single+multi+judge+blank+matching+short+caseQ+calculation,mixed:false};
+}
+async function hydrate(item){
+  try{
+    const res = await fetch(item.file, {cache:"no-store"});
+    if(!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    return {...item, counts: countFromData(data)};
+  }catch{
+    return {...item, counts: {single:item.single||0,multi:item.multi||0,judge:item.judge||0,blank:item.blank||0,total:item.total||0}};
+  }
+}
+function buildTabs(){
+  const subjects = [...new Set(allSets.map(x=>x.subject).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),"zh-Hans-CN"));
+  const box = $("subjectTabs");
+  box.innerHTML = `<button class="tab ${activeSubject ? "" : "active"}" data-subject="">全部</button>` + subjects.map(s => `<button class="tab ${activeSubject === s ? "active" : ""}" data-subject="${esc(s)}">${esc(s)}</button>`).join("");
+  box.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{activeSubject = btn.dataset.subject || ""; buildTabs(); render();}));
+}
+function filteredItems(){
+  const q = $("searchInput").value.trim().toLowerCase();
+  return allSets.filter(item => {
+    const subjectOk = !activeSubject || item.subject === activeSubject;
+    const hay = [item.title,item.desc,item.subject,(item.tags||[]).join(" "),item.id].join(" ").toLowerCase();
+    return subjectOk && (!q || hay.includes(q));
+  });
+}
+function updateHeroStats(){
+  const totalSets = allSets.length;
+  const totalQuestions = allSets.reduce((sum,item)=>sum + Number(item.counts?.total || item.total || 0),0);
+  const totalAnswered = allSets.reduce((sum,item)=>sum + progressFor(item, item.counts?.total).answered,0);
+  const subjects = new Set(allSets.map(x=>x.subject).filter(Boolean)).size;
+  $("statSets").textContent = totalSets;
+  $("statQuestions").textContent = totalQuestions;
+  $("statAnswered").textContent = totalAnswered;
+  $("statSubjects").textContent = subjects;
+}
+function render(){
+  const items = filteredItems();
+  $("resultCount").textContent = items.length;
+  $("messageBox").innerHTML = items.length ? "" : `<div class="empty">没有匹配的题库。换个关键词，或者检查 <code>data/list.json</code> 是否已经更新。</div>`;
+  $("listBox").innerHTML = items.map(item => {
+    const c = item.counts || {};
+    const p = progressFor(item, c.total);
+    const tags = [item.subject, ...(item.tags||[])].filter(Boolean).slice(0,5);
+    const config = [
+      item.shuffleOptions !== false ? "选项乱序" : "固定选项",
+      item.shuffleQuestions ? "题序乱序" : "固定题序",
+      item.durationMinutes ? `${item.durationMinutes}分钟` : "不限时"
+    ];
+    const typePills = [
+      c.single ? `<span class="pill">单选 ${c.single}</span>` : "",
+      c.multi ? `<span class="pill">多选 ${c.multi}</span>` : "",
+      c.judge ? `<span class="pill">判断 ${c.judge}</span>` : "",
+      c.blank ? `<span class="pill">填空 ${c.blank}</span>` : "",
+      c.matching ? `<span class="pill warn">匹配 ${c.matching}</span>` : "",
+      c.short ? `<span class="pill warn">简答 ${c.short}</span>` : "",
+      c.caseQ ? `<span class="pill warn">案例 ${c.caseQ}</span>` : "",
+      c.calculation ? `<span class="pill warn">计算 ${c.calculation}</span>` : ""
+    ].join("");
+    return `<article class="card">
+      <div class="card-top">
+        <div>
+          <h2>${esc(item.title)}</h2>
+        </div>
+        <div class="badge">${esc(itemInitial(item))}</div>
+      </div>
+      <p class="desc">${esc(item.desc || "暂无描述")}</p>
+      <div class="meta"><span class="pill blue"><strong>${c.total || item.total || "?"}</strong> 题</span>${typePills}</div>
+      <div class="meta">${tags.map(t=>`<span class="pill good">${esc(t)}</span>`).join("")}</div>
+      <div class="meta">${config.map(t=>`<span class="pill">${esc(t)}</span>`).join("")}</div>
+      <div class="progress-row">
+        <div class="progress-info"><span>已答 ${p.answered}/${p.total || "?"}</span><span>${p.pct}%</span></div>
+        <div class="progress"><div class="bar" style="width:${p.pct}%"></div></div>
+      </div>
+      <div class="card-actions"><a class="open" href="/q/${encodeURIComponent(item.id)}">开始 / 继续</a><span class="id-text" title="${esc(item.id)}">${esc(item.id)}</span></div>
+    </article>`;
+  }).join("");
+}
+async function load(){
+  $("messageBox").innerHTML = `<div class="loading">正在读取题库列表...</div>`;
+  try{
+    const res = await fetch(LIST_URL, {cache:"no-store"});
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const list = await res.json();
+    if(!Array.isArray(list)) throw new Error("list.json 必须是数组");
+    allSets = await Promise.all(list.filter(x=>x && x.enabled !== false).map(hydrate));
+    $("messageBox").innerHTML = "";
+    buildTabs();
+    updateHeroStats();
+    render();
+  }catch(err){
+    $("listBox").innerHTML = "";
+    $("resultCount").textContent = "0";
+    $("statSets").textContent = "0";
+    $("statQuestions").textContent = "0";
+    $("statAnswered").textContent = "0";
+    $("statSubjects").textContent = "0";
+    $("messageBox").innerHTML = `<div class="error"><b>题库列表加载失败。</b><br/>请确认 <code>data/list.json</code> 存在。若刚放入新题库，请先运行 <code>python scripts/generate-list.py</code>。并且你需要通过本地服务器或网站访问，而不是直接双击打开 HTML。<br/>错误信息：${esc(err.message)}</div>`;
+  }
+}
+$("searchInput").addEventListener("input", render);
+$("btnReload").addEventListener("click", load);
+$("btnReloadTop").addEventListener("click", load);
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,1001 @@
+{
+  "meta": {
+    "id": "2",
+    "title": "恶意代码期末复习题",
+    "desc": "作者：奥利奥",
+    "generated": "2026-06-23",
+    "subject": "恶意代码",
+    "tags": [
+      "期末",
+      "自测",
+      "AI题库"
+    ],
+    "shuffleOptions": true,
+    "shuffleJudge": false,
+    "shuffleQuestions": true,
+    "durationMinutes": 0,
+    "enabled": true
+  },
+  "single": [
+    {
+      "num": 1,
+      "stem": "某恶意代码样本被命名为 Trojan.Agent.b，其中 Trojan 最可能表示：（ ）",
+      "options": {
+        "A": "恶意代码类型",
+        "B": "家族特征",
+        "C": "变种特征",
+        "D": "文件大小"
+      },
+      "answer": "A",
+      "explanation": "三元组命名法中，前缀通常表示恶意代码类型。"
+    },
+    {
+      "num": 2,
+      "stem": "某样本被命名为 Worm.Sasser.c，其中 Sasser 最可能表示：（ ）",
+      "options": {
+        "A": "类型",
+        "B": "家族特征",
+        "C": "变种特征",
+        "D": "操作系统版本"
+      },
+      "answer": "B",
+      "explanation": "三元组命名法中，名称通常表示家族特征。"
+    },
+    {
+      "num": 3,
+      "stem": "某样本被命名为 Virus.Xorer.d，其中 d 最可能表示：（ ）",
+      "options": {
+        "A": "类型",
+        "B": "家族特征",
+        "C": "变种特征",
+        "D": "传播方式"
+      },
+      "answer": "C",
+      "explanation": "三元组命名法中，扩展名通常表示变种特征。"
+    },
+    {
+      "num": 4,
+      "stem": "某旧式 BIOS 引导计算机需要在一块磁盘上划分多个分区。管理员想直接创建 5 个主分区，该方案的问题是：（ ）",
+      "options": {
+        "A": "BIOS 引导方式下磁盘最多 4 个分区",
+        "B": "BIOS 引导方式下只能有 1 个分区",
+        "C": "BIOS 引导方式下不能使用 MBR",
+        "D": "BIOS 引导方式下必须使用 GPT"
+      },
+      "answer": "A",
+      "explanation": "BIOS/MBR 分区方式下磁盘最多 4 个分区。"
+    },
+    {
+      "num": 5,
+      "stem": "某磁盘已经存在一个扩展分区，管理员还想再创建第二个扩展分区。下列判断正确的是：（ ）",
+      "options": {
+        "A": "可以创建，扩展分区数量不限",
+        "B": "不可以，扩展分区最多 1 个",
+        "C": "不可以，扩展分区最多 0 个",
+        "D": "可以创建，但必须删除 MBR"
+      },
+      "answer": "B",
+      "explanation": "扩展分区最多 1 个。"
+    },
+    {
+      "num": 6,
+      "stem": "某系统启动时，BIOS 启动代码执行后，接下来依次完成 MBR、PBR/IPL、Bootmgr、winload.exe 的加载。该描述对应的是：（ ）",
+      "options": {
+        "A": "Windows 操作系统引导过程",
+        "B": "宏病毒自启动过程",
+        "C": "Rootkit 文件隐藏过程",
+        "D": "蠕虫扫描过程"
+      },
+      "answer": "A",
+      "explanation": "这是 Windows 从 BIOS 到引导程序再到系统加载器的启动流程。"
+    },
+    {
+      "num": 7,
+      "stem": "某引导型病毒修改了 MBR，使系统启动时先执行恶意代码，再继续执行原本引导流程。该病毒最可能寄生在：（ ）",
+      "options": {
+        "A": "MBR 或 PBR",
+        "B": "PE 导入表",
+        "C": "Office 模板",
+        "D": "Android 沙箱"
+      },
+      "answer": "A",
+      "explanation": "引导型病毒主要寄生在 MBR 和 PBR。"
+    },
+    {
+      "num": 8,
+      "stem": "系统从硬盘正常启动 Windows 时，Bootmgr 之后负责加载操作系统的是：（ ）",
+      "options": {
+        "A": "winload.exe",
+        "B": "winresume.exe",
+        "C": "explorer.exe",
+        "D": "cmd.exe"
+      },
+      "answer": "A",
+      "explanation": "正常从硬盘加载 Windows 操作系统时运行 winload.exe。"
+    },
+    {
+      "num": 9,
+      "stem": "系统从休眠状态恢复时，不走正常冷启动加载流程，而是运行：（ ）",
+      "options": {
+        "A": "winload.exe",
+        "B": "winresume.exe",
+        "C": "services.exe",
+        "D": "Boot ROM"
+      },
+      "answer": "B",
+      "explanation": "从休眠状态恢复运行 winresume.exe。"
+    },
+    {
+      "num": 10,
+      "stem": "在 Windows 启动过程中，Bootmgr 的一个关键作用是：（ ）",
+      "options": {
+        "A": "负责实模式向保护模式切换",
+        "B": "负责文件隐藏",
+        "C": "负责查杀病毒",
+        "D": "负责注册表持久化"
+      },
+      "answer": "A",
+      "explanation": "Bootmgr 负责实模式向保护模式切换。"
+    },
+    {
+      "num": 11,
+      "stem": "某病毒只有在目标文件类型、目标路径、感染次数等条件满足时，才对宿主文件进行感染。该机制主要用于控制病毒的传染行为和传染频率，这属于：（ ）",
+      "options": {
+        "A": "传染条件",
+        "B": "破坏模块",
+        "C": "文件隐藏",
+        "D": "免杀技术"
+      },
+      "answer": "A",
+      "explanation": "传染条件用于控制病毒的传染行为和传染频率。"
+    },
+    {
+      "num": 12,
+      "stem": "某病毒运行后首先判断当前操作系统、目录权限、宿主文件格式是否满足要求，满足后才继续执行。该检查工作主要由哪个模块承担？（ ）",
+      "options": {
+        "A": "引导模块",
+        "B": "感染模块",
+        "C": "破坏模块",
+        "D": "数据模块"
+      },
+      "answer": "A",
+      "explanation": "引导模块是初始模块，负责检查运行环境是否满足运行条件。"
+    },
+    {
+      "num": 13,
+      "stem": "某 Word 文档打开后，“查看宏”按钮无法正常使用，宏相关提示也被隐藏。该现象更符合宏病毒的哪类行为？（ ）",
+      "options": {
+        "A": "自我保护",
+        "B": "SSDT Hook",
+        "C": "DKOM",
+        "D": "Bootkit"
+      },
+      "answer": "A",
+      "explanation": "屏蔽宏查看、隐藏提示信息属于宏病毒自我保护。"
+    },
+    {
+      "num": 14,
+      "stem": "某木马感染主机后，将受害主机作为中转节点，攻击者通过它代理访问外部网络。该木马属于：（ ）",
+      "options": {
+        "A": "代理型木马",
+        "B": "DoS 型木马",
+        "C": "挖矿型木马",
+        "D": "引导型病毒"
+      },
+      "answer": "A",
+      "explanation": "代理型木马使受害主机充当代理或中转节点。"
+    },
+    {
+      "num": 15,
+      "stem": "某木马控制大量受害主机同时向目标服务器发送请求，使目标服务器无法正常提供服务。该木马属于：（ ）",
+      "options": {
+        "A": "代理型木马",
+        "B": "DoS 型木马",
+        "C": "挖矿型木马",
+        "D": "宏病毒"
+      },
+      "answer": "B",
+      "explanation": "DoS 型木马用于发起拒绝服务攻击。"
+    },
+    {
+      "num": 16,
+      "stem": "某恶意程序长期占用 CPU/GPU 资源，后台运行挖矿程序，将收益转给攻击者。该木马属于：（ ）",
+      "options": {
+        "A": "代理型木马",
+        "B": "DoS 型木马",
+        "C": "挖矿型木马",
+        "D": "文件型病毒"
+      },
+      "answer": "C",
+      "explanation": "植入挖矿程序并利用算力获利属于挖矿型木马。"
+    },
+    {
+      "num": 17,
+      "stem": "某木马将 .txt 文件的默认打开程序修改为自己的程序，使用户打开文本文件时实际启动木马。该行为属于：（ ）",
+      "options": {
+        "A": "文件类型劫持",
+        "B": "映像劫持",
+        "C": "路径劫持",
+        "D": "DLL 劫持"
+      },
+      "answer": "A",
+      "explanation": "替换指定类型文件的关联程序属于文件类型劫持。"
+    },
+    {
+      "num": 18,
+      "stem": "某木马修改注册表 IFEO 项下的 Debugger 值，使用户启动正常程序时实际先启动木马。该行为属于：（ ）",
+      "options": {
+        "A": "文件类型劫持",
+        "B": "映像劫持",
+        "C": "快捷方式劫持",
+        "D": "DLL 劫持"
+      },
+      "answer": "B",
+      "explanation": "利用 IFEO 下 Debugger 键启动木马属于映像劫持。"
+    },
+    {
+      "num": 19,
+      "stem": "某木马在更高优先级的搜索目录中放置与正常程序同名的文件，使系统优先执行木马文件。该行为属于：（ ）",
+      "options": {
+        "A": "路径劫持",
+        "B": "映像劫持",
+        "C": "文件类型劫持",
+        "D": "快捷方式劫持"
+      },
+      "answer": "A",
+      "explanation": "在更优先搜索目录中设置同名文件属于路径劫持。"
+    },
+    {
+      "num": 20,
+      "stem": "某木马修改桌面快捷方式的目标路径，使用户点击常用软件图标时实际启动木马。该行为属于：（ ）",
+      "options": {
+        "A": "快捷方式劫持",
+        "B": "路径劫持",
+        "C": "DLL 劫持",
+        "D": "文件类型劫持"
+      },
+      "answer": "A",
+      "explanation": "修改快捷方式目标属于快捷方式劫持。"
+    },
+    {
+      "num": 21,
+      "stem": "某木马设计了一个恶意 DLL，替换系统原 DLL，并保持相同功能和导出表以降低异常概率。该行为属于：（ ）",
+      "options": {
+        "A": "DLL 劫持",
+        "B": "映像劫持",
+        "C": "路径劫持",
+        "D": "计划任务启动"
+      },
+      "answer": "A",
+      "explanation": "设计 DLL 木马替换系统原 DLL，并保持相同功能和导出表，属于 DLL 劫持。"
+    },
+    {
+      "num": 22,
+      "stem": "某恶意代码无需用户手动复制，就主动扫描网络中的其他主机并尝试利用漏洞传播。该恶意代码更可能是：（ ）",
+      "options": {
+        "A": "蠕虫",
+        "B": "宏病毒",
+        "C": "普通文件感染型病毒",
+        "D": "逻辑炸弹"
+      },
+      "answer": "A",
+      "explanation": "蠕虫具有主动攻击、主动传播特征。"
+    },
+    {
+      "num": 23,
+      "stem": "某恶意代码必须依附宿主文件，被用户运行宿主文件后才可能继续感染；另一恶意代码能主动扫描并攻击网络主机。后者更符合：（ ）",
+      "options": {
+        "A": "蠕虫",
+        "B": "普通计算机病毒",
+        "C": "宏病毒",
+        "D": "PE 节表"
+      },
+      "answer": "A",
+      "explanation": "能够主动扫描并攻击网络主机的是蠕虫。"
+    },
+    {
+      "num": 24,
+      "stem": "震网蠕虫之所以危害大，一个重要原因是利用了：（ ）",
+      "options": {
+        "A": "零日漏洞",
+        "B": "普通弱口令",
+        "C": "文件扩展名隐藏",
+        "D": "Office 模板"
+      },
+      "answer": "A",
+      "explanation": "震网蠕虫利用零日漏洞。"
+    },
+    {
+      "num": 25,
+      "stem": "某 Rootkit 通过 Hook 系统调用路径，使原本的系统调用转向自己的处理函数，再返回过滤后的结果。该技术属于：（ ）",
+      "options": {
+        "A": "MEP 技术",
+        "B": "DKOM 技术",
+        "C": "宏病毒技术",
+        "D": "Android 沙箱技术"
+      },
+      "answer": "A",
+      "explanation": "MEP 技术通过挂钩修改程序执行路径。"
+    },
+    {
+      "num": 26,
+      "stem": "某 Rootkit 直接修改内核中的进程链表，使某进程不再被系统枚举出来。该技术属于：（ ）",
+      "options": {
+        "A": "MEP",
+        "B": "DKOM",
+        "C": "IAT Hook",
+        "D": "Bootmgr"
+      },
+      "answer": "B",
+      "explanation": "DKOM 技术直接对内核层对象进行修改实现隐藏。"
+    },
+    {
+      "num": 27,
+      "stem": "某 Rootkit 插入过滤驱动，拦截系统对文件对象的请求，并在返回前过滤目标文件。该技术属于：（ ）",
+      "options": {
+        "A": "内核过滤驱动技术",
+        "B": "宏病毒自我保护",
+        "C": "文件类型劫持",
+        "D": "分块填充法"
+      },
+      "answer": "A",
+      "explanation": "内核过滤驱动技术通过插入过滤驱动拦截系统请求。"
+    },
+    {
+      "num": 28,
+      "stem": "某 Rootkit 没有直接改内核对象，而是通过改变执行路径达到隐藏目的。它更接近：（ ）",
+      "options": {
+        "A": "MEP",
+        "B": "DKOM",
+        "C": "GPT",
+        "D": "UEFI 固件"
+      },
+      "answer": "A",
+      "explanation": "通过修改执行路径实现隐藏的是 MEP 技术。"
+    },
+    {
+      "num": 29,
+      "stem": "某 Hook 技术通过修改函数入口处指令，使程序跳转到自定义代码。该技术更接近：（ ）",
+      "options": {
+        "A": "Inline Hook",
+        "B": "DKOM",
+        "C": "GPT 分区",
+        "D": "Outlook 自动收发"
+      },
+      "answer": "A",
+      "explanation": "Inline Hook 常通过修改函数入口处指令改变执行流程。"
+    },
+    {
+      "num": 30,
+      "stem": "某安全软件更容易发现 IAT 表中函数地址被篡改，而对函数内部指令跳转修改检测更困难。该说法说明：（ ）",
+      "options": {
+        "A": "IAT Hook 比 Inline Hook 更容易被发现",
+        "B": "Inline Hook 不能用于用户层",
+        "C": "IAT Hook 只能用于内核层",
+        "D": "二者都不是 Hook 技术"
+      },
+      "answer": "A",
+      "explanation": "资料重点指出 IAT Hook 比 Inline Hook 更容易被安全软件发现。"
+    },
+    {
+      "num": 31,
+      "stem": "微软 Detours 工具的本质技术是：（ ）",
+      "options": {
+        "A": "Inline Hook",
+        "B": "DKOM",
+        "C": "IRP Hook",
+        "D": "Bootkit"
+      },
+      "answer": "A",
+      "explanation": "Detours 的技术本质是 Inline Hook。"
+    },
+    {
+      "num": 32,
+      "stem": "用户层程序需要调用内核服务时，发出 INT 2E 指令。CPU 接下来通过什么找到 KiSystemService？（ ）",
+      "options": {
+        "A": "IDT",
+        "B": "IAT",
+        "C": "PE 节表",
+        "D": "BCD"
+      },
+      "answer": "A",
+      "explanation": "CPU 通过 IDT 找到 KiSystemService。"
+    },
+    {
+      "num": 33,
+      "stem": "KiSystemService 根据服务 ID 查找服务函数地址和参数描述时，主要查找：（ ）",
+      "options": {
+        "A": "SSDT",
+        "B": "IDT",
+        "C": "MBR",
+        "D": "PBR"
+      },
+      "answer": "A",
+      "explanation": "KiSystemService 根据服务 ID 从 SSDT 查找服务函数地址和参数描述。"
+    },
+    {
+      "num": 34,
+      "stem": "下列 Hook 类型中，属于应用层 MEP 的是：（ ）",
+      "options": {
+        "A": "IAT Hook 和 Inline Hook",
+        "B": "SSDT Hook 和 IDT Hook",
+        "C": "IRP Hook 和 SSDT Hook",
+        "D": "DKOM 和 Bootkit"
+      },
+      "answer": "A",
+      "explanation": "应用层 MEP 包括 IAT 和 Inline。"
+    },
+    {
+      "num": 35,
+      "stem": "下列 Hook 类型中，属于内核层 MEP 的是：（ ）",
+      "options": {
+        "A": "SSDT、IDT、IRP",
+        "B": "IAT、宏、脚本",
+        "C": "GPT、MBR、PBR",
+        "D": "沙箱、签名、访问控制"
+      },
+      "answer": "A",
+      "explanation": "内核层 MEP 包括 SSDT、IDT、IRP。"
+    },
+    {
+      "num": 36,
+      "stem": "某 Android 应用即使被安装，也只能在受限制的权限环境中访问自己的数据目录。这体现了安卓的：（ ）",
+      "options": {
+        "A": "沙箱隔离机制",
+        "B": "SSDT Hook",
+        "C": "MBR 引导机制",
+        "D": "PE 文件头免杀"
+      },
+      "answer": "A",
+      "explanation": "安卓安全机制包括沙箱隔离。"
+    },
+    {
+      "num": 37,
+      "stem": "某系统要求应用必须经过签名后才能安装或运行，这是安卓安全机制中的：（ ）",
+      "options": {
+        "A": "应用程序签名",
+        "B": "Boot ROM",
+        "C": "IRP Hook",
+        "D": "IAT Hook"
+      },
+      "answer": "A",
+      "explanation": "安卓安全机制包括应用程序签名。"
+    },
+    {
+      "num": 38,
+      "stem": "关于“安全启动链”，下列判断正确的是：（ ）",
+      "options": {
+        "A": "它不是安卓安全机制，是 iOS 系统独有安全机制",
+        "B": "它是 Windows MBR 的组成部分",
+        "C": "它是 PE 文件结构之一",
+        "D": "它是宏病毒检测方法"
+      },
+      "answer": "A",
+      "explanation": "安全启动链不是安卓安全机制，是 iOS 系统独有安全机制。"
+    },
+    {
+      "num": 39,
+      "stem": "iOS 安全启动链中，属于硬件级别、不容易被修改的是：（ ）",
+      "options": {
+        "A": "Boot ROM",
+        "B": "第三方 app",
+        "C": "守护进程",
+        "D": "用户文档"
+      },
+      "answer": "A",
+      "explanation": "Boot ROM 属于硬件级别，不容易被修改。"
+    },
+    {
+      "num": 40,
+      "stem": "iOS 安全启动链正确顺序是：（ ）",
+      "options": {
+        "A": "Boot ROM → LLB → iBoot → iOS 系统内核 → 守护进程和应用程序 → 第三方 app",
+        "B": "LLB → Boot ROM → iBoot → iOS 系统内核",
+        "C": "iBoot → LLB → Boot ROM → 第三方 app",
+        "D": "Bootmgr → winload.exe → ntoskrnl.exe"
+      },
+      "answer": "A",
+      "explanation": "iOS 安全启动链为 Boot ROM → LLB → iBoot → iOS 系统内核 → 守护进程和应用程序 → 第三方 app。"
+    },
+    {
+      "num": 41,
+      "stem": "某安全软件对二进制恶意程序提取了十六进制字符串作为特征码；另一个脚本病毒样本则使用 ASCII 字符串作为特征。下列说法正确的是：（ ）",
+      "options": {
+        "A": "所有特征码都必须是十六进制字符串",
+        "B": "二进制程序特征码通常是十六进制字符串，脚本病毒不一定",
+        "C": "脚本病毒不能使用特征码检测",
+        "D": "特征码只能由数字组成"
+      },
+      "answer": "B",
+      "explanation": "不能笼统说所有特征码都是十六进制字符串，脚本病毒不一定。"
+    },
+    {
+      "num": 42,
+      "stem": "同一个恶意代码样本被 A 厂商和 B 厂商查杀，但两者定义的特征码不同。下列说法正确的是：（ ）",
+      "options": {
+        "A": "这是可能的，不同厂商定义的特征码可以不同",
+        "B": "这是不可能的，同一恶意代码特征码必须相同",
+        "C": "说明其中一个厂商一定错误",
+        "D": "说明样本不是恶意代码"
+      },
+      "answer": "A",
+      "explanation": "不同安全软件/安全厂商针对同一恶意代码定义的特征码可能不同。"
+    },
+    {
+      "num": 43,
+      "stem": "某安全软件只依赖一个连续字节串查杀样本；另一安全软件需要多个特征片段同时满足才查杀。两者分别对应：（ ）",
+      "options": {
+        "A": "单一特征码、复合特征码",
+        "B": "PE 头、节表",
+        "C": "MBR、PBR",
+        "D": "宏病毒、脚本病毒"
+      },
+      "answer": "A",
+      "explanation": "按个数分类可分为单一特征码和复合特征码。"
+    },
+    {
+      "num": 44,
+      "stem": "关于特征码组成，下列说法符合资料的是：（ ）",
+      "options": {
+        "A": "特征码通常由英文字母和数字组成",
+        "B": "特征码只能由汉字组成",
+        "C": "特征码只能由 IP 地址组成",
+        "D": "特征码只能由文件路径组成"
+      },
+      "answer": "A",
+      "explanation": "特征码通常由英文字母和数字组成。"
+    },
+    {
+      "num": 45,
+      "stem": "使用分块填充法定位特征码时，该方法最早用于：（ ）",
+      "options": {
+        "A": "CLL 特征定位工具",
+        "B": "Bootmgr",
+        "C": "Outlook",
+        "D": "Android Boot ROM"
+      },
+      "answer": "A",
+      "explanation": "分块填充法最早用于特征定位工具 CLL。"
+    },
+    {
+      "num": 46,
+      "stem": "某免杀方法通过移动 PE 头部部分关键结构，使安全软件原本的扫描位置失效。该方法属于：（ ）",
+      "options": {
+        "A": "PE 文件头免杀",
+        "B": "导入表免杀",
+        "C": "代码段免杀",
+        "D": "数据段免杀"
+      },
+      "answer": "A",
+      "explanation": "PE 文件头免杀是对 PE 头部部分关键结构进行移位。"
+    },
+    {
+      "num": 47,
+      "stem": "某程序不再静态导入大量 API，而是运行时通过 LoadLibrary 与 GetProcAddress 获取函数地址。该方法属于：（ ）",
+      "options": {
+        "A": "导入表免杀",
+        "B": "PE 文件头免杀",
+        "C": "数据段免杀",
+        "D": "Bootkit"
+      },
+      "answer": "A",
+      "explanation": "用动态获取函数方式代替静态编译方式是导入表免杀思路之一。"
+    },
+    {
+      "num": 48,
+      "stem": "某程序移动了导入表中函数名、函数地址等信息，使安全软件在原偏移处找不到目标函数。该方法属于：（ ）",
+      "options": {
+        "A": "导入表免杀",
+        "B": "宏病毒检测",
+        "C": "文件隐藏",
+        "D": "进程隐藏"
+      },
+      "answer": "A",
+      "explanation": "移动导入表是导入表免杀思路之一。"
+    },
+    {
+      "num": 49,
+      "stem": "某安全软件最常在 PE 文件的某一区域提取恶意代码特征。该区域通常是：（ ）",
+      "options": {
+        "A": "代码段",
+        "B": "桌面快捷方式",
+        "C": "文件图标",
+        "D": "回收站目录"
+      },
+      "answer": "A",
+      "explanation": "特征码最常出现的地方是 PE 文件的代码段。"
+    },
+    {
+      "num": 50,
+      "stem": "某程序在原代码中插入不影响功能的空操作指令或无用数据，使特征码发生变化。该方法属于：（ ）",
+      "options": {
+        "A": "垃圾代码插入",
+        "B": "寄存器重命名",
+        "C": "指令乱序",
+        "D": "等价指令替换"
+      },
+      "answer": "A",
+      "explanation": "插入无用代码改变特征码属于垃圾代码插入。"
+    },
+    {
+      "num": 51,
+      "stem": "某程序将可替换的通用寄存器换成其他等效寄存器，程序逻辑不变但指令结构变化。该方法属于：（ ）",
+      "options": {
+        "A": "寄存器重命名",
+        "B": "垃圾代码插入",
+        "C": "指令乱序",
+        "D": "分块填充法"
+      },
+      "answer": "A",
+      "explanation": "更换寄存器使用方式属于寄存器重命名。"
+    },
+    {
+      "num": 52,
+      "stem": "某程序把两条互不相关的指令调整顺序，执行结果不变但字节序列发生变化。该方法属于：（ ）",
+      "options": {
+        "A": "指令乱序",
+        "B": "PE 文件头移位",
+        "C": "路径劫持",
+        "D": "映像劫持"
+      },
+      "answer": "A",
+      "explanation": "改变指令排列顺序且执行结果不变属于指令乱序。"
+    },
+    {
+      "num": 53,
+      "stem": "某程序将一条指令替换为功能相同但形式不同的指令。该方法属于：（ ）",
+      "options": {
+        "A": "等价指令替换",
+        "B": "寄存器重命名",
+        "C": "文件隐藏",
+        "D": "通信隐藏"
+      },
+      "answer": "A",
+      "explanation": "用等价指令替换原指令属于等价指令替换。"
+    },
+    {
+      "num": 54,
+      "stem": "对寄存器重命名，下列说法正确的是：（ ）",
+      "options": {
+        "A": "隐含特殊指令的寄存器不可参与替换",
+        "B": "所有寄存器都必须替换",
+        "C": "所有寄存器都可以随意替换",
+        "D": "只能替换 EIP"
+      },
+      "answer": "A",
+      "explanation": "隐含特殊指令的寄存器不可参与替换。"
+    },
+    {
+      "num": 55,
+      "stem": "关于指令乱序，下列说法正确的是：（ ）",
+      "options": {
+        "A": "跳转法并未改变程序执行顺序，非跳转法改变了指令原来的排列顺序",
+        "B": "跳转法一定改变程序执行结果",
+        "C": "非跳转法不能改变指令排列顺序",
+        "D": "指令乱序不要求指令之间是否相关"
+      },
+      "answer": "A",
+      "explanation": "跳转法并未改变程序执行顺序；非跳转法改变了指令原来的排列顺序。"
+    },
+    {
+      "num": 56,
+      "stem": "指令乱序的前提条件是：（ ）",
+      "options": {
+        "A": "乱序前后两条指令不相关",
+        "B": "两条指令必须使用同一寄存器",
+        "C": "两条指令必须互相依赖",
+        "D": "必须修改 PE 头"
+      },
+      "answer": "A",
+      "explanation": "指令乱序要求乱序前后两条指令不相关。"
+    },
+    {
+      "num": 57,
+      "stem": "使用分块填充法后，只有一个处理后的文件没有被查杀，其余仍被查杀。该结果说明：（ ）",
+      "options": {
+        "A": "该块可能包含单一特征码",
+        "B": "一定存在复合特征码",
+        "C": "分块过大破坏了特征码完整性",
+        "D": "没有任何特征码"
+      },
+      "answer": "A",
+      "explanation": "仅一个文件保留说明该块包含单一特征码。"
+    },
+    {
+      "num": 58,
+      "stem": "使用分块填充法后，多个不相邻文件没有被查杀。该结果说明：（ ）",
+      "options": {
+        "A": "可能存在单一特征的多个子特征串",
+        "B": "分块一定过大",
+        "C": "一定是 PE 头免杀成功",
+        "D": "不需要继续定位"
+      },
+      "answer": "A",
+      "explanation": "多个不相邻文件保留说明存在单一特征的多个子特征串。"
+    },
+    {
+      "num": 59,
+      "stem": "使用分块填充法后，相邻文件没有被查杀。该结果说明：（ ）",
+      "options": {
+        "A": "分块过大，破坏了特征码完整性",
+        "B": "一定不存在特征码",
+        "C": "一定是脚本病毒",
+        "D": "一定是宏病毒"
+      },
+      "answer": "A",
+      "explanation": "相邻文件保留说明分块过大，破坏了特征码完整性。"
+    },
+    {
+      "num": 60,
+      "stem": "使用分块填充法后，所有处理后的文件仍被删除或查杀。该结果说明：（ ）",
+      "options": {
+        "A": "可能存在复合特征码，需要继续定位",
+        "B": "已经成功免杀",
+        "C": "文件没有恶意特征",
+        "D": "只存在单一特征码"
+      },
+      "answer": "A",
+      "explanation": "所有文件被删除说明存在复合特征码，需要继续定位。"
+    },
+    {
+      "num": 61,
+      "stem": "某恶意代码对主体代码进行加密，但为了运行时能够恢复执行，必须把解密算法放在程序中。该解密算法通常放在：（ ）",
+      "options": {
+        "A": "程序入口点",
+        "B": "文件图标",
+        "C": "回收站目录",
+        "D": "注册表 IFEO 项"
+      },
+      "answer": "A",
+      "explanation": "解密算法通常放在程序入口点。"
+    },
+    {
+      "num": 62,
+      "stem": "被加密代码运行前需要预先解密，主要原因是：（ ）",
+      "options": {
+        "A": "不解密会影响程序正确执行",
+        "B": "解密算法不能放在代码中",
+        "C": "加密后不需要入口点",
+        "D": "加密后不能被加载到内存"
+      },
+      "answer": "A",
+      "explanation": "被加密代码运行前需要预先解密，否则会影响程序正确执行。"
+    }
+  ],
+"multi": [],
+"judge": [],
+"blank": [
+  {
+    "num": 1,
+    "stem": "主引导记录通过读取 {{blank}} 标记来确定引导扇区是否有效。",
+    "answer": [
+      "55AA"
+    ],
+    "explanation": "主引导记录有效性标记为 55AA。"
+  },
+  {
+    "num": 2,
+    "stem": "UEFI 引导过程中采用 GPT 分区最多可以分 {{blank}} 个分区。",
+    "answer": [
+      "128"
+    ],
+    "explanation": "GPT 分区最多可以分 128 个分区。"
+  },
+  {
+    "num": 3,
+    "stem": "基于 UEFI 的 Bootkit 主要攻击对象是 {{blank}}。",
+    "answer": [
+      "UEFI 固件"
+    ],
+    "explanation": "基于 UEFI 的 Bootkit 主要攻击 UEFI 固件。"
+  },
+  {
+    "num": 4,
+    "stem": "计算机病毒按寄生方式可分为：{{blank}}、{{blank}}、{{blank}}、{{blank}} 病毒。",
+    "answer": [
+      "覆盖型",
+      "链接型",
+      "填充型",
+      "转储型"
+    ],
+    "explanation": "按寄生方式分类为覆盖型、链接型、填充型、转储型病毒。"
+  },
+  {
+    "num": 5,
+    "stem": "PE 文件结构包括：{{blank}}、{{blank}}、{{blank}}、{{blank}}。",
+    "answer": [
+      "MS-DOS 头",
+      "PE 文件头",
+      "节表",
+      "节"
+    ],
+    "explanation": "PE 文件结构包括 MS-DOS 头、PE 文件头、节表、节。"
+  },
+  {
+    "num": 6,
+    "stem": "Win32 病毒动态获取 API 函数地址常用两个函数：{{blank}} 和 {{blank}}。",
+    "answer": [
+      "LoadLibrary",
+      "GetProcAddress"
+    ],
+    "explanation": "动态获取 API 常用 LoadLibrary 和 GetProcAddress。"
+  },
+  {
+    "num": 7,
+    "stem": "Win32 病毒动态获取 API 函数地址的方式是什么？其中，{{blank}} 用于加载到内存，{{blank}} 用于获取指定函数地址。",
+    "answer": [
+      "LoadLibrary",
+      "GetProcAddress"
+    ],
+    "explanation": "LoadLibrary 加载 DLL 到内存，GetProcAddress 获取指定函数地址。"
+  },
+  {
+    "num": 8,
+    "stem": "蠕虫优化扫描策略的三种方式是：{{blank}}、{{blank}}、{{blank}}。",
+    "answer": [
+      "IP 地址段设置",
+      "扫描次数设置",
+      "扫描流量减少"
+    ],
+    "explanation": "蠕虫扫描策略优化包括 IP 地址段设置、扫描次数设置、扫描流量减少。"
+  },
+  {
+    "num": 9,
+    "stem": "蠕虫处理步骤是：{{blank}}、{{blank}}、{{blank}}、{{blank}}。",
+    "answer": [
+      "定位",
+      "隔离",
+      "响应",
+      "恢复"
+    ],
+    "explanation": "蠕虫处理步骤为定位、隔离、响应、恢复。"
+  },
+  {
+    "num": 10,
+    "stem": "代码段指令变形技术四种是：{{blank}}、{{blank}}、{{blank}}、{{blank}}。",
+    "answer": [
+      "垃圾代码插入",
+      "寄存器重命名",
+      "指令乱序",
+      "等价指令替换"
+    ],
+    "explanation": "代码段指令变形技术包括垃圾代码插入、寄存器重命名、指令乱序、等价指令替换。"
+  },
+  {
+    "num": 11,
+    "stem": "衡量恶意代码检测的重要指标是：{{blank}} 和 {{blank}}。",
+    "answer": [
+      "误报率",
+      "漏报率"
+    ],
+    "explanation": "衡量恶意代码检测的重要指标是误报率和漏报率。"
+  },
+  {
+    "num": 12,
+    "stem": "加密代码中的解密算法通常放在 {{blank}}。",
+    "answer": [
+      "程序入口点"
+    ],
+    "explanation": "解密算法通常放在程序入口点，以便被加密代码运行前完成解密。"
+  },
+  {
+    "num": 13,
+    "stem": "案例分析题：Rootkit 文件隐藏案例分析\n某安全人员发现，磁盘中实际存在文件 secret.doc，但在资源管理器、命令行 dir、普通文件搜索中均不可见。进一步分析发现，系统目录查询链路被内核层 Rootkit 修改：\n\n用户层文件枚举会调用 FindFile、FindFirstFile、FindNextFile 等 Win32 API；\n这些 API 底层由 ntdll.dll 中的 ZwQueryDirectoryFile 支持；\n系统调用进入内核后，会通过 SSDT 找到对应内核函数；\n文件查询结果最终以文件信息链表形式返回；\nRootkit 修改了 SSDT 中 ZwQueryDirectoryFile 的地址，使其转向自定义函数 NewZwQueryDirectoryFile；\nNewZwQueryDirectoryFile 先调用原函数获取正常查询结果，再删除链表中与 secret.doc 对应的节点，最后把过滤后的结果返回用户层。\n问题1：该 Rootkit 为了实现文件隐藏，挂钩的核心函数是什么？\n{{blank}}",
+    "answer": [
+      "ZwQueryDirectoryFile 函数"
+    ],
+    "explanation": "自评题，按参考答案核对要点。\nZwQueryDirectoryFile 函数。"
+  },
+  {
+    "num": 14,
+    "stem": "案例分析题：Rootkit 文件隐藏案例分析\n某安全人员发现，磁盘中实际存在文件 secret.doc，但在资源管理器、命令行 dir、普通文件搜索中均不可见。进一步分析发现，系统目录查询链路被内核层 Rootkit 修改：\n\n用户层文件枚举会调用 FindFile、FindFirstFile、FindNextFile 等 Win32 API；\n这些 API 底层由 ntdll.dll 中的 ZwQueryDirectoryFile 支持；\n系统调用进入内核后，会通过 SSDT 找到对应内核函数；\n文件查询结果最终以文件信息链表形式返回；\nRootkit 修改了 SSDT 中 ZwQueryDirectoryFile 的地址，使其转向自定义函数 NewZwQueryDirectoryFile；\nNewZwQueryDirectoryFile 先调用原函数获取正常查询结果，再删除链表中与 secret.doc 对应的节点，最后把过滤后的结果返回用户层。\n问题2：该技术更接近 MEP、DKOM，还是内核过滤驱动？说明理由。\n{{blank}}",
+    "answer": [
+      "MEP 技术"
+    ],
+    "explanation": "自评题，按参考答案核对要点。\n更接近 MEP 技术。MEP 是修改执行路径技术。题干中 Rootkit 修改 SSDT 中 ZwQueryDirectoryFile 的地址，使原本的系统调用转向自定义函数 NewZwQueryDirectoryFile，本质是通过 Hook 改变程序执行路径，而不是直接修改内核对象链表。"
+  },
+  {
+    "num": 15,
+    "stem": "案例分析题：Rootkit 文件隐藏案例分析\n某安全人员发现，磁盘中实际存在文件 secret.doc，但在资源管理器、命令行 dir、普通文件搜索中均不可见。进一步分析发现，系统目录查询链路被内核层 Rootkit 修改：\n\n用户层文件枚举会调用 FindFile、FindFirstFile、FindNextFile 等 Win32 API；\n这些 API 底层由 ntdll.dll 中的 ZwQueryDirectoryFile 支持；\n系统调用进入内核后，会通过 SSDT 找到对应内核函数；\n文件查询结果最终以文件信息链表形式返回；\nRootkit 修改了 SSDT 中 ZwQueryDirectoryFile 的地址，使其转向自定义函数 NewZwQueryDirectoryFile；\nNewZwQueryDirectoryFile 先调用原函数获取正常查询结果，再删除链表中与 secret.doc 对应的节点，最后把过滤后的结果返回用户层。\n问题3：写出 SSDT 中指定函数位置的公式。注意：这里只写公式，不作为计算题。\n{{blank}}",
+    "answer": [
+      "指定函数在 SSDT 中的位置 = SSDT 基地址 + 索引值 × 4"
+    ],
+    "explanation": "自评题，按参考答案核对要点。\n指定函数在 SSDT 中的位置 = SSDT 基地址 + 索引值 × 索引项长度。索引项长度通常为 4 字节，所以：指定函数在 SSDT 中的位置 = SSDT 基地址 + 索引值 × 4。"
+  },
+  {
+    "num": 16,
+    "stem": "案例分析题：Rootkit 文件隐藏案例分析\n某安全人员发现，磁盘中实际存在文件 secret.doc，但在资源管理器、命令行 dir、普通文件搜索中均不可见。进一步分析发现，系统目录查询链路被内核层 Rootkit 修改：\n\n用户层文件枚举会调用 FindFile、FindFirstFile、FindNextFile 等 Win32 API；\n这些 API 底层由 ntdll.dll 中的 ZwQueryDirectoryFile 支持；\n系统调用进入内核后，会通过 SSDT 找到对应内核函数；\n文件查询结果最终以文件信息链表形式返回；\nRootkit 修改了 SSDT 中 ZwQueryDirectoryFile 的地址，使其转向自定义函数 NewZwQueryDirectoryFile；\nNewZwQueryDirectoryFile 先调用原函数获取正常查询结果，再删除链表中与 secret.doc 对应的节点，最后把过滤后的结果返回用户层。\n问题4：IRP Hook 有哪两种方式？分别说明派遣函数和完成例程函数的含义。\n{{blank}}",
+    "answer": [
+      "替换派遣函数；替换完成例程函数"
+    ],
+    "explanation": "自评题，按参考答案核对要点。\n1. 替换派遣函数：不同类型的 IRP 对应不同的派遣函数，派遣函数用于处理与其对应的 IRP 请求。Rootkit 可以通过替换指定驱动对象中的 IRP 派遣函数，控制某一类 IRP 请求。\n2. 替换完成例程函数：每个 IRP 请求下都有一个 I/O 栈，每一层 I/O 栈中都有一个完成例程函数。IRP 执行之后需要返回时调用的函数就是完成例程函数。Rootkit 可以通过替换完成例程函数，在结果返回前进行修改。"
+  },
+  {
+    "num": 17,
+    "stem": "案例分析题：Rootkit 文件隐藏案例分析\n某安全人员发现，磁盘中实际存在文件 secret.doc，但在资源管理器、命令行 dir、普通文件搜索中均不可见。进一步分析发现，系统目录查询链路被内核层 Rootkit 修改：\n\n用户层文件枚举会调用 FindFile、FindFirstFile、FindNextFile 等 Win32 API；\n这些 API 底层由 ntdll.dll 中的 ZwQueryDirectoryFile 支持；\n系统调用进入内核后，会通过 SSDT 找到对应内核函数；\n文件查询结果最终以文件信息链表形式返回；\nRootkit 修改了 SSDT 中 ZwQueryDirectoryFile 的地址，使其转向自定义函数 NewZwQueryDirectoryFile；\nNewZwQueryDirectoryFile 先调用原函数获取正常查询结果，再删除链表中与 secret.doc 对应的节点，最后把过滤后的结果返回用户层。\n问题5：结合材料，完整说明 Rootkit 实现文件隐藏的过程。\n{{blank}}",
+    "answer": [
+      "Rootkit 通过 SSDT Hook 修改 ZwQueryDirectoryFile，使其转向自定义函数；自定义函数先调用原函数获得文件信息链表，再删除目标文件节点，最后返回过滤后的文件列表。"
+    ],
+    "explanation": "自评题，按参考答案核对要点。\n1. Windows 系统在显示或搜索文件时，会调用 FindFile、FindFirstFile、FindNextFile 等 Win32 API 函数。\n2. 这些 Win32 API 函数由 ntdll.dll 中的 Native API 函数 ZwQueryDirectoryFile 支持。\n3. ZwQueryDirectoryFile 执行时，利用 INT 2Eh 或 SYSENTER 切换到内核层。\n4. 进入内核层后，系统调用 SSDT 中同名的内核函数 ZwQueryDirectoryFile。\n5. 该函数向文件系统过滤驱动发送访问磁盘的 IRP 消息，IRP 消息依次向下传递。\n6. 最终由磁盘驱动根据 IRP 消息获取所有文件信息，并将文件信息填入链表结构中，再依次向上返回。\n7. Rootkit 通过 SSDT Hook 修改 SSDT 中的 ZwQueryDirectoryFile 函数，使其转向自编函数 NewZwQueryDirectoryFile。\n8. NewZwQueryDirectoryFile 先调用原始 ZwQueryDirectoryFile 完成正常文件查询，得到返回的 FILE_BOTH_DIRECTORY_INFORMATION 文件信息链表。\n9. 然后遍历该文件信息链表，检查是否存在需要隐藏的文件名。\n10. 如果发现需要隐藏的文件，就修改链表关系，将该文件对应的节点从链表中删除。\n11. 这样返回给用户层的文件列表中就不包含该文件，用户无法看到该文件，从而实现文件隐藏。"
+  },
+  {
+  "num": 18,
+  "stem": "计算题：PE 文件偏移计算\n\n某 PE 文件节表如下：\n\n\\[\n\\begin{array}{c|c|c|c|c}\n\\text{节名} & \\text{虚拟偏移} & \\text{虚拟大小} & \\text{物理偏移} & \\text{物理大小} \\\\\n\\hline\n.text & 0x1000 & 0x11E41 & 0x400 & 0x12000 \\\\\n.rdata & 0x13000 & 0x657C & 0x12400 & 0x6600 \\\\\n.data & 0x1A000 & 0x4680 & 0x18A00 & 0x1800 \\\\\n.rsrc & 0x1F000 & 0xBE58 & 0x1A200 & 0xC000 \\\\\n.reloc & 0x2B000 & 0x1B6E & 0x26200 & 0x1C00\n\\end{array}\n\\]\n\n已知某变量的虚拟地址 RVA = \\(0x11008\\)。请计算该变量在磁盘文件中的偏移。\n\n所属节：{{blank}}；公式：{{blank}}；关键计算式：{{blank}}；最终答案：{{blank}}。",
+  "answer": [
+    ".text",
+    "文件偏移 = 虚拟地址 - 所在节的虚拟偏移 + 所在节的物理偏移",
+    "0x11008 - 0x1000 + 0x400 = 0x10408",
+    "0x10408"
+    ],
+  "explanation": "计算过程：\n\n\\[\n.text\\text{ 节范围} = 0x1000 \\sim 0x1000 + 0x11E41 = 0x1000 \\sim 0x12E41\n\\]\n\n因为：\n\n\\[\n0x1000 \\leq 0x11008 < 0x12E41\n\\]\n\n所以 0x11008 位于 .text 节中。\n\n文件偏移计算公式为：\n\n\\[\n\\text{文件偏移} = \\text{虚拟地址} - \\text{所在节的虚拟偏移} + \\text{所在节的物理偏移}\n\\]\n\n代入数据：\n\n\\[\n0x11008 - 0x1000 + 0x400 = 0x10408\n\\]\n\n因此，该变量在磁盘文件中的偏移为：\n\n\\[\n\\boxed{0x10408}\n\\]"
+  },
+  {
+    "num": 19,
+    "stem": "匹配题转填空：木马启动技术。请根据选项填写对应的选项字母。\n选项：A. 利用系统配置启动；B. 利用注册表启动；C. 劫持技术启动；D. 捆绑文件启动；E. 计划任务启动。\n1. 把木马程序或快捷方式建立在启动目录中，系统启动时自动运行：{{blank}}\n2. 修改注册表相关启动项：{{blank}}\n3. 出现文件类型劫持、映像劫持、路径劫持等：{{blank}}\n4. 木马与其他文件或程序绑定运行：{{blank}}\n5. 利用系统计划任务定时启动：{{blank}}",
+    "answer": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "explanation": "1-A 利用系统配置启动；2-B 利用注册表启动；3-C 劫持技术启动；4-D 捆绑文件启动；5-E 计划任务启动。"
+  },
+  {
+    "num": 20,
+    "stem": "匹配题转填空：木马隐藏技术。请根据选项填写对应的选项字母。本题 4 个选项、5 个空，其中 A 选项使用两次。\n选项：A. 通信隐藏；B. 文件隐藏；C. 进程隐藏；D. 控制端隐藏。\n1. 隐藏通信过程：{{blank}}\n2. 隐藏木马文件：{{blank}}\n3. 隐藏木马进程：{{blank}}\n4. 通过动态 DNS、Fast-Flux、洋葱网络等方式隐藏攻击者控制端：{{blank}}\n5. 隐藏网络连接、通信地址或通信行为：{{blank}}",
+    "answer": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "A"
+    ],
+    "explanation": "1-A 通信隐藏；2-B 文件隐藏；3-C 进程隐藏；4-D 控制端隐藏；5-A 通信隐藏。A 选项使用两次。"
+  },
+  {
+    "num": 21,
+    "stem": "匹配题转填空：劫持启动细分类。请根据选项填写对应的选项字母。\n选项：A. 文件类型劫持；B. 映像劫持；C. 路径劫持；D. 快捷方式劫持；E. DLL 劫持。\n1. 替换指定类型文件的关联程序：{{blank}}\n2. 利用 IFEO 下 Debugger 键启动木马：{{blank}}\n3. 在更高优先级搜索目录中设置同名文件：{{blank}}\n4. 修改快捷方式文件目标为木马文件：{{blank}}\n5. 设计 DLL 木马替换系统原 DLL，并保持相同功能和导出表：{{blank}}",
+    "answer": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "explanation": "1-A 文件类型劫持；2-B 映像劫持；3-C 路径劫持；4-D 快捷方式劫持；5-E DLL 劫持。"
+  }
+],
+"short": [
+  {
+    "num": 1,
+    "stem": "简答题：Win32 病毒感染 PE 文件过程\n某 Win32 病毒感染 PE 文件后，宿主程序仍能正常运行。请说明它如何判断 PE 文件、添加病毒节、修改入口点，并最终跳回宿主程序。",
+    "answer": "1. 通过 MS-DOS 头中的 MZ 标志和 PE 文件头中的 PE\\0\\0 标志，判断文件是否为 PE 格式。\n2. 查找病毒感染标志，判断该文件是否已经被同类病毒感染。\n3. 如果文件未被感染，则根据 PE 头找到节表起始位置。\n4. 根据节的个数和结构大小，确定各节的位置和大小。\n5. 为节表新添加一个节表项，写入病毒节名、节的实际大小、内存中的 RVA、对齐后的尺寸、节的 RA 和属性等信息。\n6. 修改 optional_header.NumberOfSection 字段，使节数加 1，保持新增节后节数一致。\n7. 修改 optional_header.EntryPoint 字段，使程序入口点指向新增病毒节的起始指令。\n8. 修改病毒末尾代码，使病毒代码执行完后可以跳转回原入口点，让宿主程序继续运行。\n9. 修改 optional_header.SizeOfImage 字段，使其与新增节后的映像大小一致。\n10. 在 PE 文件头中选择合适位置写入病毒感染标志。\n11. 将病毒代码写入新添加的节中。",
+    "explanation": "过程类简答题，步骤要完整。"
+  },
+  {
+    "num": 2,
+    "stem": "简答题：宏病毒检测方法\n某 Office 文档疑似感染宏病毒。请写出至少 3 种检测方法，并解释每种方法对应的异常现象。",
+    "answer": "1. 打开带宏文档时弹出警告框：Office 设置为“禁用所有宏，并发出通知”时，打开带宏文档会弹出警告框。\n2. 查看宏时发现自动宏或内建宏：例如 AutoOpen、AutoClose 等自动宏，或 FileSave 等内建宏。\n3. 无法操作“查看宏”或宏相关按钮异常：宏病毒可能屏蔽宏查看功能，导致菜单栏或工具栏中的宏相关按钮异常。\n4. 另存为时只能以模板类型保存：文档保存类型异常，可能说明模板或宏被感染。\n5. 未修改文档却弹出保存提示：打开后未修改直接退出却提示保存，可能说明宏在后台修改了文档。\n6. 操作文档时出现异常：如内存不足、打印不正常等异常现象。",
+    "explanation": "方法类简答题，至少写 3 个并解释。"
+  },
+  {
+    "num": 3,
+    "stem": "简答题：木马文件隐藏方法\n某主机被植入木马，但用户很难在磁盘上发现木马文件。请写出木马文件隐藏的常用方法，至少 3 种，并解释。",
+    "answer": "1. 伪装为系统文件：将木马命名为类似 services.exe 的文件名，使普通用户难以区分。\n2. 隐藏到特殊目录：将木马放入 System32、Program Files、多层深目录或伪装回收站目录，降低被发现概率。\n3. 替换系统动态链接库：DLL 木马可替换系统 DLL，或伪造成系统 DLL，并保持原有导出表和功能。\n4. 设置为隐藏属性：例如使用 attrib +H filename 将木马文件设置为隐藏属性，使系统默认不显示。\n5. 利用驱动程序隐藏文件：通过 Rootkit 或驱动层技术挂钩文件操作函数，篡改系统返回的文件查询结果。\n6. 运行期间删除文件：木马运行后删除磁盘自身文件，只保留内存中的木马进程，使用户无法在磁盘上找到文件。",
+    "explanation": "方法类简答题，至少写 3 个并解释。"
+  },
+  {
+    "num": 4,
+    "stem": "简答题：INT 2E 模式切换过程\n某用户层程序调用系统服务时，需要进入内核层执行。请简述通过软中断 INT 2E 实现模式切换的过程。",
+    "answer": "1. 用户层程序调用系统服务或 API 函数时，需要访问内核层代码或数据。\n2. 由于用户层代码不能直接访问内核层，所以需要通过系统调用进行模式切换。\n3. 应用程序发出 INT 2E 软中断指令。\n4. CPU 通过 IDT，也就是中断描述符表，找到对应的 KiSystemService 函数。\n5. 在转交执行权前，CPU 完成从用户模式切换到内核模式的准备工作，例如权限检查和内核栈准备。\n6. KiSystemService 根据服务 ID，从 SSDT 中查找需要调用的服务函数地址和参数描述。\n7. 系统将参数从用户态栈复制到当前线程的内核栈中。\n8. KiSystemService 调用对应的内核服务函数。\n9. 内核服务函数执行完成后，将运行结果复制回用户层调用线程的状态栈。\n10. 最后通过 IRET 指令恢复到用户层，程序继续执行。",
+    "explanation": "过程类简答题，步骤要完整。"
+  },
+  {
+    "num": 5,
+    "stem": "简答题：特征码定位主要思想\n某样本被安全软件查杀，分析人员希望找到安全软件定义的特征码位置。请简述特征码定位的主要思想。",
+    "answer": "1. 确定特征码在文件中的位置，是实现代码免杀的基础和前提。\n2. 特征码定位通常通过将样本文件分区间用零字节覆盖来实现。\n3. 覆盖后，使用安全软件对样本进行扫描。\n4. 根据扫描结果判断被覆盖的区间是否包含安全软件定义的特征码。\n5. 如果覆盖某一区间后样本不再被查杀，说明该区间可能包含特征码。\n6. 然后继续缩小覆盖范围，反复扫描和判断。\n7. 直到找到能够满足免杀效果的特征码长度和具体位置为止。\n8. 对于单一特征码和复合特征码，定位方法会有所区别。",
+    "explanation": "简答题，按参考答案核对要点。"
+  }
+]
+}

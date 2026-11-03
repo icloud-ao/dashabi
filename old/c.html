@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>C语言综合练习</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png">
+<style>
+  :root {
+    --bg: #0b0f14;
+    --panel: #111827;
+    --panel2: #0f172a;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --border: rgba(255,255,255,.10);
+    --ok: #10b981;
+    --bad: #ef4444;
+    --warn: #f59e0b;
+    --link: #60a5fa;
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: linear-gradient(180deg, #0b0f14 0%, #090d12 100%);
+    color: var(--text);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", Arial, sans-serif;
+    line-height: 1.45;
+  }
+  a { color: var(--link); }
+  .wrap {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 20px 16px 96px;
+  }
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    backdrop-filter: blur(10px);
+    background: rgba(11,15,20,.7);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .title-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: .2px;
+  }
+  .sub {
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .ctrl {
+    background: rgba(17,24,39,.75);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: var(--shadow);
+  }
+  .ctrl-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .stats {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .pill {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 10px;
+    background: rgba(15,23,42,.6);
+  }
+  .pill strong { color: var(--text); font-weight: 700; }
+  .btn {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: rgba(15,23,42,.8);
+    color: var(--text);
+    border-radius: 12px;
+    padding: 10px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: transform .04s ease, border-color .12s ease;
+  }
+  .btn:hover { border-color: rgba(255,255,255,.22); }
+  .btn:active { transform: translateY(1px); }
+  .btn.primary {
+    background: rgba(59,130,246,.25);
+    border-color: rgba(59,130,246,.5);
+  }
+  .btn.danger {
+    background: rgba(239,68,68,.18);
+    border-color: rgba(239,68,68,.45);
+  }
+  .btn.ghost {
+    background: rgba(17,24,39,.45);
+  }
+  .input {
+    width: 100%;
+    background: rgba(15,23,42,.7);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+  }
+  .input:focus { border-color: rgba(96,165,250,.65); }
+  .section {
+    margin-top: 18px;
+  }
+  .section h2 {
+    margin: 18px 0 10px;
+    font-size: 15px;
+    color: #f3f4f6;
+  }
+  .q {
+    background: rgba(17,24,39,.70);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin: 10px 0;
+    box-shadow: var(--shadow);
+  }
+  .q.correct { border-color: rgba(16,185,129,.55); }
+  .q.wrong { border-color: rgba(239,68,68,.55); }
+  .q.unanswered { border-color: rgba(245,158,11,.55); }
+  .q-head {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .q-title {
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .q-meta {
+    color: var(--muted);
+    font-size: 12px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .tag {
+    border: 1px solid var(--border);
+    background: rgba(15,23,42,.55);
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+  }
+  .tag.ok { border-color: rgba(16,185,129,.55); color: #a7f3d0; }
+  .tag.bad { border-color: rgba(239,68,68,.55); color: #fecaca; }
+  .tag.warn { border-color: rgba(245,158,11,.55); color: #fde68a; }
+  .stem {
+    margin-top: 8px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 13px;
+  }
+  .options {
+    margin-top: 10px;
+    display: grid;
+    gap: 8px;
+  }
+  .opt {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 10px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: rgba(15,23,42,.55);
+    cursor: pointer;
+    user-select: none;
+  }
+  .opt:hover { border-color: rgba(255,255,255,.22); }
+  .opt input { margin-top: 2px; }
+  .opt .letter {
+    width: 20px;
+    font-weight: 800;
+    color: #c7d2fe;
+  }
+  .opt .text {
+    flex: 1;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 13px;
+    color: #e5e7eb;
+  }
+  .opt.correct {
+    border-color: rgba(16,185,129,.65);
+    background: rgba(16,185,129,.10);
+  }
+  .opt.wrong {
+    border-color: rgba(239,68,68,.65);
+    background: rgba(239,68,68,.10);
+  }
+  .answer-line {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--muted);
+    display: none;
+  }
+  .answer-line.show { display: block; }
+  .answer-line b { color: #f3f4f6; }
+  
+  .stem.code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 13px;
+  }
+  .blank-input {
+    display: inline-block;
+    min-width: 150px;
+    max-width: 100%;
+    padding: 6px 8px;
+    margin: 2px 2px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,.04);
+    color: var(--fg);
+    outline: none;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 13px;
+  }
+  .blank-input:focus { border-color: rgba(96,165,250,.75); box-shadow: 0 0 0 4px rgba(96,165,250,.18); }
+  .blank-input.correct { border-color: rgba(16,185,129,.85); box-shadow: 0 0 0 4px rgba(16,185,129,.18); }
+  .blank-input.wrong { border-color: rgba(239,68,68,.85); box-shadow: 0 0 0 4px rgba(239,68,68,.18); }
+.bottom-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    background: rgba(11,15,20,.78);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border);
+  }
+  .bottom-inner {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 12px 16px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .status {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .status b { color: var(--text); }
+  .right-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 0;
+  }
+  .note {
+    color: var(--muted);
+    font-size: 12px;
+    margin: 8px 0 0;
+  }
+  @media (max-width: 720px) {
+    .controls { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="title-row">
+      <div>
+        <h1>综合练习2</h1>
+        <div class="sub">本页面会把作答自动保存到本机浏览器（localStorage）。可离线打开。</div>
+      </div>
+      <div class="stats" id="statsTop"></div>
+    </div>
+
+    <div class="controls">
+      <div class="ctrl">
+        <div class="ctrl-row">
+          <input id="jumpInput" class="input" placeholder="输入题号并回车跳转（例如：单选 58 输入 58；判断 10 输入 J10；填空 5-3-2 输入 5-3-2（或填空 5-10-1 输入 5-10-1））" />
+          <button class="btn ghost" id="btnShowAll">显示全部</button>
+        </div>
+        <div class="note">跳转规则：输入 <b>数字</b> → 单选题；输入 <b>J数字</b> → 判断题。</div>
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-row">
+          <button class="btn ghost" id="btnFilterUnanswered">只看未答</button>
+          <button class="btn ghost" id="btnFilterWrong">只看错题</button>
+          <button class="btn ghost" id="btnToggleAnswers">显示答案</button>
+        </div>
+        <div class="note">“只看错题”需要先点一次 <b>提交判分</b> 才有意义。</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+
+  <div class="divider"></div>
+
+  <div class="section" id="secJudge">
+    <h2>判断题（共 36 题）</h2>
+    <div id="judgeList"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section" id="secSingle">
+    <h2>单选题（共 67 题）</h2>
+    <div id="singleList"></div>
+  </div>
+  
+  <div class="section" id="secBlank">
+    <h2>程序填空题（共 11 题）</h2>
+    <div id="blankList"></div>
+  </div>
+  <p class="note">题目与答案来自你上传的文本整理（程序填空 11 + 判断题 36 + 单选题 67）。</p>
+</div>
+
+<div class="bottom-bar">
+  <div class="bottom-inner">
+    <div class="status" id="statusBar">未判分</div>
+    <div class="right-buttons">
+      <button class="btn primary" id="btnGrade">提交判分</button>
+      <button class="btn" id="btnClear">清空选择</button>
+      <button class="btn danger" id="btnReset">清空本页所有保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const DATA = {"meta": {"title": "综合练习2", "generated": "2025-12-28"}, "judge": [{"num": 1, "stem": "已知 double a; 使用 scanf() 函数输入一个数值给变量 a，正确的函数调用是 scanf(\"%lf\",&a);。", "answer": "T"}, {"num": 2, "stem": "break 语句只能用于 switch 语句。", "answer": "F"}, {"num": 3, "stem": "在 switch 语句中必须使用 default。", "answer": "F"}, {"num": 4, "stem": "语句: printf(\"%d\",(a=2)&&(b=-2)); 的输出结果是 1。", "answer": "T"}, {"num": 5, "stem": "C 程序中注释部分可以出现在程序中任意合适的地方。", "answer": "T"}, {"num": 6, "stem": "设变量已正确定义，执行以下程序段，连续输入三个字符 k，则输出一个字符 k。\nscanf(\"%c%c%c\", &ch1, &ch2, &ch3); printf(\"%c\", ch2);", "answer": "T"}, {"num": 7, "stem": "定义结构体时，成员的定义顺序不会影响结构体变量的内存布局。", "answer": "F"}, {"num": 8, "stem": "指针变量存储的是某个变量的内存地址。", "answer": "T"}, {"num": 9, "stem": "定义指针时，int* p1, p2; 语句中 p1 和 p2 都是 int 类型指针。", "answer": "F"}, {"num": 10, "stem": "函数的返回值可以是多个，也可以没有返回值。", "answer": "T"}, {"num": 11, "stem": "字符串常量实质上是一个指向该字符串首字符的指针常量。", "answer": "T"}, {"num": 12, "stem": "调用 printf 函数，%s 的格式输出字符串时，字符数组名、字符指针和字符串常量都可以作为输出参数。", "answer": "T"}, {"num": 13, "stem": "main 函数必须位于其他函数之前。", "answer": "F"}, {"num": 14, "stem": "函数的嵌套就是在一个函数中定义另外一个函数。", "answer": "F"}, {"num": 15, "stem": "执行以下 while 语句，将出现死循环。\ns = 0; i = 1; while(1){ if(i > 10){ continue; } s = s + i; i++;}", "answer": "T"}, {"num": 16, "stem": "以下程序段中，break 语句只执行一次。\nn = 9;\nfor(i = 1; i <= n; i++){\n  for(j = 1; j <= n; j++){\n    if(i != 1 && j > i){ break; }\n    printf(\"%4d\", i*j)\n  }\n  printf(\"\\n\");\n}", "answer": "F"}, {"num": 17, "stem": "continue 不是结束本次循环，而是终止整个循环的执行。", "answer": "F"}, {"num": 18, "stem": "在 switch 语句中，每一个的 case 常量表达式的值可以相同。", "answer": "F"}, {"num": 19, "stem": "在 if 语句的三种形式中，如果要想在满足条件时执行一组(多个)语句，则必须把这一组语句用 {} 括起来组成一个复合语句。", "answer": "T"}, {"num": 20, "stem": "数组定义中，数组名后是用方括号括起来的常量表达式，不能用圆括号。", "answer": "T"}, {"num": 21, "stem": "C 程序总是从程序的第一条语句开始执行。", "answer": "F"}, {"num": 22, "stem": "任何表达式语句都是表达式加分号组成的。", "answer": "T"}, {"num": 23, "stem": "C 语言本身不提供输入输出语句，输入和输出操作是由函数来实现的。", "answer": "T"}, {"num": 24, "stem": "continue 不是结束本次循环，而是终止整个循环的执行。", "answer": "F"}, {"num": 25, "stem": "当数组元素作为函数参数传递时，传递的是数组元素的值。", "answer": "T"}, {"num": 26, "stem": "数组名本质上是指向数组首元素的常量指针，不能对其进行赋值操作。", "answer": "T"}, {"num": 27, "stem": "指针和它所指向对象的类型必须保持一致。", "answer": "T"}, {"num": 28, "stem": "可以通过“结构体变量名.成员名”的方式访问结构体中的成员。", "answer": "T"}, {"num": 29, "stem": "C 语言程序中可以有多个函数，但只能有一个主函数。", "answer": "T"}, {"num": 30, "stem": "结构体成员的类型必须是基本数据类型。", "answer": "F"}, {"num": 31, "stem": "结构体类型本身不占用内存空间，结构体变量占用内存空间。", "answer": "T"}, {"num": 32, "stem": "在 switch 语句中，可以根据需要使用或不使用 break 语句。", "answer": "T"}, {"num": 33, "stem": "C 语言中的变量名不区分大小写。", "answer": "F"}, {"num": 34, "stem": "\"a\" 和 'a' 是等价的。", "answer": "F"}, {"num": 35, "stem": "通常 C 语句末尾以分号结束。", "answer": "T"}, {"num": 36, "stem": "判断整型变量 x 是否是奇数的表达式为 x%2!=0。", "answer": "T"}], "single": [{"num": 1, "stem": "若有定义：int a[2][3]; 以下选项中对数组元素正确引用的是（）。", "options": {"A": "a[2][0]", "B": "a[2][3]", "C": "a[0][3]", "D": "a[1>2][1]"}, "answer": "D"}, {"num": 2, "stem": "当调用函数时，实参是一个数组名，则向函数传送的是（）。", "options": {"A": "数组的长度", "B": "数组每个元素中的值", "C": "数组的首地址", "D": "数组每一个元素的地址"}, "answer": "C"}, {"num": 3, "stem": "C 语言规定：在一个源程序中，main函数的位置（）。", "options": {"A": "必须在最开始", "B": "必须在系统调用的库函数的后面", "C": "可以任意", "D": "必须在最后"}, "answer": "C"}, {"num": 4, "stem": "执行以下代码，输出的结果是：\n#include <stdio.h>\nvoid swap(int *x, int *y){\n    int *z;\n    z=x;  x=y;  y=z;\n}\nint main(){\n    int x=8, y=3;\n    swap(&x, &y);\n    printf(\"%d, %d\\n\", x, y);\n    return 0;\n}", "options": {"A": "3, 8", "B": "8, 3", "C": "输出结果不确定", "D": "程序有错"}, "answer": "B"}, {"num": 5, "stem": "执行以下代码，打印输出的内容是：\n#include <stdio.h>\nint main(){\n    int a, b;\n    a = (5<10) || (8<9);\n    b = (5<7) + (8<11);\n    printf(\"%d%d\", a, b);\n    return 0;\n}", "options": {"A": "11", "B": "12", "C": "21", "D": "22", "E": "程序有错"}, "answer": "B"}, {"num": 6, "stem": "初始化一维数组，错误的是（）。", "options": {"A": "int a[10]={0};", "B": "int a[10]={1,2,3};", "C": "int a[]={1,2,3,4,5,6,7,8,9,10};", "D": "int a[10]={1,2,3,4,5,6,7,8,9,10,11};"}, "answer": "D"}, {"num": 7, "stem": "包含5个元素的一维数组a的第3个元素可表达为（）。", "options": {"A": "a[2]", "B": "a[3]", "C": "a[-3]", "D": "a[-2]"}, "answer": "A"}, {"num": 8, "stem": "对于语句“int s=0,i=1; while(i=1) s+=i;”，说法正确的是（）。", "options": {"A": "while循环执行0次", "B": "while循环执行1次", "C": "while循环执行无限次", "D": "以上说法都错"}, "answer": "C"}, {"num": 9, "stem": "执行语句\n执行语句int s=0,i=1; while(i<10) s+=i, i+=2; printf(\"%d\",s);\n输出（）。", "options": {"A": "25", "B": "30", "C": "45", "D": "50"}, "answer": "A"}, {"num": 10, "stem": "在 for(表达式1; 表达式2; 表达式3) 循环中，控制循环结束的是（）。", "options": {"A": "初始化表达式（表达式1）", "B": "条件表达式（表达式2）", "C": "迭代表达式（表达式3）", "D": "循环体"}, "answer": "B"}, {"num": 11, "stem": "执行语句\n执行语句int s, i; for(s=0,i=1;i<=9;i+=2,s++) s+=i; printf(\"%d\",s);\n输出（）。", "options": {"A": "20", "B": "21", "C": "25", "D": "30"}, "answer": "D"}, {"num": 12, "stem": "正确表达“若变量a小于变量b，则借助变量c交换a、b”的语句（序列）是（）。", "options": {"A": "if(a<b) {c=a;a=b;b=c;}", "B": "if a<b: c=a,a=b,b=c;", "C": "if(a<b) c=a;a=b;b=c;", "D": "if a<b: c=a;a=b;b=c;"}, "answer": "A"}, {"num": 13, "stem": "可判断整数n为偶数的是（）。", "options": {"A": "n%2=0", "B": "n%2==0", "C": "n/2=0", "D": "n/2==0"}, "answer": "B"}, {"num": 14, "stem": "判断“b大于a，但小于c”的表达式是（）。", "options": {"A": "a<b<c", "B": "b>a&b<c", "C": "b>a&&b<c", "D": "b>a||b<c"}, "answer": "C"}, {"num": 15, "stem": "判断“a大于b且c小于d”的表达式是（）。", "options": {"A": "a>b|c<d", "B": "a>b&c<d", "C": "a>b||c<d", "D": "a>b&&c<d"}, "answer": "D"}, {"num": 16, "stem": "执行语句“int a=1, b=0; a++, ++b;”后a、b的值分别为（）。", "options": {"A": "2 2", "B": "1 2", "C": "2 1", "D": "1 1"}, "answer": "C"}, {"num": 17, "stem": "执行语句“int a=0, b=1, c; c=a++&&++b;”后a、b、c的值分别为（）。", "options": {"A": "0 1 0", "B": "1 2 1", "C": "0 2 1", "D": "1 1 0"}, "answer": "D"}, {"num": 18, "stem": "下列程序段的输出结果是 （）。\nint x = 1, a = 0, b = 0;\nswitch (x) {\n    case 0: b++;\n    case 1: a++;\n}\nprintf(\"a=%d,b=%d\\n\", a, b);", "options": {"A": "a=1,b=1", "B": "a=1,b=0", "C": "a=2,b=2", "D": "a=2,b=1"}, "answer": "B"}, {"num": 19, "stem": "若有定义 int a = 10; int *p;，要让指针p指向变量a，正确的赋值是（）。", "options": {"A": "p = a;", "B": "p = &a;", "C": "*p = a;", "D": "*p = &a;"}, "answer": "B"}, {"num": 20, "stem": "在 C 语言中，用于从键盘输入数据的标准函数是（）。", "options": {"A": "input", "B": "in", "C": "scanf", "D": "printf"}, "answer": "C"}, {"num": 21, "stem": "下列语句定义 x 为指向 int 类型变量 a 的指针，正确的是（）。", "options": {"A": "int a, *x = a;", "B": "int a, *x = &a;", "C": "int *x = &a, a;", "D": "int a, x = a;"}, "answer": "B"}, {"num": 22, "stem": "若有以下说明，且0<=i<10，则对数组元素的错误引用是（）。\nint a[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, *p = a, i;", "options": {"A": "*(a+i)", "B": "a[p-a+i]", "C": "p+i", "D": "*(&a[i])"}, "answer": "C"}, {"num": 23, "stem": "假设变量s、a、b、c均已定义为整型变量，且a、c均已赋值（c大于0），则与以下程序段功能等价的赋值语句是（）。\ns = a;\nfor(b = 1; b <= c; b++)\n    s = s + 1;", "options": {"A": "s = a + b;", "B": "s = a + c;", "C": "s = s + c;", "D": "s = b + c;"}, "answer": "B"}, {"num": 24, "stem": "以下能对一维数组a进行初始化的语句是（）。", "options": {"A": "int a[5]=(0,1,2,3,4,);", "B": "int a(5)={};", "C": "int a[3]={0,1,2};", "D": "int a{5}={10*1};"}, "answer": "C"}, {"num": 25, "stem": "下列程序段的输出结果是（）。\nint main(void)\n{   \n      int  a = 2, b = -1, c = 2;\n      if(a < b)\n            if(b < 0)  \n                  c = 0;\n      else  c++;\n      printf(\"%d\\n\",c);   \n      return 0;\n}", "options": {"A": "0", "B": "1", "C": "2", "D": "3"}, "answer": "C"}, {"num": 26, "stem": "有两个字符数组a,b，则以下正确的输入语句是（）。", "options": {"A": "gets(a,b);", "B": "scanf(\"%s%s\",a,b);", "C": "scanf(\"%s%s\",&a,&b);", "D": "gets(\"a\"),gets(\"b\");"}, "answer": "B"}, {"num": 27, "stem": "表达式 1+2*3.14>0 的结果类型是 （）。", "options": {"A": "int", "B": "long", "C": "float", "D": "bool"}, "answer": "A"}, {"num": 28, "stem": "设变量已正确定义，以下（ ）与其它switch语句不等价。", "options": {"A": "switch(choice){\n    case 1: price = 3.0; break;\n    case 2: price = 2.5; break;\n    case 3: price = 4.0; break;\n    case 4: price = 3.5; break;\n    default: price = 0.0; break;\n}", "B": "switch(choice){\n    default: price = 0.0; break;\n    case 4: price = 3.5; break;\n    case 3: price = 4.0; break;\n    case 2: price = 2.5; break;\n    case 1: price = 3.0; break;\n}", "C": "switch(choice){\n    case 1: price = 3.0; break;\n    case 2: price = 2.5; break;\n    case 3: price = 4.0; break;\n    case 4: price = 3.5; break;\n}", "D": "price = 0.0;\nswitch(choice){\n    case 1: price = 3.0; break;\n    case 2: price = 2.5; break;\n    case 3: price = 4.0; break;\n    case 4: price = 3.5; break;\n}"}, "answer": "C"}, {"num": 29, "stem": "以下能对一维数组a进行正确初始化的语句是（）。", "options": {"A": "int a[10]=(0,0,0,0,0)", "B": "int a[2]={0,1,2}", "C": "int a[]={0}", "D": "int a[]={{}}"}, "answer": "C"}, {"num": 30, "stem": "执行程序段输出结果是（）。\ndouble x = 2.5, y = 4.7; \nint a = 7;\nprintf(\"%.1f\", x + a%3 * (int)(x+y) % 2 / 4);", "options": {"A": "2.5", "B": "2.8", "C": "3.5", "D": "3.8"}, "answer": "A"}, {"num": 31, "stem": "设以下变量均为int类型，表达式的值不为9的是（）。", "options": {"A": "(x=y=8, x+y, x+1)", "B": "(x=y=8, x+y, y+1)", "C": "(x=8, x+1, y=8, x+y)", "D": "(y=8, y+1, x=y, x+1)"}, "answer": "C"}, {"num": 32, "stem": "语句 if(x=0) y=1; else y=2; 与（ ）等价。", "options": {"A": "if(x!=0) y=2; else y=1;", "B": "x=0; if(x==0) y=2; else y=1;", "C": "if(x==0) y=1; else y=2;", "D": "if(x=0) y=2; else y=1;"}, "answer": "B"}, {"num": 33, "stem": "若\" int n; float f=13.8; \"，则执行 n=(int)f%3 后，n的值是（）。", "options": {"A": "1", "B": "4", "C": "4.333333", "D": "4.6"}, "answer": "A"}, {"num": 34, "stem": "已知字母A的ASCII码为十进制的65，下面程序段的输出是（ ）。\nchar ch1,ch2;\nch1='A'+'5'-'3';\nch2='A'+'6'-'3';\nprintf(\"%d,%c\\n\",ch1,ch2);", "options": {"A": "67,D", "B": "B,C", "C": "C,D", "D": "不确定"}, "answer": "A"}, {"num": 35, "stem": "运算符优先级最低的是（）。", "options": {"A": "*", "B": "=", "C": "==", "D": "%"}, "answer": "B"}, {"num": 36, "stem": "已知x=10,y=20,z=30；以下语句执行后，x,y,z的值是（ ）。\nif x<y:\n    z=x\n    x=y\n    y=z", "options": {"A": "10,20,30", "B": "10,20,20", "C": "20,10,10", "D": "20,10,30"}, "answer": "C"}, {"num": 37, "stem": "定义如下变量和数组:\nint i;\nint a[3][3]={1,2,3,4,5,6,7,8,9};\n则下面语句的输出结果是（）\nfor(i=0;i<3;i++)\nprintf(\" %d\",a[2-i][i]);", "options": {"A": "1 5 9", "B": "7 5 3", "C": "1 2 3", "D": "7 8 9"}, "answer": "B"}, {"num": 38, "stem": "关于数组，以下说法正确的是（）。", "options": {"A": "对数组进行初始化时，只能通过初值表对数组元素赋初值", "B": "在定义数组时，数组长度不可以省略", "C": "可以通过给指定下标的数组元素进行初始化", "D": "将数组长度用变量表示即可实现变长数组"}, "answer": "C"}, {"num": 39, "stem": "函数的功能是（）。\nint fun(char* s1,char *s2)\n{ int i = 0;\nwhile(s1[i]==s2[ i ] && s2[i]!= '\\0') i++;\nreturn(s1[i]== '\\0’&& s2[i] == '\\0'); }", "options": {"A": "将s2所指字符串赋给s1", "B": "比较s1和s2所指字符串的大小, 若s1 比s2的大, 函数值为1, 否则函数值为0", "C": "比较s1和s2所指字符串是否相等, 若相等, 函数值为1, 否则函数值为0", "D": "比较s1和s2所指字符串的长度, 若s1比s2的长, 函数值为1, 否则函数值为0"}, "answer": "C"}, {"num": 40, "stem": "关于switch分支语句，正确的是（）。", "options": {"A": "switch分支语句中的case标签必须是连续的整数。", "B": "switch分支语句中的case标签可以是字符串。", "C": "switch分支语句中，case标签可以是浮点型。", "D": "switch分支语句中，case分支如果没有break语句，代码易出现错误。"}, "answer": "D"}, {"num": 41, "stem": "不是C语言合法关键字的是（）。", "options": {"A": "long", "B": "print", "C": "default", "D": "typedef"}, "answer": "B"}, {"num": 42, "stem": "合法的C语言标识符是（）。", "options": {"A": "-a1", "B": "a[i]", "C": "a2_i", "D": "int t"}, "answer": "C"}, {"num": 43, "stem": "已知字母‘A’的ASCII码为十进制数65，且有定义“char c;”，则执行语句“c='A'+'6'-'3';”后，变量c的值为", "options": {"A": "69", "B": "'D'", "C": "错误", "D": "'d'"}, "answer": "B"}, {"num": 44, "stem": "若有定义“int n; float f=13.8;”，则执行语句“n=(int)f%3;”后，变量n的值是", "options": {"A": "1", "B": "4", "C": "4.333333", "D": "4.6"}, "answer": "A"}, {"num": 45, "stem": "已知字符a的ASCII码为97，则执行以下代码，\n#include <stdio.h>\nint main( ){\n    printf(\"%d, %c\", 'b', 'b'+1);\n    return 0;\n}", "options": {"A": "b, c", "B": "98, c", "C": "98, 99", "D": "b, 99", "E": "98, b", "F": "b, b", "G": "程序有错"}, "answer": "B"}, {"num": 46, "stem": "打印输出的内容是（）。\n#include <stdio.h>\nint main(){\n    int n, a, b;\n    a = b = 11;\n    n = 6;\n    if(n % 2 == 0)\n        a += 2,\n        b += 3;\n    else\n        a += 3;\n        b ++;\n    printf(\"%d, %d\", a, b);\n    return 0;\n}", "options": {"A": "14, 12", "B": "14, 15", "C": "13, 14", "D": "13, 15", "E": "13, 13", "F": "13, 16", "G": "12, 15", "H": "14, 13", "I": "程序有错"}, "answer": "D"}, {"num": 47, "stem": "打印输出的内容是（）。\n#include <stdio.h>\nint main(){\n    int a=3, b=4;\n    if(!a);\n        b++;\n    printf(\"%d%d\", a, b);\n    return 0;\n}", "options": {"A": "34", "B": "35", "C": "04", "D": "程序有错"}, "answer": "B"}, {"num": 48, "stem": "打印输出的内容是（）。\n#include <stdio.h>\nint main(){\n    int n=0;\n    double k=2;\n    switch(k){\n    case 1:\n        n += 10;\n        break;\n    case 2:\n        n += 20;\n    case 3:\n        n += 30;\n        break;\n    }\n    printf(\"%d\", n);\n    return 0;\n}", "options": {"A": "20", "B": "30", "C": "50", "D": "程序有错"}, "answer": "D"}, {"num": 49, "stem": "C语言中while和do-while循环的主要区别是（）。", "options": {"A": "do-while的循环体至少无条件执行一次", "B": "while的循环控制条件比do-while的循环控制条件严格", "C": "do-while允许从外部转到循环体内", "D": "do-while的循环体不能是复合语句"}, "answer": "A"}, {"num": 50, "stem": "设有定义语句“char s[12] = \"string\" ;”，则语句“printf(\"%d\\n\",strlen(s));”的输出是（）。", "options": {"A": "6", "B": "7", "C": "11", "D": "12"}, "answer": "A"}, {"num": 51, "stem": "当调用函数时，实参是一个数组名，则向函数传送的是（） 。", "options": {"A": "数组的首地址", "B": "每个元素的值", "C": "数组长度", "D": "每个元素的地址"}, "answer": "A"}, {"num": 52, "stem": "程序运行结果是（）。\n#include <stdio.h>\nvoid fun(int *x,int *y)\n{\n   printf(\"%d %d\",*x,*y);\n   *x=3;\n   *y=4;\n}\nint main()\n{\n   int x=1,y=2;\n   fun(&y,&x);\n   printf(\" %d %d\\n\",x,y);\n   return 0;\n}", "options": {"A": "1 2 3 4", "B": "1 2 2 1", "C": "2 1 4 3", "D": "1 2 1 2"}, "answer": "C"}, {"num": 53, "stem": "若有以下定义，int a[10],*p=a; 则p+7表示（）。", "options": {"A": "a[7]的值", "B": "a[7]的地址", "C": "a[8]的地址", "D": "a[8]的值"}, "answer": "B"}, {"num": 54, "stem": "若有函数声明 void func(int *x); ，调用该函数时传递变量 a （int 类型）的正确方式是（ ）", "options": {"A": "func(a);", "B": "func(&a);", "C": "func(*a);", "D": "func(&*a);"}, "answer": "B"}, {"num": 55, "stem": "当定义一个结构变量时，系统分配给它的内存空间大小是（ ）。", "options": {"A": "各成员所需内存量的总和", "B": "结构中第一个成员所需内存量", "C": "成员中占内存量最大者所需容量", "D": "结构中最后一个成员所需内存量"}, "answer": "A"}, {"num": 56, "stem": "声明结构体的关键字是（）。", "options": {"A": "int", "B": "char", "C": "struct", "D": "define"}, "answer": "C"}, {"num": 57, "stem": "能输出字母A的语句是（）。\nstruct person{char name[9]; int age;};\nstruct person class[10]={\"Tom\",17, \"John\",19, \"Susan\",18, \"Adam\",16};", "options": {"A": "printf(\"%c\\n\",class[3].name);", "B": "printf(\"%c\\n\",class[3].name[0]);", "C": "printf(\"%c\\n\",class[3].name[1]);", "D": "printf(\"%c\\n\",class[2].name[3]);"}, "answer": "B"}, {"num": 58, "stem": "在switch语句中，关于default，说法正确的是（）。", "options": {"A": "switch语句须有default", "B": "default用于处理未与任何case标号匹配的情况", "C": "每个switch语句中可以有多个default", "D": "default须放在在switch语句的最后"}, "answer": "B"}, {"num": 59, "stem": "switch语句使用正确的是（）。", "options": {"A": "switch(\"123\"){ /* 语句 */ }", "B": "switch(3.14){ /* 语句 */ }", "C": "switch(A){ /* 语句 */ }", "D": "switch(1e2){ /* 语句 */ }"}, "answer": "C", "note": "原答案说明为 switch('A')"}, {"num": 60, "stem": "要求通过while循环不断读入字符，当读入字符N时结束循环。若变量ch已正确地定义，下列正确的程序段是：", "options": {"A": "while ((ch=getchar())!='N') printf(\"%c\",ch);", "B": "while (ch=getchar()!='N') printf(\"%c\",ch);", "C": "while (ch=getchar()=='N') printf(\"%c\",ch);", "D": "while ((ch=getchar())=='N') printf(\"%c\",ch);"}, "answer": "A"}, {"num": 61, "stem": "把字符串“OK!”赋值给变量，不正确的语句或语句组是：（）。", "options": {"A": "char a[]=\"OK!\";", "B": "char a[8]={'O','K','!','\\0'};", "C": "char *p=\"OK!\";", "D": "char a[8]; a=\"OK!\";"}, "answer": "D"}, {"num": 62, "stem": "若运行时从键盘上输入2.0（回车），则下面程序的输出结果是（ ）。\n#include <stdio.h>\nint main()\n{\n    float x,y;\n    scanf(\"%f\",&x);\n    if(x<0.0) y=0.0;\n    else if((x<5.0)&&(x!=2.0))\n        y=1.0/(x+2.0);\n    else if(x<10.0) y=1.0/x;\n    else y=10.0;\n    printf(\"%f\\n\",y);\n    return 0;\n}", "options": {"A": "0.000000", "B": "0.250000", "C": "0.500000", "D": "1.000000"}, "answer": "C"}, {"num": 63, "stem": "for语句使用正确的是（）。", "options": {"A": "for(;;);", "B": "for(,,);", "C": "for(,;);", "D": "for(; ,);"}, "answer": "A"}, {"num": 64, "stem": "声明并初始化一个字符型变量ch为字符‘A’的语句（序列）是（ ）。", "options": {"A": "char ch='A';", "B": "char ch=\"A\";", "C": "char ch; ch='A';", "D": "ch='A';"}, "answer": "A"}, {"num": 65, "stem": "关于字符数组初始化，错误的是（）。", "options": {"A": "char a[]={'a','b','c','d'};", "B": "char a[]=\"abcd\";", "C": "char a[5]={'a','b','c','d'};", "D": "char a[5]; a=\"abcd\";"}, "answer": "D"}, {"num": 66, "stem": "不是C语言合法关键字的是（）。", "options": {"A": "switch", "B": "CHAR", "C": "case", "D": "default"}, "answer": "B"}, {"num": 67, "stem": "已有如下定义和输入语句：若要求a、b的值分别为10和20，正确的数据输入是。\nint a,b;\nscanf(\"%d,%d\",&a,&b);", "options": {"A": "10 20", "B": "10,20", "C": "a=10,b=20", "D": "10;20"}, "answer": "B"}], "blank": [{"id": "B5-1", "num": "5-1", "title": "输入字符'y'或'Y'，则在屏幕上输出字符串\"Yes.\"；输入其它字符，则在屏幕上输…", "stem": "输入字符'y'或'Y'，则在屏幕上输出字符串\"Yes.\"；输入其它字符，则在屏幕上输出字符串\"No.\"。要求\n定义和调用函数YesNo(ch)，当ch为'y'或'Y'时输出\"Yes.\"，当ch为其它字符时输出\"No.\"。\n#include <stdio.h>\nvoid YesNo (char ch); \nint main(void)\n{\n    char ch;\n    ch = getchar();\n    [[blank]];\n    return 0;\n}\nvoid YesNo (char ch)\n{\n    switch(ch){\n        case 'y': \n        case 'Y': [[blank]];\n        default:  [[blank]] ;\n    }\n}", "answers": ["YesNo(ch)", "printf(\"Yes.\"); break", "printf(\"No.\")"]}, {"id": "B5-3", "num": "5-3", "title": "体指数 t = 体重w /（身高h * 身高h ） w单位为千克，h单位为米", "stem": "体指数 t = 体重w /（身高h * 身高h ）\nw单位为千克，h单位为米\n当 t < 18 时，为低体重；\n当 t 介于18和25之间时，为正常体重；\n当 t 介于25和27之间时，为超重体重；\n当 t >=27 时，为肥胖。\n从键盘输入你的身高h和体重w，根据上述给定的公式计算体指数，然后判断你的体重属于何种类\n型。\n请补全代码实现上述功能。（请不要添加多余的空格）\n#include <stdio.h>\nint main()\n{\n    float h, w, t;\n    scanf(\"%f,%f\", &h,&w);\n    [[blank]]\n    if(t<18)\n        printf(\"t=%f,低体重!\",t);\n    else if(t<25)\n        printf(\"t=%f,正常体重!\",t);\n    else if([[blank]])\n        printf(\"t=%f,超重体重!\",t);\n    [[blank]]\n        printf(\"t=%f,肥胖!\",t);\n    return 0;\n}", "answers": ["t=w/(h*h);", "t<27", "else"]}, {"id": "B5-3-2", "num": "5-3-2", "title": "函数average的功能是求数组a中n个元素的平均值并返回，请填空完成相应功能。", "stem": "函数average的功能是求数组a中n个元素的平均值并返回，请填空完成相应功能。\n#include <stdio.h>\n[[blank]] average([[blank]])\n{int j;\n float aver,sum;\n sum=0;\n for(j=0;[[blank]];j++)\n   sum=sum+a[j];\n aver= sum/n;\n [[blank]];  //返回结果\n}\n#define N 10\nint main(void)\n{float x[N],pj;  //变量pj储存N个数的平均值\n15分\n10分\n int i;\n for(i=0;i<N;i++)  //输入N个数\n   scanf(\"%f\",&x[i]);\n [[blank]]; //调用函数计算平均值\n printf(\"%.3f\\n\",pj);\n}", "answers": ["float", "float a[],int n", "j<n", "return aver", "pj=average(x,N)"]}, {"id": "B5-4", "num": "5-4", "title": "本题目要求如下图打印九九乘法表。", "stem": "本题目要求如下图打印九九乘法表。\n#include <stdio.h>\nint main()\n{\n    int i,j,k;\n    char space=32;\n    for(i=9;[[blank]];i--){\n             for(k=1;[[blank]];k++)\n                printf(\"%7c\",space);\n         for([[blank]])\n        printf(\"%1d*%1d=%-3d\",j,i,[[blank]] ); \n      printf(\"\\n\");\n    }\n    return 0;\n}", "answers": ["i>0", "k<=9-i", "j=i;j>=1;j--", "i*j"]}, {"id": "B5-5", "num": "5-5", "title": "条件表达式求最大值", "stem": "#include <stdio.h>\nint main() {\n    int num1, num2;\n    // 输入两个整数\n    scanf(\"%d\", &num1);\n    scanf(\"%d\", &num2);\n    // 使用条件表达式判断最大值并输出\n    int max = [[blank]];\n    printf(\"%d\", max);\n    return 0;\n}", "answers": ["(num1>num2)?num1:num2"]}, {"id": "B5-6", "num": "5-6", "title": "冒泡法排序：本题要求将给定的个整数从小到大排序后输出。输出时相邻数字中间用一个空格分…", "stem": "冒泡法排序：本题要求将给定的个整数从小到大排序后输出。输出时相邻数字中间用一个空格分\n开，行末不得有多余空格。\n#include <stdio.h>\n# define MAXN 10\nint main()\n{\n        int i, index, j, n, temp;\n        int a[MAXN];\n        scanf(\"%d\", &n);\n        for(i = 0; i < n; i++){\n            scanf(\"%d\", &a[i]);\n        }\n        \n        for( i = 1; i < n; i++ ){\n            for[[blank]]{\n                if [[blank]]{ \n                  [[blank]]\n                 }\n            }\n        }\n       for(i = 0; i < n; i++) {\n7分n\n            if [[blank]]{\n                printf(\"%d\", a[i]);\n            }else{\n                [[blank]]\n            }\n        }\n        printf(\"\\n\");\n        return 0;\n}", "answers": ["(j=0;j<n-i;j++)", "(a[j]>a[j+1])", "temp=a[j]; a[j]=a[j+1]; a[j+1]=temp;", "(i==0)", "printf(\" %d\",a[i]);"]}, {"id": "B5-7", "num": "5-7", "title": "在玩牌程序中，每一组牌用数字1〜13代表。输入数字，显示相应的牌。其中2〜10直接显…", "stem": "在玩牌程序中，每一组牌用数字1〜13代表。输入数字，显示相应的牌。其中2〜10直接显示数字，\n而数字1、11、12、13则分别用Ace、Jack、Queen、King来表示。\n#include <stdio.h>\nint main()\n{\n    int n;\n    scanf(\"%d\", &n);\n    if(n >= 1 && n <= 13){\n        switch [[blank]]{\n            case 1: [[blank]]\n            case 11: printf(\"Jack\\n\"); break; \n            case 12: [[blank]]\n            case 13: printf(\"King\\n\"); break; \n            default: [[blank]]\n        }\n    }else{\n        printf(\"Error\\n\");\n    }\n    return 0;\n}", "answers": ["(n)", "printf(\"Ace\\n\"); break;", "printf(\"Queen\\n\"); break;", "printf(\"%d\\n\", n); break;"]}, {"id": "B5-9", "num": "5-9", "title": "统计正数个数与和", "stem": "#include <stdio.h>\nvoid main(void)\n{\nint i, a[10],sum,count;\nsum=count=0;\nfor(i=0;i<10;i++)\nscanf(\"%d\",\n[[blank]]\n);\nfor(i=0;i<10;i++)\nif ([[blank]]>0)\n{\ncount++;\nsum+=\na[i]\n5 分\n5 分;\n}\nprintf(\"sum=%d,count=%d\\n\",sum,count);\n}", "answers": ["&a[i]", "a[i]"]}, {"id": "B5-10-1", "num": "5-10-1", "title": "正整数的个位数字 请编写函数，求正整数的个位数字。", "stem": "正整数的个位数字\n请编写函数，求正整数的个位数字。\n函数原型\n// 正整数的个位数字\nint UnitDigit(int number);\n其中：参数 \nnumber 为任意整数，函数值为其个位数字。\n请在空白处填写适当内容，完成该程序。\n#include <stdio.h>\n#include <stdlib.h>\n// 正整数的个位数字\nint UnitDigit(int number);\nint main()\n{\n    int x, y;\n10分\n10分\n    scanf(\"%d\", &x);\n    y = [[blank]];\n    printf(\"%d\\n\", y);\n    return 0;\n}\n// 正整数的个位数字\nint UnitDigit(int number)\n{\n    return [[blank]];\n}\n输入样例\n381097\n输出样例\n7", "answers": ["UnitDigit(x)", "number % 10"]}, {"id": "B5-10-2", "num": "5-10-2", "title": "if-else输出最大值", "stem": "#include <stdio.h>\nint main() {\nint num1, num2;\n// 输入两个整数\nscanf(\"%d\", &num1);\nscanf(\"%d\", &num2);\n// 判断最大值并输出\n[[blank]]{\nprintf(\"%d\", num1);\n} \n[[blank]]{\nprintf(\"%d\", num2);\n}\nreturn 0;\n}", "answers": ["if(num1>num2)", "else"]}, {"id": "B5-11", "num": "5-11", "title": "本题目实现了求M×M方阵的对角线元素之和", "stem": "本题目实现了求M×M方阵的对角线元素之和\n#include <stdio.h>\n#define M 5\nint main(void)\n{\n        int a[M][M];\n        int i,j;\n        int sum=0;        \n        for(i=0;i<M;i++)\n        {\n                for(j=0;j<M;j++)\n                {\n                     scanf(\"%d\",&a[i][j]);\n                     if([[blank]])\n                     {\n                         [[blank]]\n                      }\n                 }\n        }\n      printf(\"sum=%d\\n\",sum);\n}", "answers": ["i==j||i+j==M-1", "sum=sum+a[i][j];"]}]};
+
+  const LS_KEY = "quiz_autograde_v1_" + (DATA.meta?.title || "quiz");
+
+  function esc(s) {
+    return String(s ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
+  function el(tag, attrs = {}, children = []) {
+    const e = document.createElement(tag);
+    for (const [k,v] of Object.entries(attrs)) {
+      if (k === "class") e.className = v;
+      else if (k === "html") e.innerHTML = v;
+      else if (k.startsWith("on") && typeof v === "function") e.addEventListener(k.slice(2), v);
+      else e.setAttribute(k, v);
+    }
+    for (const c of children) {
+      if (c == null) continue;
+      if (typeof c === "string") e.appendChild(document.createTextNode(c));
+      else e.appendChild(c);
+    }
+    return e;
+  }
+
+  function loadState() {
+    try {
+      return JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+    } catch {
+      return {};
+    }
+  }
+  function saveState(state) {
+    localStorage.setItem(LS_KEY, JSON.stringify(state));
+    setStatus("已自动保存", false);
+  }
+
+  function setStatus(msg, sticky) {
+    const bar = document.getElementById("statusBar");
+    const t = new Date();
+    const hh = String(t.getHours()).padStart(2,"0");
+    const mm = String(t.getMinutes()).padStart(2,"0");
+    bar.innerHTML = `<b>${esc(msg)}</b> · ${hh}:${mm}`;
+    if (!sticky) {
+      clearTimeout(setStatus._tm);
+      setStatus._tm = setTimeout(() => {
+        bar.innerHTML = bar.innerHTML.replace(/<b>.*?<\/b>/, "<b>未判分</b>");
+      }, 1500);
+    }
+  }
+
+  function render() {
+    const state = loadState();
+    const blankList = document.getElementById("blankList");
+    const judgeList = document.getElementById("judgeList");
+    const singleList = document.getElementById("singleList");
+    if (blankList) blankList.innerHTML = "";
+    judgeList.innerHTML = "";
+    singleList.innerHTML = "";
+
+    // 判分缓存
+    const lastGrade = state._grade || null;
+
+    // 程序填空题
+    for (const q of (DATA.blank || [])) {
+      const qid = q.id || `B${q.num}`;
+      const saved = Array.isArray(state[qid]) ? state[qid] : [];
+      const qBox = el("div", {class:"q", id:`q-${qid}`});
+      const head = el("div", {class:"q-head"}, [
+        el("div", {class:"q-title"}, [`填空 ${q.num}`]),
+        el("div", {class:"q-meta"}, [
+          el("span", {class:"tag"}, [`${(q.answers || []).length}空`]),
+          el("span", {class:"tag warn", id:`tag-${qid}`}, ["未判分"]),
+        ])
+      ]);
+
+      const stem = el("div", {class:"stem code"});
+      const parts = String(q.stem || "").split("[[blank]]");
+      parts.forEach((part, i) => {
+        stem.appendChild(document.createTextNode(part));
+        if (i < parts.length - 1) {
+          const input = el("input", {
+            class: "blank-input",
+            type: "text",
+            value: (saved[i] ?? ""),
+            placeholder: `填空#${i+1}`,
+            spellcheck: "false",
+            autocomplete: "off",
+            "data-idx": String(i)
+          });
+          input.addEventListener("input", () => {
+            const st = loadState();
+            const arr = Array.isArray(st[qid]) ? st[qid] : [];
+            arr[i] = input.value;
+            st[qid] = arr;
+            delete st._grade;
+            saveState(st);
+
+            // 取消判分标记
+            const box = document.getElementById(`q-${qid}`);
+            if (box) box.classList.remove("correct","wrong","unanswered");
+            const tag = document.getElementById(`tag-${qid}`);
+            if (tag) { tag.className = "tag warn"; tag.textContent = "未判分"; }
+
+            input.classList.remove("correct","wrong");
+          });
+          stem.appendChild(input);
+        }
+      });
+
+      const ansLine = el("div", {class:"answer-line", id:`ans-${qid}`});
+      const ans = (q.answers || []).map((a, i) => `填空#${i+1}：<b>${esc(a)}</b>`).join("<br>");
+      ansLine.innerHTML = ans ? `参考答案：<br>${ans}` : "";
+
+      qBox.appendChild(head);
+      qBox.appendChild(stem);
+      qBox.appendChild(ansLine);
+
+      if (blankList) blankList.appendChild(qBox);
+    }
+
+    // 判断题
+    for (const q of DATA.judge) {
+      const qid = `J${q.num}`;
+      const chosen = state[qid] ?? "";
+      const qBox = el("div", {class:"q", id:`q-${qid}`});
+      const head = el("div", {class:"q-head"}, [
+        el("div", {class:"q-title"}, [`判断 ${q.num}`]),
+        el("div", {class:"q-meta"}, [
+          el("span", {class:"tag"}, ["1分"]),
+          el("span", {class:"tag warn", id:`tag-${qid}`}, ["未判分"]),
+        ])
+      ]);
+      const stem = el("div", {class:"stem", html: esc(q.stem)});
+
+      const opts = el("div", {class:"options"});
+      for (const letter of ["T","F"]) {
+        const name = `ans-${qid}`;
+        const optId = `${qid}-${letter}`;
+        const labelText = (letter === "T" ? "正确 (T)" : "错误 (F)");
+        const opt = el("label", {class:"opt", for:optId});
+        const radio = el("input", {
+          type: "radio",
+          name,
+          id: optId,
+          value: letter
+        });
+        radio.checked = (chosen === letter);
+        radio.addEventListener("change", () => {
+          const st = loadState();
+          st[qid] = letter;
+          // 作答变更后，清掉之前判分结果
+          delete st._grade;
+          saveState(st);
+          applyChoiceVisual(qid, st[qid]);
+          refreshTopStats();
+        });
+        opt.appendChild(radio);
+        opt.appendChild(el("div", {class:"letter"}, [letter]));
+        opt.appendChild(el("div", {class:"text"}, [labelText]));
+        opts.appendChild(opt);
+      }
+
+      const ansLine = el("div", {class:"answer-line", id:`ans-${qid}`});
+      ansLine.innerHTML = `正确答案：<b>${esc(q.answer)}</b>`;
+
+      qBox.appendChild(head);
+      qBox.appendChild(stem);
+      qBox.appendChild(opts);
+      qBox.appendChild(ansLine);
+
+      judgeList.appendChild(qBox);
+    }
+
+    // 单选题
+    for (const q of DATA.single) {
+      const qid = `S${q.num}`;
+      const chosen = state[qid] ?? "";
+      const qBox = el("div", {class:"q", id:`q-${qid}`});
+      const head = el("div", {class:"q-head"}, [
+        el("div", {class:"q-title"}, [`单选 ${q.num}`]),
+        el("div", {class:"q-meta"}, [
+          el("span", {class:"tag"}, ["1分"]),
+          el("span", {class:"tag warn", id:`tag-${qid}`}, ["未判分"]),
+        ])
+      ]);
+      const stem = el("div", {class:"stem", html: esc(q.stem)});
+
+      const opts = el("div", {class:"options"});
+      for (const letter of ["A","B","C","D"]) {
+        const name = `ans-${qid}`;
+        const optId = `${qid}-${letter}`;
+        const opt = el("label", {class:"opt", for:optId});
+        const radio = el("input", {
+          type: "radio",
+          name,
+          id: optId,
+          value: letter
+        });
+        radio.checked = (chosen === letter);
+        radio.addEventListener("change", () => {
+          const st = loadState();
+          st[qid] = letter;
+          delete st._grade;
+          saveState(st);
+          applyChoiceVisual(qid, st[qid]);
+          refreshTopStats();
+        });
+        opt.appendChild(radio);
+        opt.appendChild(el("div", {class:"letter"}, [letter]));
+        opt.appendChild(el("div", {class:"text"}, [q.options[letter]]));
+        opts.appendChild(opt);
+      }
+
+      const ansLine = el("div", {class:"answer-line", id:`ans-${qid}`});
+      ansLine.innerHTML = `正确答案：<b>${esc(q.answer)}</b>${q.note ? ` <span style="color:#9ca3af">（${esc(q.note)}）</span>` : ""}`;
+
+      qBox.appendChild(head);
+      qBox.appendChild(stem);
+      qBox.appendChild(opts);
+      qBox.appendChild(ansLine);
+
+      singleList.appendChild(qBox);
+    }
+
+    // 应用之前判分结果（如果有）
+    if (lastGrade) {
+      applyGrade(lastGrade, /*showToast*/ false);
+    }
+
+    refreshTopStats();
+    applyAnswerVisibility(state._showAnswers === true);
+  }
+
+  function applyChoiceVisual(qid, chosen) {
+    // 仅刷新 qid 对应题目，不做判分
+    const box = document.getElementById(`q-${qid}`);
+    if (!box) return;
+    box.classList.remove("correct","wrong","unanswered");
+    const tag = document.getElementById(`tag-${qid}`);
+    if (tag) {
+      tag.className = "tag warn";
+      tag.textContent = "未判分";
+    }
+    // 清理选项的正确/错误标记
+    box.querySelectorAll(".opt").forEach(o => o.classList.remove("correct","wrong"));
+  }
+
+  function gradeNow() {
+    const st = loadState();
+    let total = 0, got = 0;
+    let judgeTotal = 0, judgeGot = 0;
+    let singleTotal = 0, singleGot = 0;
+    let blankTotal = 0, blankGot = 0;
+    const per = {};
+
+    // 填空（按“空”计分）
+    for (const q of (DATA.blank || [])) {
+      const qid = q.id || `B${q.num}`;
+      const chosenArr = Array.isArray(st[qid]) ? st[qid] : [];
+      const correctArr = (q.answers || []);
+      const blanks = [];
+      let anyFilled = false;
+      let gotPts = 0;
+
+      for (let i = 0; i < correctArr.length; i++) {
+        const c = String(chosenArr[i] ?? "").trim();
+        const a = String(correctArr[i] ?? "").trim();
+        if (c !== "") anyFilled = true;
+        let s = "unanswered";
+        if (c !== "") {
+          s = (c === a) ? "correct" : "wrong";
+        }
+        blanks.push(s);
+        if (s === "correct") gotPts++;
+      }
+
+      blankTotal += correctArr.length; total += correctArr.length;
+      blankGot += gotPts; got += gotPts;
+
+      const status = anyFilled ? (gotPts === correctArr.length ? "correct" : "wrong") : "unanswered";
+      per[qid] = { chosen: chosenArr, correct: correctArr, status, blanks, gotPts, totalPts: correctArr.length };
+    }
+
+    // judge
+    for (const q of DATA.judge) {
+      const qid = `J${q.num}`;
+      judgeTotal++; total++;
+      const chosen = st[qid] ?? "";
+      const correct = q.answer;
+      const status = chosen ? (chosen === correct ? "correct" : "wrong") : "unanswered";
+      if (status === "correct") { judgeGot++; got++; }
+      per[qid] = { chosen, correct, status };
+    }
+
+    // single
+    for (const q of DATA.single) {
+      const qid = `S${q.num}`;
+      singleTotal++; total++;
+      const chosen = st[qid] ?? "";
+      const correct = q.answer;
+      const status = chosen ? (chosen === correct ? "correct" : "wrong") : "unanswered";
+      if (status === "correct") { singleGot++; got++; }
+      per[qid] = { chosen, correct, status };
+    }
+
+    const grade = {
+      total, got,
+      judgeTotal, judgeGot,
+      singleTotal, singleGot,
+      blankTotal, blankGot,
+      per
+    };
+
+    st._grade = grade;
+    saveState(st);
+    applyGrade(grade, true);
+    refreshTopStats();
+  }
+
+  function applyGrade(grade, showToast) {
+    for (const [qid, info] of Object.entries(grade.per || {})) {
+      const box = document.getElementById(`q-${qid}`);
+      if (!box) continue;
+      box.classList.remove("correct","wrong","unanswered");
+      box.classList.add(info.status);
+
+      const tag = document.getElementById(`tag-${qid}`);
+      if (tag) {
+        tag.classList.remove("ok","bad","warn");
+        if (info.status === "correct") {
+          tag.className = "tag ok";
+          tag.textContent = "正确";
+        } else if (info.status === "wrong") {
+          // 填空题显示分数（按空计）
+          if (Array.isArray(info.blanks) && typeof info.gotPts === "number") {
+            tag.className = "tag bad";
+            tag.textContent = `${info.gotPts}/${info.totalPts}`;
+          } else {
+            tag.className = "tag bad";
+            tag.textContent = "错误";
+          }
+        } else {
+          tag.className = "tag warn";
+          tag.textContent = "未答";
+        }
+      }
+
+      // 标注选项（判断/单选）
+      box.querySelectorAll(".opt").forEach(opt => {
+        opt.classList.remove("correct","wrong");
+        const radio = opt.querySelector("input[type=radio]");
+        if (!radio) return;
+        const v = radio.value;
+        if (v === info.correct) opt.classList.add("correct");
+        if (info.chosen && v === info.chosen && info.chosen !== info.correct) opt.classList.add("wrong");
+      });
+
+      // 标注填空
+      if (Array.isArray(info.blanks)) {
+        box.querySelectorAll(".blank-input").forEach((inp, idx) => {
+          inp.classList.remove("correct","wrong");
+          const s = info.blanks[idx];
+          if (s === "correct") inp.classList.add("correct");
+          if (s === "wrong") inp.classList.add("wrong");
+        });
+      }
+    }
+
+    const msg = `总分 ${grade.total}，得分 ${grade.got}（填空 ${grade.blankGot}/${grade.blankTotal}，判断 ${grade.judgeGot}/${grade.judgeTotal}，单选 ${grade.singleGot}/${grade.singleTotal}）`;
+    document.getElementById("statusBar").innerHTML = `<b>${esc(msg)}</b>`;
+    if (showToast) {
+      setStatus(msg, true);
+    }
+  }
+
+  function refreshTopStats() {
+    const st = loadState();
+    const g = st._grade;
+
+    const judgeAnswered = DATA.judge.filter(q => (st[`J${q.num}`] ?? "") !== "").length;
+    const singleAnswered = DATA.single.filter(q => (st[`S${q.num}`] ?? "") !== "").length;
+    const blankAnswered = (DATA.blank || []).filter(q => {
+      const qid = q.id || `B${q.num}`;
+      const v = st[qid];
+      if (!Array.isArray(v)) return false;
+      return v.some(x => String(x ?? "").trim() !== "");
+    }).length;
+
+    const totalAnswered = judgeAnswered + singleAnswered + blankAnswered;
+    const total = DATA.judge.length + DATA.single.length + (DATA.blank || []).length;
+
+    const top = document.getElementById("statsTop");
+    const score = g ? `得分 <strong>${g.got}</strong>/${g.total}` : "未判分";
+    top.innerHTML = `
+      <span class="pill">进度 <strong>${totalAnswered}</strong>/${total}</span>
+
+      <span class="pill">判断 <strong>${judgeAnswered}</strong>/${DATA.judge.length}</span>
+      <span class="pill">单选 <strong>${singleAnswered}</strong>/${DATA.single.length}</span>
+      <span class="pill">填空 <strong>${blankAnswered}</strong>/${(DATA.blank || []).length}</span>
+      <span class="pill">${score}</span>
+    `;
+  }
+
+  function applyAnswerVisibility(show) {
+    document.querySelectorAll(".answer-line").forEach(e => {
+      e.classList.toggle("show", show);
+    });
+    document.getElementById("btnToggleAnswers").textContent = show ? "隐藏答案" : "显示答案";
+  }
+
+  function clearChoices() {
+    const st = loadState();
+    for (const q of (DATA.blank || [])) delete st[q.id || `B${q.num}`];
+    for (const q of DATA.judge) delete st[`J${q.num}`];
+    for (const q of DATA.single) delete st[`S${q.num}`];
+    delete st._grade;
+    saveState(st);
+    render();
+  }
+
+  function resetAll() {
+    localStorage.removeItem(LS_KEY);
+    render();
+    setStatus("已清空本页所有保存", true);
+  }
+
+  function scrollToQ(qid) {
+    const elQ = document.getElementById(`q-${qid}`);
+    if (elQ) elQ.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+
+  function filterShow(mode) {
+    const st = loadState();
+    const g = st._grade;
+    const all = document.querySelectorAll(".q");
+    all.forEach(x => x.style.display = "");
+    if (!mode) return;
+
+    if (mode === "unanswered") {
+      all.forEach(box => {
+        const id = box.id.replace(/^q-/, "");
+        const val = st[id];
+        const answered = Array.isArray(val)
+          ? val.some(x => String(x ?? "").trim() !== "")
+          : !!val;
+        if (answered) box.style.display = "none";
+      });
+      return;
+    }
+
+    // 需要判分结果：wrong
+    if (!g) {
+      setStatus("请先提交判分后再筛选", true);
+      return;
+    }
+
+    if (mode === "wrong") {
+      all.forEach(box => {
+        const id = box.id.replace(/^q-/, "");
+        const info = g.per?.[id];
+        if (!info || info.status !== "wrong") box.style.display = "none";
+      });
+    }
+  }
+
+  // Events
+  document.getElementById("btnGrade").addEventListener("click", gradeNow);
+  document.getElementById("btnClear").addEventListener("click", clearChoices);
+  document.getElementById("btnReset").addEventListener("click", resetAll);
+
+  document.getElementById("btnToggleAnswers").addEventListener("click", () => {
+    const st = loadState();
+    st._showAnswers = !(st._showAnswers === true);
+    saveState(st);
+    applyAnswerVisibility(st._showAnswers === true);
+  });
+
+  document.getElementById("btnFilterUnanswered").addEventListener("click", () => filterShow("unanswered"));
+  document.getElementById("btnFilterWrong").addEventListener("click", () => filterShow("wrong"));
+  document.getElementById("btnShowAll").addEventListener("click", () => filterShow(null));
+
+  document.getElementById("jumpInput").addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    const v = e.target.value.trim();
+    if (!v) return;
+
+    const mJudge = v.match(/^j(\d+)$/i);
+    if (mJudge) {
+      scrollToQ(`J${parseInt(mJudge[1],10)}`);
+      return;
+    }
+
+    const mBlank = v.match(/^b(.+)$/i);
+    if (mBlank) {
+      const num = mBlank[1].trim();
+      const q = (DATA.blank || []).find(x => String(x.num).toLowerCase() === num.toLowerCase());
+      if (q) scrollToQ(q.id || `B${q.num}`);
+      return;
+    }
+
+    // 允许直接输入如：5-3-2 / 5-10
+    const mDash = v.match(/^(\d+)-(\d+)(?:-(\d+))?$/);
+    if (mDash) {
+      const num = v;
+      const q = (DATA.blank || []).find(x => String(x.num) === num);
+      if (q) scrollToQ(q.id || `B${q.num}`);
+      return;
+    }
+
+    const mNum = v.match(/^(\d+)$/);
+    if (mNum) {
+      scrollToQ(`S${parseInt(mNum[1],10)}`);
+      return;
+    }
+  });
+
+  // Init
+  render();
+</script>
+</body>
+</html>

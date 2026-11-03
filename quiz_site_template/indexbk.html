@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>题库练习主页</title>
+<style>
+:root{
+  --bg:#0b0f14;--panel:#111827;--panel2:#0f172a;--text:#e5e7eb;--muted:#9ca3af;
+  --border:rgba(255,255,255,.10);--link:#60a5fa;--ok:#10b981;--warn:#f59e0b;--bad:#ef4444;
+  --shadow:0 10px 30px rgba(0,0,0,.35);--radius:16px;
+}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#0b0f14 0%,#090d12 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,"PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.5}a{color:var(--link);text-decoration:none}.wrap{max-width:1080px;margin:0 auto;padding:22px 16px 80px}header{position:sticky;top:0;z-index:5;background:rgba(11,15,20,.78);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}.header-inner{max-width:1080px;margin:0 auto;padding:16px}.title-row{display:flex;gap:16px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap}h1{font-size:22px;margin:0}.sub{font-size:13px;color:var(--muted);margin-top:4px}.toolbar{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:14px}.input{width:100%;background:rgba(15,23,42,.75);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:11px 12px;outline:none}.input:focus{border-color:rgba(96,165,250,.65)}.btn{appearance:none;border:1px solid var(--border);background:rgba(15,23,42,.8);color:var(--text);border-radius:12px;padding:10px 13px;cursor:pointer;font-weight:700}.btn:hover{border-color:rgba(255,255,255,.24)}.btn.primary{background:rgba(59,130,246,.25);border-color:rgba(59,130,246,.5)}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.card{border:1px solid var(--border);background:rgba(17,24,39,.72);box-shadow:var(--shadow);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;min-height:210px}.card h2{font-size:16px;margin:0 0 8px}.desc{color:var(--muted);font-size:13px;margin:0 0 12px;min-height:38px}.meta{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}.pill{border:1px solid var(--border);background:rgba(15,23,42,.6);border-radius:999px;padding:4px 8px;font-size:12px;color:var(--muted)}.pill strong{color:var(--text)}.progress{height:8px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin:4px 0 12px}.bar{height:100%;width:0;background:linear-gradient(90deg,rgba(16,185,129,.85),rgba(96,165,250,.85))}.actions{margin-top:auto;display:flex;gap:10px;align-items:center;justify-content:space-between}.open{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(96,165,250,.5);background:rgba(59,130,246,.22);color:#dbeafe;border-radius:12px;padding:10px 12px;font-weight:800}.note{color:var(--muted);font-size:12px;margin-top:12px}.empty,.error{border:1px dashed var(--border);border-radius:var(--radius);padding:24px;text-align:center;color:var(--muted);margin-top:18px}.error{border-color:rgba(239,68,68,.55);color:#fecaca;text-align:left}.footer{color:var(--muted);font-size:12px;margin-top:22px;border-top:1px solid var(--border);padding-top:14px}@media(max-width:920px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.grid{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="title-row">
+      <div>
+        <h1 id="pageTitle">题库练习主页</h1>
+        <div class="sub">选择一套题进入练习。题库列表来自 <code>data/list.json</code>，可由脚本扫描 <code>data/questions/</code> 自动生成。</div>
+      </div>
+      <button class="btn" id="btnReload">刷新列表</button>
+    </div>
+    <div class="toolbar">
+      <input class="input" id="searchInput" placeholder="搜索题库名称、描述、标签，例如：计网 / Java / 期末" />
+      <a class="btn primary" href="./quiz.html">打开答题页</a>
+    </div>
+  </div>
+</header>
+<div class="wrap">
+  <div id="listBox" class="grid"></div>
+  <div id="messageBox"></div>
+  <div class="footer">
+    部署方式：把本文件作为 <b>index.html</b>，把通用答题页作为 <b>quiz.html</b>，题库 JSON 放入 <b>data/questions/</b>。本地预览请用 <code>python -m http.server 8000</code> 后访问 <code>http://localhost:8000</code>，不要直接双击 HTML。
+  </div>
+</div>
+<script>
+const LIST_URL = "./data/list.json";
+let allSets = [];
+
+const $ = (id) => document.getElementById(id);
+function esc(s){return String(s ?? "").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[m]));}
+function readJSON(key, fallback){try{return JSON.parse(localStorage.getItem(key) || "")}catch{return fallback}}
+function progressFor(item, total){
+  const answers = readJSON(`quiz_answers_${item.id}`, {});
+  const answered = Object.values(answers).filter(v => Array.isArray(v) ? v.some(x=>String(x||"").trim()) : String(v||"").trim()).length;
+  const t = Number(total || item.total || 0);
+  const pct = t ? Math.min(100, Math.round(answered * 100 / t)) : 0;
+  return {answered,total:t,pct};
+}
+function countFromData(data){
+  const single = data.single?.length || 0;
+  const multi = data.multi?.length || 0;
+  const judge = data.judge?.length || 0;
+  const blank = data.blank?.length || data.fill?.length || 0;
+  const mixed = data.questions?.length || 0;
+  if (mixed) return {single:0,multi:0,judge:0,blank:0,total:mixed,mixed:true};
+  return {single,multi,judge,blank,total:single+multi+judge+blank,mixed:false};
+}
+async function hydrate(item){
+  try{
+    const res = await fetch(item.file, {cache:"no-store"});
+    if(!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    return {...item, counts: countFromData(data)};
+  }catch{
+    return {...item, counts: {single:item.single||0,multi:item.multi||0,judge:item.judge||0,blank:item.blank||0,total:item.total||0}};
+  }
+}
+function render(){
+  const q = $("searchInput").value.trim().toLowerCase();
+  const items = allSets.filter(item => {
+    const hay = [item.title,item.desc,item.subject,(item.tags||[]).join(" ")].join(" ").toLowerCase();
+    return !q || hay.includes(q);
+  });
+  $("messageBox").innerHTML = items.length ? "" : `<div class="empty">没有匹配的题库。</div>`;
+  $("listBox").innerHTML = items.map(item => {
+    const c = item.counts || {}; const p = progressFor(item, c.total);
+    const tags = [item.subject, ...(item.tags||[])].filter(Boolean).slice(0,5);
+    const configText = [item.shuffleOptions !== false ? "选项乱序" : "固定选项", item.shuffleQuestions ? "题序乱序" : "固定题序", item.durationMinutes ? `${item.durationMinutes}分钟` : "不限时"].join(" · ");
+    return `<article class="card">
+      <h2>${esc(item.title)}</h2>
+      <p class="desc">${esc(item.desc || "暂无描述")}</p>
+      <div class="meta">
+        <span class="pill"><strong>${c.total || item.total || "?"}</strong> 题</span>
+        ${c.single ? `<span class="pill">单选 ${c.single}</span>` : ""}
+        ${c.multi ? `<span class="pill">多选 ${c.multi}</span>` : ""}
+        ${c.judge ? `<span class="pill">判断 ${c.judge}</span>` : ""}
+        ${c.blank ? `<span class="pill">填空 ${c.blank}</span>` : ""}
+      </div>
+      <div class="meta">${tags.map(t=>`<span class="pill">${esc(t)}</span>`).join("")}</div>
+      <div class="progress"><div class="bar" style="width:${p.pct}%"></div></div>
+      <div class="note">已答 ${p.answered}/${p.total || "?"} · ${esc(configText)}</div>
+      <div class="actions"><a class="open" href="./quiz.html?set=${encodeURIComponent(item.id)}">开始 / 继续</a><span class="note">ID: ${esc(item.id)}</span></div>
+    </article>`;
+  }).join("");
+}
+async function load(){
+  $("messageBox").innerHTML = `<div class="empty">正在读取题库列表...</div>`;
+  try{
+    const res = await fetch(LIST_URL, {cache:"no-store"});
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const list = await res.json();
+    if(!Array.isArray(list)) throw new Error("list.json 必须是数组");
+    allSets = await Promise.all(list.filter(x=>x && x.enabled !== false).map(hydrate));
+    $("messageBox").innerHTML = "";
+    render();
+  }catch(err){
+    $("listBox").innerHTML = "";
+    $("messageBox").innerHTML = `<div class="error"><b>题库列表加载失败。</b><br/>请确认 <code>data/list.json</code> 存在。若刚放入新题库，请先运行 <code>python scripts/generate-list.py</code>。并且你需要通过本地服务器或网站访问，而不是直接双击打开 HTML。<br/>错误信息：${esc(err.message)}</div>`;
+  }
+}
+$("searchInput").addEventListener("input", render);
+$("btnReload").addEventListener("click", load);
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>答题页</title>
+<style>
+:root{
+  --bg:#070b12;
+  --bg2:#0b1220;
+  --panel:rgba(15,23,42,.78);
+  --panel2:rgba(17,24,39,.72);
+  --card:rgba(15,23,42,.72);
+  --card2:rgba(30,41,59,.52);
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+  --soft:#cbd5e1;
+  --border:rgba(148,163,184,.18);
+  --border2:rgba(148,163,184,.28);
+  --ok:#10b981;
+  --bad:#ef4444;
+  --warn:#f59e0b;
+  --link:#93c5fd;
+  --blue:#60a5fa;
+  --violet:#a78bfa;
+  --shadow:0 24px 70px rgba(0,0,0,.38);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  min-height:100vh;
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",Arial,sans-serif;
+  line-height:1.55;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(96,165,250,.20), transparent 28rem),
+    radial-gradient(circle at 90% 8%, rgba(167,139,250,.18), transparent 28rem),
+    linear-gradient(180deg,#070b12 0%,#09111f 45%,#070b12 100%);
+}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1120px;margin:0 auto;padding:22px 18px 112px}
+.top-shell{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:linear-gradient(180deg,rgba(7,11,18,.92),rgba(7,11,18,.74));
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+}
+.header-inner{max-width:1120px;margin:0 auto;padding:16px 18px 14px;display:grid;gap:12px}
+.title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.title-main{min-width:260px;flex:1 1 520px}
+.header-side{display:flex;flex-direction:column;gap:9px;align-items:flex-end;justify-content:flex-start;flex:0 1 auto}
+.crumb{display:inline-flex;gap:8px;align-items:center;color:var(--muted);font-size:12px;margin-bottom:8px}
+.crumb a{color:#bfdbfe}
+h1{margin:0;font-size:24px;line-height:1.15;letter-spacing:.2px;font-weight:900}
+.sub{color:var(--muted);font-size:13px;margin-top:7px}
+.stats{display:flex;gap:7px;flex-wrap:wrap;align-items:center;justify-content:flex-end;min-width:0}
+.pill{
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:5px 8px;
+  background:rgba(15,23,42,.65);
+  color:var(--muted);
+  font-size:11px;
+  box-shadow:0 8px 30px rgba(0,0,0,.18);
+}
+.pill strong{color:#fff;font-weight:900}
+.controls{display:grid;grid-template-columns:minmax(260px,1fr) minmax(300px,1.15fr);gap:12px}
+.typebar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+.typebar-title{color:var(--muted);font-size:11px;font-weight:800;margin-right:2px}
+.btn.type-btn{padding:6px 9px;border-radius:999px;font-size:11px;line-height:1.15}
+.btn.type-btn.active{background:linear-gradient(135deg,rgba(37,99,235,.62),rgba(167,139,250,.28));border-color:rgba(147,197,253,.62);color:#eff6ff;box-shadow:0 10px 26px rgba(37,99,235,.18)}
+.ctrl{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(180deg,rgba(15,23,42,.82),rgba(15,23,42,.55));
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:12px;
+  box-shadow:var(--shadow);
+}
+.ctrl::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(120deg,rgba(96,165,250,.10),transparent 42%,rgba(167,139,250,.08));pointer-events:none}
+.ctrl-row{position:relative;display:flex;gap:9px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.input{
+  flex:1 1 260px;
+  width:100%;
+  background:rgba(2,6,23,.62);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:11px 12px;
+  color:var(--text);
+  font-size:13px;
+  outline:none;
+}
+.input:focus{border-color:rgba(96,165,250,.72);box-shadow:0 0 0 4px rgba(96,165,250,.13)}
+.btn{
+  appearance:none;
+  border:1px solid var(--border);
+  background:rgba(15,23,42,.85);
+  color:var(--text);
+  border-radius:14px;
+  padding:10px 13px;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:800;
+  transition:transform .05s ease,border-color .15s ease,background .15s ease;
+  white-space:nowrap;
+}
+.btn:hover{border-color:rgba(203,213,225,.38);background:rgba(30,41,59,.82)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:linear-gradient(135deg,rgba(37,99,235,.55),rgba(59,130,246,.28));border-color:rgba(96,165,250,.62);color:#eff6ff}
+.btn.danger{background:rgba(127,29,29,.35);border-color:rgba(248,113,113,.48);color:#fee2e2}
+.btn.ghost{background:rgba(2,6,23,.34)}
+.note{color:var(--muted);font-size:12px;margin:9px 0 0;position:relative}
+.section{margin-top:24px}
+.section h2{
+  display:flex;align-items:center;gap:10px;
+  margin:0 0 12px;
+  font-size:15px;color:#f8fafc;letter-spacing:.2px;
+}
+.section h2::before{content:"";width:8px;height:18px;border-radius:99px;background:linear-gradient(180deg,var(--blue),var(--violet))}
+.q{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(180deg,rgba(15,23,42,.82),rgba(15,23,42,.62));
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:16px;
+  margin:12px 0;
+  box-shadow:0 16px 44px rgba(0,0,0,.26);
+  scroll-margin-top:220px;
+}
+.q::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,rgba(96,165,250,.72),rgba(167,139,250,.54));opacity:.75}
+.q.correct{border-color:rgba(16,185,129,.52);background:linear-gradient(180deg,rgba(6,78,59,.22),rgba(15,23,42,.72))}
+.q.correct::after{background:var(--ok)}
+.q.wrong{border-color:rgba(239,68,68,.52);background:linear-gradient(180deg,rgba(127,29,29,.22),rgba(15,23,42,.72))}
+.q.wrong::after{background:var(--bad)}
+.q.unanswered{border-color:rgba(245,158,11,.52);background:linear-gradient(180deg,rgba(120,53,15,.20),rgba(15,23,42,.72))}
+.q.unanswered::after{background:var(--warn)}
+.q-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.q-title{
+  display:inline-flex;align-items:center;gap:8px;
+  font-weight:900;font-size:13px;color:#dbeafe;
+  border:1px solid rgba(96,165,250,.24);
+  background:rgba(37,99,235,.14);
+  border-radius:999px;
+  padding:5px 10px;
+}
+.q-meta{color:var(--muted);font-size:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.tag{border:1px solid var(--border);background:rgba(2,6,23,.28);padding:4px 8px;border-radius:999px;font-size:12px;color:var(--muted)}
+.tag:empty{display:none}
+.tag.ok{border-color:rgba(16,185,129,.55);color:#a7f3d0;background:rgba(16,185,129,.10)}
+.tag.bad{border-color:rgba(239,68,68,.55);color:#fecaca;background:rgba(239,68,68,.10)}
+.tag.warn{border-color:rgba(245,158,11,.55);color:#fde68a;background:rgba(245,158,11,.10)}
+.stem{margin-top:8px;white-space:pre-wrap;word-break:break-word;font-size:15px;color:#f1f5f9;line-height:1.68}
+.stem.code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:13px;background:rgba(2,6,23,.38);border:1px solid var(--border);border-radius:16px;padding:12px}
+.options{margin-top:14px;display:grid;gap:10px}
+.opt{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  padding:12px 13px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  background:rgba(2,6,23,.30);
+  cursor:pointer;
+  user-select:none;
+  transition:border-color .15s ease,background .15s ease,transform .05s ease;
+}
+.opt:hover{border-color:rgba(147,197,253,.45);background:rgba(30,41,59,.55)}
+.opt:active{transform:translateY(1px)}
+.opt input{margin-top:4px;accent-color:#60a5fa}
+.opt .letter{
+  flex:0 0 auto;
+  width:28px;height:28px;
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:10px;
+  background:rgba(96,165,250,.14);
+  border:1px solid rgba(96,165,250,.26);
+  font-weight:950;color:#bfdbfe;font-size:13px;
+}
+.opt .text{flex:1;white-space:pre-wrap;word-break:break-word;font-size:14px;color:#e5e7eb;line-height:1.55}
+.opt.correct{border-color:rgba(16,185,129,.66);background:rgba(16,185,129,.12)}
+.opt.correct .letter{background:rgba(16,185,129,.18);border-color:rgba(16,185,129,.42);color:#bbf7d0}
+.opt.wrong{border-color:rgba(239,68,68,.66);background:rgba(239,68,68,.12)}
+.opt.wrong .letter{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.42);color:#fecaca}
+.blank-input{display:inline-block;min-width:160px;max-width:100%;padding:8px 10px;margin:3px 4px;border-radius:12px;border:1px solid var(--border);background:rgba(2,6,23,.48);color:var(--text);outline:none;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:13px}
+.blank-input:focus{border-color:rgba(96,165,250,.75);box-shadow:0 0 0 4px rgba(96,165,250,.14)}
+.blank-input.correct{border-color:rgba(16,185,129,.85);box-shadow:0 0 0 4px rgba(16,185,129,.16)}
+.blank-input.wrong{border-color:rgba(239,68,68,.85);box-shadow:0 0 0 4px rgba(239,68,68,.16)}
+.answer-line{margin-top:12px;font-size:13px;color:var(--muted);display:none;border-top:1px dashed var(--border);padding-top:11px;line-height:1.7}
+.answer-line.show{display:block}
+.answer-line b{color:#f8fafc}
+.bottom-bar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:linear-gradient(180deg,rgba(7,11,18,.54),rgba(7,11,18,.94));backdrop-filter:blur(18px);border-top:1px solid var(--border)}
+.bottom-inner{max-width:1120px;margin:0 auto;padding:12px 18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.status{font-size:13px;color:var(--muted)}
+.status b{color:#fff;font-weight:900}
+.right-buttons{display:flex;gap:9px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:24px 0 8px}
+.error{border:1px solid rgba(239,68,68,.55);border-radius:22px;padding:18px;color:#fecaca;background:rgba(127,29,29,.16);box-shadow:var(--shadow)}
+code{background:rgba(148,163,184,.12);border:1px solid var(--border);border-radius:8px;padding:1px 5px;color:#dbeafe}
+@media(max-width:860px){
+  .controls{grid-template-columns:1fr}
+  .header-side{align-items:flex-start;width:100%}
+  .stats,.typebar{justify-content:flex-start}
+  .q{scroll-margin-top:300px}
+}
+@media(max-width:620px){
+  .wrap{padding:16px 12px 150px}
+  .header-inner{padding:13px 12px}
+  h1{font-size:20px}
+  .bottom-inner{align-items:stretch}
+  .right-buttons{width:100%;justify-content:space-between}
+  .right-buttons .btn{flex:1 1 auto}
+  .ctrl-row{align-items:stretch}
+  .ctrl-row .btn{flex:1 1 auto}
+}
+</style>
+</head>
+<body>
+<header class="top-shell">
+  <div class="header-inner">
+    <div class="title-row">
+      <div class="title-main">
+        <div class="crumb"><a href="./index.html">← 返回主页</a><span>·</span><span>题库练习</span></div>
+        <h1 id="title">答题页</h1>
+        <div class="sub"><span id="subtitle">正在加载题库...</span></div>
+      </div>
+      <div class="header-side">
+        <div class="typebar" id="typeBar">
+          <span class="typebar-title">题型</span>
+          <button class="btn ghost type-btn active" data-type-filter="all">全部</button>
+          <button class="btn ghost type-btn" data-type-filter="single">单选</button>
+          <button class="btn ghost type-btn" data-type-filter="multi">多选</button>
+          <button class="btn ghost type-btn" data-type-filter="judge">判断</button>
+          <button class="btn ghost type-btn" data-type-filter="blank">填空</button>
+        </div>
+        <div class="stats" id="statsTop"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <div class="ctrl">
+        <div class="ctrl-row">
+          <input id="jumpInput" class="input" placeholder="跳题：数字=单选；M10=多选；J3=判断；F2=填空" />
+          <button class="btn ghost" id="btnShowAll">显示全部</button>
+        </div>
+        <div class="note">作答会自动保存到本机浏览器，不同题库互不覆盖。</div>
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-row">
+          <button class="btn ghost" id="btnFilterUnanswered">只看未答</button>
+          <button class="btn ghost" id="btnFilterWrong">只看错题</button>
+          <button class="btn ghost" id="btnToggleAnswers">显示答案</button>
+          <button class="btn ghost" id="btnReshuffle">重新乱序</button>
+        </div>
+        <div class="note">乱序只改变显示顺序，判分仍按题库原始答案判断。</div>
+      </div>
+    </div>
+  </div>
+</header>
+<main class="wrap" id="app"><div class="note">正在加载...</div></main>
+<div class="bottom-bar">
+  <div class="bottom-inner">
+    <div class="status" id="statusBar">未判分</div>
+    <div class="right-buttons">
+      <button class="btn primary" id="btnGrade">提交判分</button>
+      <button class="btn" id="btnClear">清空作答</button>
+      <button class="btn danger" id="btnReset">清空本题库保存</button>
+    </div>
+  </div>
+</div>
+<script>
+const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const LIST_URL = "./data/list.json";
+let setId = "";
+let setInfo = null;
+let rawData = null;
+let questions = [];
+let answers = {};
+let graded = false;
+let showAnswers = false;
+let filterMode = "all";
+let typeFilter = "all";
+let seed = "";
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[m]));
+const answerKey = () => `quiz_answers_${setId}`;
+const seedKey = () => `quiz_seed_${setId}`;
+const stateKey = () => `quiz_state_${setId}`;
+function readJSON(key, fallback){try{return JSON.parse(localStorage.getItem(key) || "")}catch{return fallback}}
+function saveAnswers(){localStorage.setItem(answerKey(), JSON.stringify(answers)); updateStats();}
+function saveState(){localStorage.setItem(stateKey(), JSON.stringify({graded,showAnswers,filterMode,typeFilter}));}
+function normalizeText(s){return String(s ?? "").trim().replace(/\s+/g," ").toLowerCase();}
+function normalizeChoiceAnswer(ans){return String(ans ?? "").toUpperCase().replace(/[^A-Z]/g,"").split("");}
+function sameSet(a,b){const aa=[...new Set(a)].sort().join("");const bb=[...new Set(b)].sort().join("");return aa===bb;}
+function hashString(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
+function mulberry32(a){return function(){let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return ((t^t>>>14)>>>0)/4294967296}}
+function shuffleDet(arr, key){const out=[...arr];const rnd=mulberry32(hashString(`${seed}|${key}`));for(let i=out.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out;}
+function qKey(type, num, idx){return `${type}:${num ?? idx+1}`;}
+function qLabel(type){return {single:"单选",multi:"多选",judge:"判断",blank:"填空"}[type] || type;}
+function typeVisible(q){return typeFilter === "all" || q.type === typeFilter;}
+function normalizeQuestion(q, type, idx){
+  const num = q.num ?? q.id ?? idx + 1;
+  let options = q.options;
+  if(type === "judge" && !options) options = {A:"对",B:"错"};
+  return {...q, type, num, key:qKey(type,num,idx), options};
+}
+function normalizeData(data){
+  if(Array.isArray(data.questions)){
+    return data.questions.map((q,idx)=>normalizeQuestion(q, q.type || "single", idx));
+  }
+  const list=[];
+  (data.single||[]).forEach((q,i)=>list.push(normalizeQuestion(q,"single",i)));
+  (data.multi||[]).forEach((q,i)=>list.push(normalizeQuestion(q,"multi",i)));
+  (data.judge||[]).forEach((q,i)=>list.push(normalizeQuestion(q,"judge",i)));
+  (data.blank||data.fill||[]).forEach((q,i)=>list.push(normalizeQuestion(q,"blank",i)));
+  return list;
+}
+function getOptions(q){
+  const entries = Object.entries(q.options || {});
+  const shouldShuffle = setInfo?.shuffleOptions !== false && !(q.type === "judge" && setInfo?.shuffleJudge !== true);
+  const ordered = shouldShuffle ? shuffleDet(entries, q.key) : entries;
+  return ordered.map(([origKey,text], idx)=>({origKey:String(origKey).toUpperCase(), text, display:LETTERS[idx]}));
+}
+function correctDisplay(q, opts){
+  if(q.type === "blank") return formatBlankAnswer(q);
+  const ans = normalizeChoiceAnswer(q.answer);
+  return opts.filter(o=>ans.includes(o.origKey)).map(o=>o.display).join("");
+}
+function userDisplay(q, opts){
+  const val = answers[q.key];
+  if(q.type === "blank") return Array.isArray(val) ? val.join(" / ") : (val || "");
+  const arr = Array.isArray(val) ? val : normalizeChoiceAnswer(val);
+  return opts.filter(o=>arr.includes(o.origKey)).map(o=>o.display).join("");
+}
+function blankExpected(q){
+  const src = q.answers ?? q.answer ?? [];
+  if(Array.isArray(src)) return src.map(x => Array.isArray(x) ? x.map(String) : [String(x)]);
+  return [[String(src)]];
+}
+function formatBlankAnswer(q){return blankExpected(q).map(x=>x.join(" / ")).join("；");}
+function isAnswered(q){
+  const val = answers[q.key];
+  if(q.type === "multi") return Array.isArray(val) && val.length > 0;
+  if(q.type === "blank") return Array.isArray(val) && val.some(x=>String(x||"").trim());
+  return String(val || "").trim() !== "";
+}
+function isCorrect(q){
+  if(!isAnswered(q)) return false;
+  if(q.type === "multi") return sameSet(answers[q.key] || [], normalizeChoiceAnswer(q.answer));
+  if(q.type === "blank"){
+    const got = Array.isArray(answers[q.key]) ? answers[q.key] : [answers[q.key]];
+    const expected = blankExpected(q);
+    if(got.length < expected.length) return false;
+    return expected.every((accepts,i)=>accepts.map(normalizeText).includes(normalizeText(got[i])));
+  }
+  return sameSet([answers[q.key]], normalizeChoiceAnswer(q.answer));
+}
+function renderStemWithBlanks(q){
+  const expected = blankExpected(q);
+  let used = 0;
+  const stem = esc(q.stem || "").replace(/\{\{blank\}\}|_{3,}/g, () => blankInput(q, used++));
+  if(used === 0){
+    return stem + `<div style="margin-top:10px">${expected.map((_,i)=>blankInput(q,i)).join(" ")}</div>`;
+  }
+  while(used < expected.length){ used++; }
+  return stem;
+}
+function blankInput(q, i){
+  const vals = Array.isArray(answers[q.key]) ? answers[q.key] : [];
+  let cls = "blank-input";
+  if(graded && isAnswered(q)){
+    const ok = (blankExpected(q)[i] || []).map(normalizeText).includes(normalizeText(vals[i]));
+    cls += ok ? " correct" : " wrong";
+  }
+  return `<input class="${cls}" data-qkey="${esc(q.key)}" data-blank-index="${i}" value="${esc(vals[i] || "")}" placeholder="填空 ${i+1}" />`;
+}
+function renderChoiceQuestion(q){
+  const opts = getOptions(q);
+  const val = answers[q.key];
+  const selected = Array.isArray(val) ? val : normalizeChoiceAnswer(val);
+  const correctOrig = normalizeChoiceAnswer(q.answer);
+  return `<div class="options">${opts.map(o=>{
+    const checked = selected.includes(o.origKey) ? "checked" : "";
+    const inputType = q.type === "multi" ? "checkbox" : "radio";
+    let cls = "opt";
+    if((graded || showAnswers) && correctOrig.includes(o.origKey)) cls += " correct";
+    if(graded && selected.includes(o.origKey) && !correctOrig.includes(o.origKey)) cls += " wrong";
+    return `<label class="${cls}"><input type="${inputType}" name="${esc(q.key)}" data-qkey="${esc(q.key)}" value="${esc(o.origKey)}" ${checked}/><span class="letter">${o.display}</span><span class="text">${esc(o.text)}</span></label>`;
+  }).join("")}</div>
+  <div class="answer-line ${(graded||showAnswers)?"show":""}"><b>正确答案：</b>${esc(correctDisplay(q,opts))}　<b>你的答案：</b>${esc(userDisplay(q,opts) || "未答")}${q.explanation ? `　<b>解析：</b>${esc(q.explanation)}` : ""}</div>`;
+}
+function renderBlankQuestion(q){
+  return `<div class="stem ${q.code ? "code" : ""}">${renderStemWithBlanks(q)}</div>
+  <div class="answer-line ${(graded||showAnswers)?"show":""}"><b>参考答案：</b>${esc(formatBlankAnswer(q))}　<b>你的答案：</b>${esc(userDisplay(q,[]) || "未答")}${q.explanation ? `　<b>解析：</b>${esc(q.explanation)}` : ""}</div>`;
+}
+function shouldShowQuestion(q){
+  if(!typeVisible(q)) return false;
+  if(filterMode === "unanswered" && isAnswered(q)) return false;
+  if(filterMode === "wrong" && (!graded || !isAnswered(q) || isCorrect(q))) return false;
+  return true;
+}
+function renderQuestion(q, displayNo){
+  let cls = "q";
+  if(graded){ cls += !isAnswered(q) ? " unanswered" : (isCorrect(q) ? " correct" : " wrong"); }
+  const status = !graded ? "" : (!isAnswered(q) ? `<span class="tag warn">未答</span>` : (isCorrect(q) ? `<span class="tag ok">正确</span>` : `<span class="tag bad">错误</span>`));
+  return `<article class="${cls}" id="q-${q.type}-${displayNo}" data-qkey="${esc(q.key)}">
+    <div class="q-head"><div class="q-title">${qLabel(q.type)} ${esc(displayNo)}</div><div class="q-meta"><span class="tag">${esc(q.point || q.tag || "")}</span>${status}</div></div>
+    ${q.type === "blank" ? renderBlankQuestion(q) : `<div class="stem ${q.code ? "code" : ""}">${esc(q.stem || "")}</div>${renderChoiceQuestion(q)}`}
+  </article>`;
+}
+function groupQuestions(){
+  let list = [...questions];
+  if(setInfo?.shuffleQuestions) list = shuffleDet(list, "question-order");
+  return {
+    single:list.filter(q=>q.type==="single"),
+    multi:list.filter(q=>q.type==="multi"),
+    judge:list.filter(q=>q.type==="judge"),
+    blank:list.filter(q=>q.type==="blank")
+  };
+}
+function render(){
+  const groups = groupQuestions();
+  const titles = {single:"单选题",multi:"多选题",judge:"判断题",blank:"填空题"};
+  const order = ["single","multi","judge","blank"];
+  $("app").innerHTML = order.map(type => {
+    if(typeFilter !== "all" && typeFilter !== type) return "";
+    const items = groups[type].map((q,i)=>({q, displayNo:i+1}));
+    const visible = items.filter(({q}) => shouldShowQuestion(q));
+    const html = visible.map(({q,displayNo}) => renderQuestion(q, displayNo)).join("");
+    if(!groups[type].length || !html) return "";
+    return `<div class="section" id="sec-${type}"><h2>${titles[type]}（共 ${groups[type].length} 题）</h2><div>${html}</div></div><div class="divider"></div>`;
+  }).join("") || `<div class="note">当前筛选条件下没有题目。</div>`;
+  updateControls();
+  updateStats();
+}
+function activeQuestions(){return questions.filter(typeVisible);}
+function updateControls(){
+  document.querySelectorAll("[data-type-filter]").forEach(btn=>btn.classList.toggle("active", btn.dataset.typeFilter === typeFilter));
+  $("btnToggleAnswers").textContent = showAnswers ? "隐藏答案" : "显示答案";
+  $("btnFilterUnanswered").classList.toggle("primary", filterMode === "unanswered");
+  $("btnFilterWrong").classList.toggle("primary", filterMode === "wrong");
+  $("btnShowAll").classList.toggle("primary", filterMode === "all");
+}
+function updateStats(){
+  const scope = activeQuestions();
+  const total = scope.length;
+  const answered = scope.filter(isAnswered).length;
+  const correct = scope.filter(q=>isAnswered(q)&&isCorrect(q)).length;
+  const wrong = scope.filter(q=>isAnswered(q)&&!isCorrect(q)).length;
+  const typeName = typeFilter === "all" ? "全部" : qLabel(typeFilter);
+  $("statsTop").innerHTML = `<span class="pill">题型 <strong>${typeName}</strong></span><span class="pill">已答 <strong>${answered}</strong>/${total}</span>${graded ? `<span class="pill">正确 <strong>${correct}</strong></span><span class="pill">错误 <strong>${wrong}</strong></span>` : `<span class="pill">未判分</span>`}`;
+  $("statusBar").innerHTML = graded ? `当前题型：<b>${typeName}</b>；已判分：正确 <b>${correct}</b>，错误 <b>${wrong}</b>，未答 <b>${total-answered}</b>` : `当前题型：<b>${typeName}</b>；未判分：已答 <b>${answered}</b>/${total}`;
+}
+function onChoiceChange(input){
+  const card = input.closest(".q");
+  const q = questions.find(x=>x.key===input.dataset.qkey);
+  if(!q) return;
+  if(q.type === "multi"){
+    answers[q.key] = [...card.querySelectorAll(`input[data-qkey="${CSS.escape(q.key)}"]:checked`)].map(x=>x.value);
+  }else{
+    answers[q.key] = input.value;
+  }
+  saveAnswers();
+}
+function onBlankInput(input){
+  const q = questions.find(x=>x.key===input.dataset.qkey);
+  if(!q) return;
+  const expected = blankExpected(q);
+  const vals = Array.isArray(answers[q.key]) ? [...answers[q.key]] : Array(expected.length).fill("");
+  vals[Number(input.dataset.blankIndex)] = input.value;
+  answers[q.key] = vals;
+  saveAnswers();
+}
+async function loadQuiz(){
+  const params = new URLSearchParams(location.search);
+  setId = params.get("set") || "";
+  if(!setId){
+    $("app").innerHTML = `<div class="error"><b>缺少题库参数。</b><br/>请从 <a href="./index.html">主页</a> 选择题库，或使用 <code>quiz.html?set=题库ID</code> 打开。</div>`;
+    return;
+  }
+  try{
+    const listRes = await fetch(LIST_URL, {cache:"no-store"});
+    if(!listRes.ok) throw new Error(`list.json HTTP ${listRes.status}`);
+    const list = await listRes.json();
+    setInfo = list.find(x=>x.id===setId);
+    if(!setInfo) throw new Error(`list.json 中没有找到题库 ID：${setId}`);
+    const dataRes = await fetch(setInfo.file, {cache:"no-store"});
+    if(!dataRes.ok) throw new Error(`${setInfo.file} HTTP ${dataRes.status}`);
+    rawData = await dataRes.json();
+    questions = normalizeData(rawData);
+    answers = readJSON(answerKey(), {});
+    const st = readJSON(stateKey(), {});
+    graded = !!st.graded; showAnswers = !!st.showAnswers; filterMode = st.filterMode || "all"; typeFilter = st.typeFilter || "all";
+    seed = localStorage.getItem(seedKey());
+    if(!seed){ seed = `${Date.now()}-${Math.random()}`; localStorage.setItem(seedKey(), seed); }
+    $("title").textContent = rawData.meta?.title || setInfo.title || "答题页";
+    $("subtitle").textContent = `${setInfo.desc || ""} ${setInfo.shuffleOptions !== false ? "· 选项乱序已开启" : "· 选项固定"}`;
+    render();
+  }catch(err){
+    $("app").innerHTML = `<div class="error"><b>题库加载失败。</b><br/>${esc(err.message)}<br/><br/>检查：1）是否通过服务器访问；2）data/list.json 的 id 和 file 是否正确；3）题库 JSON 是否是合法 JSON。</div>`;
+  }
+}
+document.addEventListener("change", e=>{if(e.target.matches('input[type="radio"],input[type="checkbox"]')) onChoiceChange(e.target);});
+document.addEventListener("input", e=>{if(e.target.matches(".blank-input")) onBlankInput(e.target);});
+document.addEventListener("click", e=>{const btn=e.target.closest("[data-type-filter]"); if(!btn) return; typeFilter=btn.dataset.typeFilter || "all"; saveState(); render();});
+$("btnGrade").addEventListener("click",()=>{graded=true;showAnswers=true;saveState();render();});
+$("btnToggleAnswers").addEventListener("click",()=>{showAnswers=!showAnswers;$("btnToggleAnswers").textContent=showAnswers?"隐藏答案":"显示答案";saveState();render();});
+$("btnFilterUnanswered").addEventListener("click",()=>{filterMode="unanswered";saveState();render();});
+$("btnFilterWrong").addEventListener("click",()=>{filterMode="wrong";saveState();render();});
+$("btnShowAll").addEventListener("click",()=>{filterMode="all";saveState();render();});
+$("btnClear").addEventListener("click",()=>{answers={};graded=false;saveAnswers();saveState();render();});
+$("btnReset").addEventListener("click",()=>{if(confirm("确定清空本题库的作答、判分状态和乱序种子？")){localStorage.removeItem(answerKey());localStorage.removeItem(stateKey());localStorage.removeItem(seedKey());answers={};graded=false;showAnswers=false;filterMode="all";typeFilter="all";seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed);render();}});
+$("btnReshuffle").addEventListener("click",()=>{if(confirm("重新生成选项/题序乱序？已选答案会保留，但显示位置可能变化。")){seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed);render();}});
+$("jumpInput").addEventListener("keydown", e=>{
+  if(e.key !== "Enter") return;
+  const v = e.target.value.trim().toUpperCase(); if(!v) return;
+  const m = v.match(/^([SMJF])?\s*(\d+)$/); if(!m) return;
+  const map = {S:"single",M:"multi",J:"judge",F:"blank"};
+  const type = map[m[1] || "S"]; const num = m[2];
+  filterMode="all"; typeFilter=type; saveState(); render();
+  setTimeout(()=>{const el = $(`q-${type}-${num}`); if(el) el.scrollIntoView({behavior:"smooth",block:"start"});},30);
+});
+loadQuiz();
+</script>
+</body>
+</html>
+

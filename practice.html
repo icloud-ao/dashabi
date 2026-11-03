@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<base href="/">
+<title>逐题练习</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png">
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+:root{
+  --bg:#070b12;--panel:rgba(15,23,42,.82);--panel2:rgba(17,24,39,.76);--text:#e5e7eb;--muted:#94a3b8;--soft:#cbd5e1;--border:rgba(148,163,184,.18);--border2:rgba(148,163,184,.30);--ok:#10b981;--bad:#ef4444;--warn:#f59e0b;--blue:#60a5fa;--violet:#a78bfa;--green:#34d399;--shadow:0 24px 70px rgba(0,0,0,.38)
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",Arial,sans-serif;line-height:1.6;background:radial-gradient(circle at 12% 0%,rgba(96,165,250,.20),transparent 28rem),radial-gradient(circle at 92% 8%,rgba(167,139,250,.18),transparent 28rem),linear-gradient(180deg,#070b12 0%,#09111f 45%,#070b12 100%)}
+a{color:#bfdbfe;text-decoration:none}a:hover{text-decoration:underline}.shell{max-width:980px;margin:0 auto;padding:18px 16px 112px}.top{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(7,11,18,.94),rgba(7,11,18,.74));backdrop-filter:blur(18px)}.top-inner{max-width:980px;margin:0 auto;padding:14px 16px;display:grid;gap:12px}.title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}.crumb{display:inline-flex;gap:8px;align-items:center;color:var(--muted);font-size:12px;margin-bottom:7px}h1{margin:0;font-size:23px;line-height:1.15;font-weight:950}.sub{margin-top:7px;color:var(--muted);font-size:13px}.head-right{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center}.pill{border:1px solid var(--border);border-radius:999px;padding:5px 9px;background:rgba(15,23,42,.66);font-size:12px;color:var(--muted)}.pill strong{color:#fff}.typebar{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.btn{appearance:none;border:1px solid var(--border2);background:rgba(15,23,42,.78);color:var(--text);border-radius:14px;padding:10px 13px;cursor:pointer;font-size:13px;font-weight:850;transition:.12s ease;white-space:nowrap}.btn:hover{border-color:rgba(203,213,225,.42);background:rgba(30,41,59,.82)}.btn:active{transform:translateY(1px)}.btn.primary{background:linear-gradient(135deg,rgba(37,99,235,.62),rgba(96,165,250,.34));border-color:rgba(96,165,250,.62)}.btn.good{background:linear-gradient(135deg,rgba(5,150,105,.62),rgba(52,211,153,.28));border-color:rgba(52,211,153,.55)}.btn.danger{background:rgba(127,29,29,.35);border-color:rgba(248,113,113,.48);color:#fee2e2}.btn.type-btn{padding:6px 10px;border-radius:999px;font-size:11px}.btn.type-btn.active{background:linear-gradient(135deg,rgba(37,99,235,.62),rgba(167,139,250,.28));border-color:rgba(147,197,253,.62)}.panel{margin-top:16px;border:1px solid var(--border);background:linear-gradient(180deg,rgba(15,23,42,.82),rgba(15,23,42,.62));border-radius:26px;box-shadow:var(--shadow);overflow:hidden}.progress-wrap{padding:16px 18px;border-bottom:1px solid var(--border);background:rgba(2,6,23,.18)}.progress-top{display:flex;justify-content:space-between;gap:12px;align-items:center;color:var(--muted);font-size:13px;margin-bottom:10px}.progress{height:10px;border-radius:999px;background:rgba(148,163,184,.14);overflow:hidden}.bar{height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--blue));border-radius:inherit}.q{padding:20px 18px 18px}.q-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}.q-title{display:inline-flex;align-items:center;gap:8px;font-weight:950;font-size:13px;color:#dbeafe;border:1px solid rgba(96,165,250,.26);background:rgba(37,99,235,.14);border-radius:999px;padding:6px 11px}.q-meta{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.tag{border:1px solid var(--border);background:rgba(2,6,23,.28);padding:4px 8px;border-radius:999px;font-size:12px;color:var(--muted)}.tag.ok{border-color:rgba(16,185,129,.55);color:#a7f3d0;background:rgba(16,185,129,.10)}.tag.bad{border-color:rgba(239,68,68,.55);color:#fecaca;background:rgba(239,68,68,.10)}.tag.warn{border-color:rgba(245,158,11,.55);color:#fde68a;background:rgba(245,158,11,.10)}.tag.info{border-color:rgba(96,165,250,.55);color:#bfdbfe;background:rgba(96,165,250,.10)}.stem{white-space:pre-wrap;word-break:break-word;font-size:16px;color:#f1f5f9;line-height:1.75}.stem.code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:13px;background:rgba(2,6,23,.38);border:1px solid var(--border);border-radius:16px;padding:12px}.q-images,.answer-images{margin-top:12px;display:grid;gap:10px}.q-images img,.answer-images img{display:block;max-width:100%;height:auto;border-radius:16px;border:1px solid var(--border);background:rgba(2,6,23,.38);box-shadow:0 12px 34px rgba(0,0,0,.22)}figure{margin:0}figcaption{margin-top:6px;color:var(--muted);font-size:12px}.options{margin-top:16px;display:grid;gap:10px}.opt{display:flex;gap:12px;align-items:flex-start;padding:13px;border-radius:16px;border:1px solid var(--border);background:rgba(2,6,23,.30);cursor:pointer;user-select:none;transition:.12s ease}.opt:hover{border-color:rgba(147,197,253,.45);background:rgba(30,41,59,.55)}.opt input{margin-top:4px;accent-color:#60a5fa}.letter{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(96,165,250,.14);border:1px solid rgba(96,165,250,.26);font-weight:950;color:#bfdbfe;font-size:13px}.text{flex:1;white-space:pre-wrap;word-break:break-word;font-size:14px;color:#e5e7eb;line-height:1.55}.opt.correct{border-color:rgba(16,185,129,.66);background:rgba(16,185,129,.12)}.opt.correct .letter{background:rgba(16,185,129,.18);border-color:rgba(16,185,129,.42);color:#bbf7d0}.opt.wrong{border-color:rgba(239,68,68,.66);background:rgba(239,68,68,.12)}.opt.wrong .letter{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.42);color:#fecaca}.blank-input{display:inline-block;min-width:170px;max-width:100%;padding:9px 10px;margin:4px;border-radius:12px;border:1px solid var(--border);background:rgba(2,6,23,.48);color:var(--text);outline:none;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:13px}.blank-input:focus,.short-answer:focus{border-color:rgba(96,165,250,.75);box-shadow:0 0 0 4px rgba(96,165,250,.14)}.blank-input.correct{border-color:rgba(16,185,129,.85);box-shadow:0 0 0 4px rgba(16,185,129,.16)}.blank-input.wrong{border-color:rgba(239,68,68,.85);box-shadow:0 0 0 4px rgba(239,68,68,.16)}.short-answer{width:100%;min-height:170px;margin-top:15px;padding:12px 13px;border-radius:16px;border:1px solid var(--border);background:rgba(2,6,23,.40);color:var(--text);outline:none;resize:vertical;font:14px/1.65 system-ui,-apple-system,Segoe UI,Roboto,"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",Arial,sans-serif}.answer-line{margin-top:14px;font-size:13px;color:var(--muted);display:none;border-top:1px dashed var(--border);padding-top:12px;line-height:1.75;white-space:pre-wrap;word-break:break-word}.answer-line.show{display:block}.answer-line b{color:#f8fafc}.actions{display:flex;gap:10px;flex-wrap:wrap;padding:0 18px 18px;align-items:center;justify-content:space-between}.left-actions,.right-actions{display:flex;gap:10px;flex-wrap:wrap}.bottom{position:fixed;left:0;right:0;bottom:0;z-index:30;border-top:1px solid var(--border);background:linear-gradient(180deg,rgba(7,11,18,.54),rgba(7,11,18,.94));backdrop-filter:blur(18px)}.bottom-inner{max-width:980px;margin:0 auto;padding:12px 16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}.status{font-size:13px;color:var(--muted)}.status b{color:#fff}.error,.empty{border:1px solid rgba(239,68,68,.55);border-radius:22px;padding:18px;color:#fecaca;background:rgba(127,29,29,.16);box-shadow:var(--shadow);margin-top:16px}.empty{border-color:var(--border);color:var(--muted);background:rgba(15,23,42,.50)}code{background:rgba(148,163,184,.12);border:1px solid var(--border);border-radius:8px;padding:1px 5px;color:#dbeafe}.kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.hidden{display:none!important}@media(max-width:720px){.shell{padding:14px 12px 150px}.top-inner{padding:12px}.head-right,.typebar{justify-content:flex-start}.actions,.bottom-inner{align-items:stretch}.left-actions,.right-actions{width:100%}.left-actions .btn,.right-actions .btn,.bottom .btn{flex:1}.q{padding:16px 14px}.q-head{flex-direction:column}.q-meta{justify-content:flex-start}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <div class="title-row">
+      <div>
+        <div class="crumb"><a href="/">← 返回主页</a><span>·</span><a id="normalLink" href="/quiz.html">整套刷题</a><span>·</span><span>逐题练习</span></div>
+        <h1 id="title">逐题练习</h1>
+        <div class="sub" id="subtitle">正在加载题库...</div>
+      </div>
+      <div class="head-right">
+        <div class="typebar" id="typeBar">
+          <button class="btn type-btn active" data-type-filter="all">全部</button>
+          <button class="btn type-btn" data-type-filter="single">单选</button>
+          <button class="btn type-btn" data-type-filter="multi">多选</button>
+          <button class="btn type-btn" data-type-filter="judge">判断</button>
+          <button class="btn type-btn" data-type-filter="blank">填空</button>
+          <button class="btn type-btn" data-type-filter="short">简答</button>
+        </div>
+        <div id="topStats"></div>
+      </div>
+    </div>
+  </div>
+</header>
+<main class="shell">
+  <section class="panel" id="practicePanel">
+    <div class="progress-wrap">
+      <div class="progress-top"><span id="progressText">正在加载...</span><span id="resultText">未作答</span></div>
+      <div class="progress"><div class="bar" id="progressBar"></div></div>
+    </div>
+    <div id="app"><div class="empty">正在加载...</div></div>
+  </section>
+</main>
+<div class="bottom">
+  <div class="bottom-inner">
+    <div class="status" id="statusBar">逐题模式：做完一道看一道答案</div>
+    <div class="right-actions">
+      <button class="btn" id="btnPrev">上一题</button>
+      <button class="btn primary" id="btnNext">下一题</button>
+      <button class="btn" id="btnResetPractice">重置进度</button>
+    </div>
+  </div>
+</div>
+<script>
+const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const LIST_URL = "./data/list.json";
+let setId = "";
+let setInfo = null;
+let rawData = null;
+let questions = [];
+let ordered = [];
+let answers = {};
+let feedback = {};
+let currentIndex = 0;
+let typeFilter = "all";
+let seed = "";
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[m]));
+function renderMath(){
+  if(window.MathJax && MathJax.typesetPromise){
+    MathJax.typesetClear && MathJax.typesetClear();
+    MathJax.typesetPromise([$('app')]).catch(err => console.warn('MathJax typeset failed:', err));
+  }
+}
+function answerKey(){return `quiz_answers_${setId}`}
+function seedKey(){return `quiz_seed_${setId}`}
+function practiceStateKey(){return `practice_state_${setId}`}
+function feedbackKey(){return `practice_feedback_${setId}`}
+function readJSON(key, fallback){try{return JSON.parse(localStorage.getItem(key) || "")}catch{return fallback}}
+function saveAnswers(){localStorage.setItem(answerKey(), JSON.stringify(answers)); updateStats();}
+function saveFeedback(){localStorage.setItem(feedbackKey(), JSON.stringify(feedback));}
+function saveState(){localStorage.setItem(practiceStateKey(), JSON.stringify({currentIndex,typeFilter}));}
+function normalizeText(s){return String(s ?? "").trim().replace(/\s+/g," ").toLowerCase();}
+function normalizeChoiceAnswer(ans){return String(ans ?? "").toUpperCase().replace(/[^A-Z]/g,"").split("");}
+function sameSet(a,b){const aa=[...new Set(a)].sort().join("");const bb=[...new Set(b)].sort().join("");return aa===bb;}
+function hashString(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
+function mulberry32(a){return function(){let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return ((t^t>>>14)>>>0)/4294967296}}
+function shuffleDet(arr, key){const out=[...arr];const rnd=mulberry32(hashString(`${seed}|${key}`));for(let i=out.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out;}
+function qKey(type, num, idx){return `${type}:${num ?? idx+1}`;}
+function qLabel(type){return {single:"单选",multi:"多选",judge:"判断",blank:"填空",short:"简答"}[type] || type;}
+function normalizeOptions(options){
+  if(!options) return options;
+  if(Array.isArray(options)){
+    const obj = {};
+    options.forEach((x,i)=>{obj[LETTERS[i]] = x});
+    return obj;
+  }
+  return options;
+}
+function normalizeQuestion(q, type, idx){
+  const num = q.num ?? q.id ?? idx + 1;
+  let options = normalizeOptions(q.options);
+  if(type === "judge" && !options) options = {A:"对",B:"错"};
+  return {...q, type, num, key:qKey(type,num,idx), options};
+}
+function normalizeData(data){
+  if(Array.isArray(data.questions)) return data.questions.map((q,idx)=>normalizeQuestion(q, q.type || "single", idx));
+  const list=[];
+  (data.single||[]).forEach((q,i)=>list.push(normalizeQuestion(q,"single",i)));
+  (data.multi||[]).forEach((q,i)=>list.push(normalizeQuestion(q,"multi",i)));
+  (data.judge||[]).forEach((q,i)=>list.push(normalizeQuestion(q,"judge",i)));
+  (data.blank||data.fill||[]).forEach((q,i)=>list.push(normalizeQuestion(q,"blank",i)));
+  (data.short||[]).forEach((q,i)=>list.push(normalizeQuestion(q,"short",i)));
+  return list;
+}
+function buildOrder(){
+  let list = [...questions];
+  if(setInfo?.shuffleQuestions) list = shuffleDet(list, "question-order");
+  if(typeFilter !== "all") list = list.filter(q=>q.type === typeFilter);
+  ordered = list;
+  if(currentIndex >= ordered.length) currentIndex = Math.max(0, ordered.length - 1);
+}
+function imageList(q){
+  const list = [];
+  if(q.image) list.push({src:q.image, caption:q.imageCaption || q.caption || ""});
+  if(Array.isArray(q.images)) q.images.forEach(item=>{if(typeof item === "string") list.push({src:item, caption:""}); else if(item && item.src) list.push({src:item.src, caption:item.caption || item.title || ""});});
+  return list;
+}
+function mediaListFrom(q, singleKeys, multiKeys){
+  const list = [];
+  singleKeys.forEach(key=>{ if(q[key]) list.push({src:q[key], caption:q[`${key}Caption`] || ""}); });
+  multiKeys.forEach(key=>{ if(Array.isArray(q[key])) q[key].forEach(item=>{if(typeof item === "string") list.push({src:item, caption:""}); else if(item && item.src) list.push({src:item.src, caption:item.caption || item.title || ""});}); });
+  return list;
+}
+function renderImageBlock(imgs, className, altText){return `<div class="${className}">${imgs.map(img=>`<figure><img src="${esc(img.src)}" alt="${esc(img.caption || altText || "图片")}" loading="lazy"/>${img.caption ? `<figcaption>${esc(img.caption)}</figcaption>` : ""}</figure>`).join("")}</div>`;}
+function renderQuestionImages(q){const imgs=imageList(q); return imgs.length ? renderImageBlock(imgs,"q-images",q.stem || "题目图片") : "";}
+function renderAnswerImages(q){const imgs=mediaListFrom(q,["answerImage","solutionImage","explanationImage"],["answerImages","solutionImages","explanationImages"]); return imgs.length ? renderImageBlock(imgs,"answer-images","答案图片") : "";}
+function getOptions(q){
+  const entries = Object.entries(q.options || {});
+  const shouldShuffle = setInfo?.shuffleOptions !== false && !(q.type === "judge" && setInfo?.shuffleJudge !== true);
+  const ordered = shouldShuffle ? shuffleDet(entries, q.key) : entries;
+  return ordered.map(([origKey,text], idx)=>({origKey:String(origKey).toUpperCase(), text, display:LETTERS[idx]}));
+}
+function blankExpected(q){const src = q.answers ?? q.answer ?? []; if(Array.isArray(src)) return src.map(x=>Array.isArray(x)?x.map(String):[String(x)]); return [[String(src)]];}
+function formatBlankAnswer(q){return blankExpected(q).map(x=>x.join(" / ")).join("；");}
+function isAnswered(q){const val=answers[q.key]; if(q.type==="multi") return Array.isArray(val)&&val.length>0; if(q.type==="blank") return Array.isArray(val)&&val.some(x=>String(x||"").trim()); if(q.type==="short") return String(val||"").trim()!==""; return String(val||"").trim()!=="";}
+function isCorrect(q){
+  if(q.type==="short") return false;
+  if(!isAnswered(q)) return false;
+  if(q.type==="multi") return sameSet(answers[q.key] || [], normalizeChoiceAnswer(q.answer));
+  if(q.type==="blank"){
+    const got = Array.isArray(answers[q.key]) ? answers[q.key] : [answers[q.key]];
+    const expected = blankExpected(q);
+    if(got.length < expected.length) return false;
+    return expected.every((accepts,i)=>accepts.map(normalizeText).includes(normalizeText(got[i])));
+  }
+  return sameSet([answers[q.key]], normalizeChoiceAnswer(q.answer));
+}
+function correctDisplay(q, opts){if(q.type==="short") return String(q.answer ?? q.reference ?? ""); if(q.type==="blank") return formatBlankAnswer(q); const ans=normalizeChoiceAnswer(q.answer); return opts.filter(o=>ans.includes(o.origKey)).map(o=>o.display).join("");}
+function userDisplay(q, opts){const val=answers[q.key]; if(q.type==="short") return String(val||""); if(q.type==="blank") return Array.isArray(val)?val.join(" / "):(val||""); const arr=Array.isArray(val)?val:normalizeChoiceAnswer(val); return opts.filter(o=>arr.includes(o.origKey)).map(o=>o.display).join("");}
+function feedbackShown(q){return !!feedback[q.key];}
+function markFeedback(q){feedback[q.key]=true; saveFeedback();}
+function renderStemWithBlanks(q){
+  const expected=blankExpected(q); let used=0;
+  const stem=esc(q.stem || "").replace(/\{\{blank\}\}|_{3,}/g,()=>blankInput(q,used++));
+  if(used===0) return stem + `<div style="margin-top:12px">${expected.map((_,i)=>blankInput(q,i)).join(" ")}</div>`;
+  return stem;
+}
+function blankInput(q,i){
+  const vals=Array.isArray(answers[q.key])?answers[q.key]:[]; let cls="blank-input";
+  if(feedbackShown(q) && isAnswered(q)){const ok=(blankExpected(q)[i]||[]).map(normalizeText).includes(normalizeText(vals[i])); cls += ok ? " correct" : " wrong";}
+  return `<input class="${cls}" data-qkey="${esc(q.key)}" data-blank-index="${i}" value="${esc(vals[i] || "")}" placeholder="填空 ${i+1}" />`;
+}
+function answerLine(q, opts=[]){
+  const show = feedbackShown(q);
+  const label = q.type === "short" ? "参考答案" : (q.type === "blank" ? "参考答案" : "正确答案");
+  const answer = q.type === "short" ? String(q.answer ?? q.reference ?? "暂无") : correctDisplay(q,opts);
+  const mine = userDisplay(q,opts) || "未答";
+  return `<div class="answer-line ${show ? "show" : ""}"><b>${label}：</b>${esc(answer || "暂无")}${q.type !== "short" ? `　<b>你的答案：</b>${esc(mine)}` : ""}${q.explanation ? `　<b>解析：</b>${esc(q.explanation)}` : ""}${renderAnswerImages(q)}</div>`;
+}
+function renderChoice(q){
+  const opts=getOptions(q); const selected=Array.isArray(answers[q.key])?answers[q.key]:normalizeChoiceAnswer(answers[q.key]); const correctOrig=normalizeChoiceAnswer(q.answer); const show=feedbackShown(q);
+  return `<div class="options">${opts.map(o=>{const checked=selected.includes(o.origKey)?"checked":""; const inputType=q.type==="multi"?"checkbox":"radio"; let cls="opt"; if(show && correctOrig.includes(o.origKey)) cls += " correct"; if(show && selected.includes(o.origKey) && !correctOrig.includes(o.origKey)) cls += " wrong"; return `<label class="${cls}"><input type="${inputType}" name="${esc(q.key)}" data-qkey="${esc(q.key)}" value="${esc(o.origKey)}" ${checked}/><span class="letter">${o.display}</span><span class="text">${esc(o.text)}</span></label>`}).join("")}</div>${answerLine(q,opts)}`;
+}
+function renderBlank(q){return `<div class="stem ${q.code ? "code" : ""}">${renderStemWithBlanks(q)}</div>${renderQuestionImages(q)}${answerLine(q,[])}`;}
+function renderShort(q){const val=String(answers[q.key] || ""); return `<div class="stem ${q.code ? "code" : ""}">${esc(q.stem || "")}</div>${renderQuestionImages(q)}<textarea class="short-answer" data-qkey="${esc(q.key)}" placeholder="在这里写你的答案，系统会自动保存。">${esc(val)}</textarea>${answerLine(q,[])}`;}
+function currentQ(){return ordered[currentIndex];}
+function render(){
+  buildOrder();
+  const q=currentQ();
+  document.querySelectorAll('[data-type-filter]').forEach(btn=>btn.classList.toggle('active', btn.dataset.typeFilter === typeFilter));
+  if(!q){$('app').innerHTML = `<div class="empty">当前题型没有题目。</div>`; updateProgress(); updateStats(); return;}
+  const shown=feedbackShown(q);
+  const status = q.type === "short" ? (isAnswered(q) ? `<span class="tag info">已写</span>` : `<span class="tag warn">未写</span>`) : (!shown ? `<span class="tag warn">未查看答案</span>` : (!isAnswered(q) ? `<span class="tag warn">未答</span>` : (isCorrect(q) ? `<span class="tag ok">正确</span>` : `<span class="tag bad">错误</span>`)));
+  let body = q.type === "blank" ? renderBlank(q) : (q.type === "short" ? renderShort(q) : `<div class="stem ${q.code ? "code" : ""}">${esc(q.stem || "")}</div>${renderQuestionImages(q)}${renderChoice(q)}`);
+  const confirmText = q.type === "short" ? "查看参考答案" : "确认答案";
+  const confirmClass = q.type === "short" ? "good" : "primary";
+  $('app').innerHTML = `<div class="q"><div class="q-head"><div class="q-title">${qLabel(q.type)} ${currentIndex+1}</div><div class="q-meta"><span class="tag">原题 ${esc(q.num)}</span>${status}</div></div>${body}</div><div class="actions"><div class="left-actions"><button class="btn ${confirmClass}" id="btnCheck">${confirmText}</button><button class="btn" id="btnReveal">只看答案</button></div><div class="right-actions"><button class="btn" id="btnFirst">第一题</button><button class="btn" id="btnLast">最后一题</button></div></div>`;
+  $('btnCheck').addEventListener('click',()=>{markFeedback(q); render();});
+  $('btnReveal').addEventListener('click',()=>{markFeedback(q); render();});
+  $('btnFirst').addEventListener('click',()=>{currentIndex=0; saveState(); render();});
+  $('btnLast').addEventListener('click',()=>{currentIndex=Math.max(0,ordered.length-1); saveState(); render();});
+  updateProgress(); updateStats(); renderMath();
+}
+function updateProgress(){
+  const total=ordered.length; const done=ordered.filter(q=>feedbackShown(q)).length; const p=total?Math.round((currentIndex+1)*100/total):0; const q=currentQ();
+  $('progressText').textContent = total ? `第 ${currentIndex+1} / ${total} 题` : '无题目';
+  $('progressBar').style.width = `${p}%`;
+  if(!q){$('resultText').textContent='';return;}
+  $('resultText').textContent = feedbackShown(q) ? (q.type === 'short' ? '已显示参考答案' : (isCorrect(q) ? '本题正确' : '本题错误 / 未答')) : '作答后查看答案';
+}
+function updateStats(){
+  const scope = questions.filter(q=>typeFilter==='all'||q.type===typeFilter);
+  const total=scope.length; const answered=scope.filter(isAnswered).length; const done=scope.filter(q=>feedbackShown(q)).length;
+  $('topStats').innerHTML = `<span class="pill">已答 <strong>${answered}</strong>/${total}</span><span class="pill">已看答案 <strong>${done}</strong>/${total}</span>`;
+  $('statusBar').innerHTML = `当前：<b>${typeFilter==='all'?'全部':qLabel(typeFilter)}</b>；已答 <b>${answered}</b>/${total}；已看答案 <b>${done}</b>/${total}`;
+}
+function onChoiceChange(input){
+  const q=questions.find(x=>x.key===input.dataset.qkey); if(!q) return;
+  const card=input.closest('.q');
+  if(q.type === 'multi') answers[q.key] = [...card.querySelectorAll(`input[data-qkey="${CSS.escape(q.key)}"]:checked`)].map(x=>x.value);
+  else { answers[q.key]=input.value; markFeedback(q); }
+  saveAnswers(); render();
+}
+function onBlankInput(input){
+  const q=questions.find(x=>x.key===input.dataset.qkey); if(!q) return;
+  const expected=blankExpected(q); const vals=Array.isArray(answers[q.key])?[...answers[q.key]]:Array(expected.length).fill('');
+  vals[Number(input.dataset.blankIndex)] = input.value; answers[q.key]=vals; saveAnswers();
+}
+function onShortInput(input){const q=questions.find(x=>x.key===input.dataset.qkey); if(!q) return; answers[q.key]=input.value; saveAnswers();}
+function nextQuestion(delta){if(!ordered.length) return; currentIndex=Math.min(Math.max(currentIndex+delta,0),ordered.length-1); saveState(); render();}
+function getSetIdFromUrl(){
+  const params=new URLSearchParams(location.search); const fromQuery=params.get('set'); if(fromQuery) return fromQuery;
+  let match=location.pathname.match(/^\/p\/([^/]+)\/?$/); if(match) return decodeURIComponent(match[1]);
+  match=location.pathname.match(/^\/q\/([^/]+)\/?$/); if(match) return decodeURIComponent(match[1]);
+  return '';
+}
+async function loadPractice(){
+  setId=getSetIdFromUrl();
+  if(!setId){$('app').innerHTML=`<div class="error"><b>缺少题库参数。</b><br/>请从 <a href="/">主页</a> 选择题库，或使用 <code>/p/题库ID</code> 打开。</div>`;return;}
+  try{
+    const listRes=await fetch(LIST_URL,{cache:'no-store'}); if(!listRes.ok) throw new Error(`list.json HTTP ${listRes.status}`);
+    const list=await listRes.json(); setInfo=list.find(x=>x.id===setId); if(!setInfo) throw new Error(`list.json 中没有找到题库 ID：${setId}`);
+    const dataRes=await fetch(setInfo.file,{cache:'no-store'}); if(!dataRes.ok) throw new Error(`${setInfo.file} HTTP ${dataRes.status}`);
+    rawData=await dataRes.json(); questions=normalizeData(rawData); answers=readJSON(answerKey(),{}); feedback=readJSON(feedbackKey(),{});
+    const st=readJSON(practiceStateKey(),{}); currentIndex=Number(st.currentIndex||0); typeFilter=st.typeFilter || 'all';
+    seed=localStorage.getItem(seedKey()); if(!seed){seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed);}
+    $('title').textContent = rawData.meta?.title || setInfo.title || '逐题练习';
+    $('subtitle').textContent = `${setInfo.desc || ''} · 做完一道看一道答案`;
+    $('normalLink').href = `/q/${encodeURIComponent(setId)}`;
+    render();
+  }catch(err){$('app').innerHTML=`<div class="error"><b>题库加载失败。</b><br/>${esc(err.message)}<br/><br/>检查：1）伪静态是否设置；2）data/list.json 的 id 和 file 是否正确；3）题库 JSON 是否合法。</div>`;}
+}
+document.addEventListener('change',e=>{if(e.target.matches('input[type="radio"],input[type="checkbox"]')) onChoiceChange(e.target);});
+document.addEventListener('input',e=>{if(e.target.matches('.blank-input')) onBlankInput(e.target); if(e.target.matches('.short-answer')) onShortInput(e.target);});
+document.addEventListener('click',e=>{const btn=e.target.closest('[data-type-filter]'); if(!btn) return; typeFilter=btn.dataset.typeFilter || 'all'; currentIndex=0; saveState(); render();});
+$('btnPrev').addEventListener('click',()=>nextQuestion(-1));
+$('btnNext').addEventListener('click',()=>nextQuestion(1));
+$('btnResetPractice').addEventListener('click',()=>{if(confirm('确定清空逐题练习的答案显示进度？作答内容不会删除。')){feedback={};currentIndex=0;saveFeedback();saveState();render();}});
+window.addEventListener('keydown',e=>{if(e.target && ['INPUT','TEXTAREA'].includes(e.target.tagName)) return; if(e.key==='ArrowRight') nextQuestion(1); if(e.key==='ArrowLeft') nextQuestion(-1);});
+loadPractice();
+</script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "id": "linear-algebra-blue-check-1",
+    "title": "线性代数",
+    "desc": "线性代数期末复习计算题与解答",
+    "subject": "线性代数",
+    "tags": [
+      "线性代数",
+      "期末",
+      "计算题",
+      "自测"
+    ],
+    "shuffleOptions": true,
+    "shuffleJudge": false,
+    "shuffleQuestions": true,
+    "durationMinutes": 0,
+    "enabled": true
+  },
+  "single": [],
+  "multi": [],
+  "judge": [],
+  "blank": [],
+  "short": [
+    {
+      "num": 1,
+      "stem": "【计算题】计算行列式\n\n$$D=\\begin{vmatrix}1&1&1&1\\\\1&2&0&0\\\\1&0&3&0\\\\1&0&0&4\\end{vmatrix}$$\n\n的值。",
+      "answer": "$$\\boxed{D=-2}$$",
+      "explanation": "计算题按自评处理，不自动判分。",
+      "source": "蓝色对号题目",
+      "origin": "原题 1"
+    },
+    {
+      "num": 2,
+      "stem": "【计算题】计算行列式\n\n$$D=\\begin{vmatrix}1&3&1&1\\\\3&1&1&1\\\\1&1&1&3\\\\1&1&3&1\\end{vmatrix}$$\n\n的值。",
+      "answer": "$$\\boxed{D=48}$$",
+      "explanation": "计算题按自评处理，不自动判分。",
+      "source": "蓝色对号题目",
+      "origin": "原题 2"
+    },
+    {
+      "num": 3,
+      "stem": "【计算题】设\n\n$$A=\\begin{pmatrix}3&-1&2\\\\1&0&-1\\\\-2&1&4\\end{pmatrix},\\quad P=\\begin{pmatrix}0&0&1\\\\0&1&0\\\\1&0&0\\end{pmatrix},\\quad Q=\\begin{pmatrix}0&1&0\\\\1&0&0\\\\0&0&1\\end{pmatrix},$$\n\n求\n\n$$P^{2024}AQ^{2025}.$$",
+      "answer": "因为\n\n$$P^2=E,\\qquad Q^2=E,$$\n\n所以\n\n$$P^{2024}=E,\\qquad Q^{2025}=Q.$$\n\n因此\n\n$$P^{2024}AQ^{2025}=AQ.$$\n\n右乘 $Q$ 相当于交换矩阵 $A$ 的第 1、2 列，得\n\n$$\\boxed{P^{2024}AQ^{2025}=\\begin{pmatrix}-1&3&2\\\\0&1&-1\\\\1&-2&4\\end{pmatrix}}$$",
+      "explanation": "计算题按自评处理，不自动判分。",
+      "source": "蓝色对号题目",
+      "origin": "原题 3"
+    },
+    {
+      "num": 4,
+      "stem": "【计算题】设 $A$ 为三阶方阵，且\n\n$$|A|=\\frac13,$$\n\n求行列式\n\n$$\\left|(2A)^{-1}-3A^*\\right|$$\n\n的值。",
+      "answer": "已知\n\n$$|A|=\\frac13.$$\n\n因为\n\n$$(2A)^{-1}=\\frac12A^{-1},$$\n\n且\n\n$$A^*=|A|A^{-1}=\\frac13A^{-1},$$\n\n所以\n\n$$(2A)^{-1}-3A^*=\\frac12A^{-1}-A^{-1}=-\\frac12A^{-1}.$$\n\n于是\n\n$$\\begin{aligned}\\left|(2A)^{-1}-3A^*\\right|&=\\left|-\\frac12A^{-1}\\right|\\\\&=\\left(-\\frac12\\right)^3|A^{-1}|\\\\&=-\\frac18\\cdot\\frac1{|A|}\\\\&=-\\frac18\\cdot3.\\end{aligned}$$\n\n答案：\n\n$$\\boxed{-\\frac38}$$",
+      "explanation": "计算题按自评处理，不自动判分。",
+      "source": "蓝色对号题目",
+      "origin": "原题 4"
+    },
+    {
+      "num": 5,
+      "stem": "【计算题】已知\n\n$$A=\\begin{pmatrix}2&1&-1\\\\1&1&1\\\\3&2&1\\end{pmatrix},$$\n\n分别用公式法及初等变换法求 $A^{-1}$。",
+      "answer": "先求行列式：\n\n$$|A|=1\\ne0,$$\n\n所以 $A$ 可逆。\n\n最终得到\n\n$$\\boxed{A^{-1}=\\begin{pmatrix}-1&-3&2\\\\2&5&-3\\\\-1&-1&1\\end{pmatrix}}$$",
+      "explanation": "计算题按自评处理，不自动判分。",
+      "source": "蓝色对号题目",
+      "origin": "原题 5"
+    },
+    {
+      "num": 6,
+      "stem": "【计算题】若向量\n\n$$\\alpha_1=\\begin{pmatrix}1\\\\1\\\\0\\end{pmatrix},\\quad \\alpha_2=\\begin{pmatrix}1\\\\3\\\\-1\\end{pmatrix},\\quad \\alpha_3=\\begin{pmatrix}5\\\\3\\\\t\\end{pmatrix}$$\n\n线性相关，求 $t$ 的值。",
+      "answer": "三个向量线性相关，等价于以它们为列组成的行列式为零：\n\n$$\\begin{vmatrix}1&1&5\\\\1&3&3\\\\0&-1&t\\end{vmatrix}=0.$$\n\n计算得\n\n$$2(t-1)=0.$$\n\n因此\n\n$$\\boxed{t=1}$$",
+      "explanation": "计算题按自评处理，不自动判分。",
+      "source": "蓝色对号题目",
+      "origin": "原题 6"
+    },
+    {
+      "num": 7,
+      "stem": "【计算题】已知向量组\n\n$$\\alpha_1=\\begin{pmatrix}1\\\\-1\\\\2\\end{pmatrix},\\quad \\alpha_2=\\begin{pmatrix}0\\\\2\\\\5\\end{pmatrix},\\quad \\alpha_3=\\begin{pmatrix}-2\\\\4\\\\1\\end{pmatrix},\\quad \\alpha_4=\\begin{pmatrix}3\\\\-7\\\\-4\\end{pmatrix}.$$\n\n（1）求此向量组的秩和一个极大无关组；\n\n（2）将其余向量用此极大无关组线性表示。",
+      "answer": "设\n\n$$A=(\\alpha_1,\\alpha_2,\\alpha_3,\\alpha_4).$$\n\n对矩阵进行初等行变换，可得其秩为\n\n$$\\boxed{r(A)=2}.$$\n\n一个极大无关组可以取\n\n$$\\boxed{\\alpha_1,\\alpha_2}.$$\n\n其余向量的线性表示为\n\n$$\\boxed{\\alpha_3=-2\\alpha_1+\\alpha_2}$$\n\n$$\\boxed{\\alpha_4=3\\alpha_1-2\\alpha_2}$$",
+      "explanation": "计算题按自评处理，不自动判分。",
+      "source": "蓝色对号题目",
+      "origin": "原题 7"
+    },
+    {
+      "num": 8,
+      "stem": "【计算题】设矩阵\n\n$$A=\\begin{pmatrix}1&-2&-1&0&2\\\\-2&4&2&6&-6\\\\2&-1&0&2&3\\\\3&3&3&3&4\\end{pmatrix}.$$\n\n（1）求矩阵 $A$ 的秩；\n\n（2）求其列向量组的一个极大无关组；\n\n（3）将其余向量用极大无关组线性表示。",
+      "answer": "设矩阵的列向量依次为\n\n$$\\alpha_1,\\alpha_2,\\alpha_3,\\alpha_4,\\alpha_5.$$\n\n经过初等行变换，主元列为第 1、2、4 列，因此\n\n$$\\boxed{r(A)=3}.$$\n\n一个极大无关组为\n\n$$\\boxed{\\alpha_1,\\alpha_2,\\alpha_4}.$$\n\n其余列向量可表示为\n\n$$\\boxed{\\alpha_3=\\frac13\\alpha_1+\\frac23\\alpha_2}$$\n\n$$\\boxed{\\alpha_5=\\frac{16}{9}\\alpha_1-\\frac19\\alpha_2-\\frac13\\alpha_4}$$",
+      "explanation": "计算题按自评处理，不自动判分。",
+      "source": "蓝色对号题目",
+      "origin": "原题 8"
+    },
+    {
+      "num": 9,
+      "stem": "【计算题】求齐次线性方程组\n\n$$x_1+x_2-x_3=0$$\n\n的通解。",
+      "answer": "由方程得\n\n$$x_1=-x_2+x_3.$$\n\n令\n\n$$x_2=s,\\qquad x_3=t,$$\n\n则\n\n$$x_1=-s+t.$$\n\n因此通解为\n\n$$\\boxed{\\begin{pmatrix}x_1\\\\x_2\\\\x_3\\end{pmatrix}=s\\begin{pmatrix}-1\\\\1\\\\0\\end{pmatrix}+t\\begin{pmatrix}1\\\\0\\\\1\\end{pmatrix},\\quad s,t\\in\\mathbb R}$$\n\n基础解系可取\n\n$$\\boxed{\\left\\{\\begin{pmatrix}-1\\\\1\\\\0\\end{pmatrix},\\begin{pmatrix}1\\\\0\\\\1\\end{pmatrix}\\right\\}}$$",
+      "explanation": "计算题按自评处理，不自动判分。",
+      "source": "蓝色对号题目",
+      "origin": "原题 9"
+    },
+    {
+      "num": 10,
+      "stem": "【计算题】求出齐次线性方程组\n\n$$\\begin{cases}x_1-x_2-x_3+x_4=0,\\\\x_1-x_2+x_3-3x_4=0,\\\\x_1-x_2-2x_3+3x_4=0\\end{cases}$$\n\n的一个基础解系，并表示出其通解。",
+      "answer": "原方程组化简后为\n\n$$\\begin{cases}x_1-x_2-x_4=0,\\\\x_3-2x_4=0.\\end{cases}$$\n\n即\n\n$$x_1=x_2+x_4,\\qquad x_3=2x_4.$$\n\n令\n\n$$x_2=s,\\qquad x_4=t,$$\n\n则\n\n$$x_1=s+t,\\qquad x_3=2t.$$\n\n所以通解为\n\n$$\\boxed{\\begin{pmatrix}x_1\\\\x_2\\\\x_3\\\\x_4\\end{pmatrix}=s\\begin{pmatrix}1\\\\1\\\\0\\\\0\\end{pmatrix}+t\\begin{pmatrix}1\\\\0\\\\2\\\\1\\end{pmatrix},\\quad s,t\\in\\mathbb R}$$\n\n一个基础解系为\n\n$$\\boxed{\\left\\{\\begin{pmatrix}1\\\\1\\\\0\\\\0\\end{pmatrix},\\begin{pmatrix}1\\\\0\\\\2\\\\1\\end{pmatrix}\\right\\}}$$",
+      "explanation": "计算题按自评处理，不自动判分。",
+      "source": "蓝色对号题目",
+      "origin": "原题 10"
+    }
+  ]
+}
