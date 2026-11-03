@@ -89,14 +89,16 @@ figcaption {margin-top:4px; color:var(--mut); font-size:12px}
 .options {display:grid; gap:8px; margin-top:14px}
 .opt {display:flex; align-items:flex-start; gap:11px; min-height:48px; padding:10px 12px; border:1px solid var(--line); border-radius:13px; cursor:pointer; background-color:var(--option); transition:transform .22s cubic-bezier(.2,.75,.25,1),border-color .2s,background-color .2s}
 .opt:active,.opt:has(input:active) {transform:scale(.99); transition-duration:.09s,.2s,.2s}
-.question.no-motion .opt,.question.no-motion .opt::after,.question.no-motion .letter {transition:none}
+.question.no-motion .opt,.question.no-motion .feedback-icon,.question.no-motion .letter {transition:none}
 .opt:has(input:focus-visible) {outline:2px solid var(--tc); outline-offset:2px}
 .opt input {position:absolute; opacity:0; width:1px; height:1px}
 .letter {display:grid; place-items:center; flex:none; width:28px; height:28px; border-radius:8px; background-color:var(--card); color:var(--mut); font-size:13px; font-weight:750; transition:background-color .2s,color .2s}
 .opt .text {flex:1; min-width:0; padding-top:2px; white-space:pre-wrap; overflow-wrap:anywhere; font-size:15px}
-.opt::after {content:"✓"; flex:0 0 20px; align-self:center; text-align:center; opacity:0; transform:scale(.85); color:var(--ok); font-size:17px; font-weight:750; transition:opacity .2s,transform .22s ease-out}
-.opt.correct::after,.opt.wrong::after {opacity:1; transform:scale(1)}
-.opt.wrong::after {content:"×"; color:var(--bad)}
+.feedback-icon {flex:0 0 20px; align-self:center; text-align:center; opacity:0; transform:scale(.85); color:var(--ok); font-size:17px; font-weight:750; transition:opacity .2s,transform .22s ease-out}
+.feedback-icon::before {content:"✓"}
+.opt.correct .feedback-icon,.opt.wrong .feedback-icon {opacity:1; transform:scale(1)}
+.opt.wrong .feedback-icon {color:var(--bad)}
+.opt.wrong .feedback-icon::before {content:"×"}
 .opt:has(input:checked) {border-color:var(--tc); background-color:var(--selected)}
 .opt:has(input:checked) .letter {background-color:var(--tc); color:var(--on-accent)}
 .opt.correct,.opt.correct:has(input:checked) {border-color:var(--ok); background-color:var(--okbg)}
@@ -377,7 +379,7 @@ function renderChoiceQuestion(q){
     let cls = "opt";
     if((graded || showAnswers) && correctOrig.includes(o.origKey)) cls += " correct";
     if(graded && selected.includes(o.origKey) && !correctOrig.includes(o.origKey)) cls += " wrong";
-    return `<label class="${cls}"><input type="${inputType}" name="${esc(q.key)}" data-qkey="${esc(q.key)}" value="${esc(o.origKey)}" ${checked}/><span class="letter">${o.display}</span><span class="text">${esc(o.text)}</span></label>`;
+    return `<label class="${cls}"><input type="${inputType}" name="${esc(q.key)}" data-qkey="${esc(q.key)}" value="${esc(o.origKey)}" ${checked}/><span class="letter">${o.display}</span><span class="text">${esc(o.text)}</span><span class="feedback-icon" aria-hidden="true"></span></label>`;
   }).join("")}</div>${renderAnswerPanel(q, "正确答案", correctDisplay(q,opts), userDisplay(q,opts) || "未答")}`;
 }
 function renderBlankQuestion(q){
