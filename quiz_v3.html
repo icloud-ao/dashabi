@@ -570,7 +570,7 @@ function closeSettings(){
   if (reducedMotion.matches){ dialog.close(); return; }
   dialog.classList.add("closing");
   const finish = event => {
-    if (event.target !== dialog || event.animationName !== "dialog-out") return;
+    if (event.target !== dialog || event.animationName !== "ios-dialog-out") return;
     dialog.removeEventListener("animationend", finish);
     dialog.classList.remove("closing");
     dialog.close();
