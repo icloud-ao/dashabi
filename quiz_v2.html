@@ -36,22 +36,23 @@ button {cursor:pointer}
 button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible {outline:3px solid var(--tc); outline-offset:2px}
 a {color:inherit; text-decoration:none}
 .top {position:sticky; top:0; z-index:10; background:var(--header); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:1px solid var(--rule)}
-.top-inner {max-width:1600px; margin:auto; padding:calc(6px + env(safe-area-inset-top)) 20px 8px}
+.top-inner {max-width:1080px; margin:auto; padding:calc(6px + env(safe-area-inset-top)) 20px 8px}
 .top-row {display:flex; align-items:center; gap:10px; min-width:0}
 .icon {display:grid; place-items:center; flex:none; width:36px; height:36px; border:1px solid var(--rule); border-radius:12px; background:var(--card); font-size:20px; line-height:1}
 .title {flex:1; min-width:0; font-size:15px; font-weight:750; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .progress-label {flex:none; color:var(--mut); font-size:13px; font-variant-numeric:tabular-nums; white-space:nowrap}
 .progress-label b {color:var(--ink)}
 .bar {height:4px; margin:5px 0 7px; border-radius:99px; background:var(--rule); overflow:hidden}
-.bar span {display:block; width:0; height:100%; border-radius:inherit; background:var(--tc); transition:width .38s cubic-bezier(.2,.8,.2,1)}
+.bar span {display:block; width:0; height:100%; border-radius:inherit; background:var(--tc); transition:width .44s cubic-bezier(.18,.85,.25,1)}
 .toolbar {display:flex; align-items:center; gap:7px; min-width:0}
 .filters {display:flex; flex:1; min-width:0; gap:6px; overflow-x:auto; scrollbar-width:none}
 .filters::-webkit-scrollbar {display:none}
 .pill, .tool {flex:none; border:1px solid var(--rule); background:var(--card); border-radius:99px; padding:5px 11px; font-size:13px; font-weight:700; line-height:1.4; white-space:nowrap; transition:transform .25s cubic-bezier(.2,1.5,.4,1),background .2s,color .2s,border-color .2s}
 .pill.active {border-color:var(--tc); color:var(--tc); background:color-mix(in srgb,var(--tc) 12%,var(--card))}
 .tool.primary {background:var(--tc); border-color:var(--tc); color:white}
-button:active, .icon:active {transform:scale(.96)}
-main {max-width:1600px; margin:auto; padding:18px 20px calc(40px + env(safe-area-inset-bottom))}
+.icon {transition:transform .32s cubic-bezier(.22,1.45,.42,1), background-color .2s}
+button:active, .icon:active {transform:scale(.95); transition-duration:.09s}
+main {max-width:1080px; margin:auto; padding:18px 20px calc(40px + env(safe-area-inset-bottom))}
 .summary {display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; margin:0 3px 12px; color:var(--mut); font-size:13px}
 .summary strong {color:var(--ink)}
 .question {--accent:var(--tc); min-width:0; padding:20px; background:var(--card); border:1px solid var(--rule); border-radius:22px; box-shadow:var(--shadow); scroll-margin-top:160px}
@@ -76,28 +77,22 @@ main {max-width:1600px; margin:auto; padding:18px 20px calc(40px + env(safe-area
 figure {margin:0}
 figcaption {margin-top:4px; color:var(--mut); font-size:12px}
 .options {display:grid; gap:8px; margin-top:15px}
-.opt {display:flex; align-items:flex-start; gap:11px; min-height:48px; padding:10px 12px; border:1.5px solid var(--rule); border-radius:15px; cursor:pointer; transition:transform .3s cubic-bezier(.2,1.6,.4,1),border-color .24s,background-color .24s,box-shadow .24s}
-.opt:active {transform:scale(.985)}
-.opt:focus-within {outline:2px solid var(--accent); outline-offset:2px}
+.opt {display:flex; align-items:flex-start; gap:11px; min-height:48px; padding:10px 12px; border:1.5px solid var(--rule); border-radius:15px; cursor:pointer; background-color:var(--card); transition:transform .34s cubic-bezier(.2,1.45,.42,1),border-color .22s,background-color .26s}
+.opt:active {transform:scale(.982); transition-duration:.085s,.22s,.26s}
+.opt:has(input:focus-visible) {outline:2px solid var(--accent); outline-offset:2px}
 .opt input {position:absolute; opacity:0; width:1px; height:1px}
-.letter {display:grid; place-items:center; flex:none; width:28px; height:28px; border-radius:9px; background:var(--bg); color:var(--mut); font-size:13px; font-weight:800; transition:background-color .24s,color .24s,transform .3s cubic-bezier(.2,1.6,.4,1)}
-.opt.correct {border-color:var(--ok); background:var(--okbg)}
-.opt.correct .letter {background:var(--ok); color:#fff}
-.opt.correct::after {content:"✓"; color:var(--ok); font-size:18px; font-weight:800}
-.opt.wrong {border-color:var(--bad); background:var(--badbg)}
-.opt.wrong .letter {background:var(--bad); color:#fff}
-.opt.wrong::after {content:"×"; color:var(--bad); font-size:20px; font-weight:800; line-height:1.2}
-.question.animate-wrong .opt.wrong {animation:shake .34s ease}
-.question.animate-good .opt.correct .letter {animation:pop .4s cubic-bezier(.2,1.6,.4,1)}
-@keyframes shake {0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 55%{transform:translateX(3px)} 80%{transform:translateX(-1px)}}
-@keyframes pop {0%{transform:scale(.85)} 70%{transform:scale(1.12)} 100%{transform:scale(1)}}
+.letter {display:grid; place-items:center; flex:none; width:28px; height:28px; border-radius:9px; background-color:var(--bg); color:var(--mut); font-size:13px; font-weight:800; transition:background-color .24s,color .24s}
+.opt::after {content:"✓"; flex:0 0 20px; align-self:center; text-align:center; opacity:0; transform:scale(.55); color:var(--ok); font-size:18px; font-weight:800; transition:opacity .18s,transform .36s cubic-bezier(.18,1.55,.42,1)}
+.opt.correct::after,.opt.wrong::after {opacity:1; transform:scale(1)}
+.opt.wrong::after {content:"×"; color:var(--bad)}
 .blank-input {display:inline-block; min-width:120px; max-width:100%; margin:2px 4px; padding:4px 9px; border:0; border-bottom:2px solid var(--accent); border-radius:8px 8px 0 0; background:color-mix(in srgb,var(--accent) 9%,var(--card)); font-size:16px}
 .blank-input.correct {border-color:var(--ok); color:var(--ok)}
 .blank-input.wrong {border-color:var(--bad); color:var(--bad)}
 textarea {width:100%; min-height:110px; margin-top:15px; padding:12px; border:1.5px solid var(--rule); border-radius:15px; background:transparent; resize:vertical; font-size:16px}
 textarea:focus {border-color:var(--accent)}
 .note {margin:10px 0 0; color:var(--mut); font-size:13px}
-.reveal {display:grid; grid-template-rows:0fr; opacity:0; transition:grid-template-rows .32s cubic-bezier(.2,.8,.2,1),opacity .25s}
+.reveal {display:grid; grid-template-rows:0fr; opacity:0}
+.reveal.animate {transition:grid-template-rows .38s cubic-bezier(.22,.8,.25,1),opacity .24s ease-out}
 .reveal.open {grid-template-rows:1fr; opacity:1}
 .reveal-inner {min-height:0; overflow:hidden}
 .result {margin-top:14px; padding:12px 14px; border-radius:14px; background:var(--bg); font-size:14px; line-height:1.75; white-space:pre-wrap; overflow-wrap:anywhere}
@@ -105,8 +100,9 @@ textarea:focus {border-color:var(--accent)}
 .empty {padding:45px 20px; text-align:center; color:var(--mut); background:var(--card); border:1px dashed var(--rule); border-radius:22px}
 .error {padding:16px; border-radius:16px; background:var(--badbg); color:var(--bad)}
 dialog {width:min(680px,calc(100% - 24px)); max-height:min(80dvh,820px); border:1px solid var(--rule); border-radius:24px; padding:0; background:var(--card); color:var(--ink); box-shadow:0 20px 60px rgba(0,0,0,.3)}
-dialog[open] {animation:dialog-in .25s cubic-bezier(.2,.8,.2,1)}
-dialog::backdrop {background:rgba(5,10,20,.45); backdrop-filter:blur(3px)}
+dialog[open] {animation:dialog-in .32s cubic-bezier(.2,.85,.25,1)}
+dialog::backdrop {background:rgba(5,10,20,.45); backdrop-filter:blur(3px); animation:backdrop-in .22s ease-out}
+@keyframes backdrop-in {from{opacity:0}to{opacity:1}}
 @keyframes dialog-in {from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
 .dialog-head {position:sticky; top:0; z-index:1; display:flex; align-items:center; justify-content:space-between; padding:15px 18px; background:var(--card); border-bottom:1px solid var(--rule); font-weight:800}
 .dialog-body {padding:6px 18px 20px}
@@ -135,15 +131,14 @@ dialog::backdrop {background:rgba(5,10,20,.45); backdrop-filter:blur(3px)}
 .section {margin:0 0 22px}
 .section h2 {margin:0 3px 10px; color:var(--mut); font-size:14px}
 .question-grid {display:grid; grid-template-columns:minmax(0,1fr); align-items:start; gap:14px}
-@media (min-width:1100px) {.question-grid {grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px}}
 .question[data-type="single"] {--accent:var(--tc)}
 .opt .text {flex:1; min-width:0; padding-top:2px; white-space:pre-wrap; overflow-wrap:anywhere; font-size:15px}
-.opt:has(input:checked) {border-color:var(--accent); background:color-mix(in srgb,var(--accent) 9%,var(--card))}
-.opt:has(input:checked) .letter {background:var(--accent); color:#fff}
-.opt.correct, .opt.correct:has(input:checked) {border-color:var(--ok); background:var(--okbg)}
-.opt.correct .letter, .opt.correct:has(input:checked) .letter {background:var(--ok); color:#fff}
-.opt.wrong, .opt.wrong:has(input:checked) {border-color:var(--bad); background:var(--badbg)}
-.opt.wrong .letter, .opt.wrong:has(input:checked) .letter {background:var(--bad); color:#fff}
+.opt:has(input:checked) {border-color:var(--accent); background-color:color-mix(in srgb,var(--accent) 9%,var(--card))}
+.opt:has(input:checked) .letter {background-color:var(--accent); color:#fff}
+.opt.correct, .opt.correct:has(input:checked) {border-color:var(--ok); background-color:var(--okbg)}
+.opt.correct .letter, .opt.correct:has(input:checked) .letter {background-color:var(--ok); color:#fff}
+.opt.wrong, .opt.wrong:has(input:checked) {border-color:var(--bad); background-color:var(--badbg)}
+.opt.wrong .letter, .opt.wrong:has(input:checked) .letter {background-color:var(--bad); color:#fff}
 .q-images, .answer-images {margin-top:12px; display:grid; gap:10px}
 .q-images img, .answer-images img {display:block; max-width:100%; height:auto; border-radius:12px; border:1px solid var(--rule)}
 .self-note {margin:10px 0 0; color:var(--mut); font-size:13px}
@@ -212,7 +207,6 @@ let showAnswers = false;
 let filterMode = "all";
 let typeFilter = "all";
 let seed = "";
-let animateAnswers = false;
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[m]));
@@ -367,11 +361,11 @@ function renderChoiceQuestion(q){
     if(graded && selected.includes(o.origKey) && !correctOrig.includes(o.origKey)) cls += " wrong";
     return `<label class="${cls}"><input type="${inputType}" name="${esc(q.key)}" data-qkey="${esc(q.key)}" value="${esc(o.origKey)}" ${checked}/><span class="letter">${o.display}</span><span class="text">${esc(o.text)}</span></label>`;
   }).join("")}</div>
-  <div class="reveal ${(graded||showAnswers)&&!animateAnswers?"open":""}" aria-hidden="${!(graded||showAnswers)}"><div class="reveal-inner"><div class="result${resultClass(q)}"><b>正确答案：</b>${esc(correctDisplay(q,opts))}　<b>你的答案：</b>${esc(userDisplay(q,opts) || "未答")}${q.explanation ? `　<b>解析：</b>${esc(q.explanation)}` : ""}${renderAnswerImages(q)}</div></div></div>`;
+  <div class="reveal ${(graded||showAnswers)?"open":""}" aria-hidden="${!(graded||showAnswers)}"><div class="reveal-inner"><div class="result${resultClass(q)}"><b>正确答案：</b>${esc(correctDisplay(q,opts))}　<b>你的答案：</b><span class="user-answer">${esc(userDisplay(q,opts) || "未答")}</span>${q.explanation ? `　<b>解析：</b>${esc(q.explanation)}` : ""}${renderAnswerImages(q)}</div></div></div>`;
 }
 function renderBlankQuestion(q){
   return `<div class="stem ${q.code ? "code" : ""}">${renderStemWithBlanks(q)}</div>${renderQuestionImages(q)}
-  <div class="reveal ${(graded||showAnswers)&&!animateAnswers?"open":""}" aria-hidden="${!(graded||showAnswers)}"><div class="reveal-inner"><div class="result${resultClass(q)}"><b>参考答案：</b>${esc(formatBlankAnswer(q))}　<b>你的答案：</b>${esc(userDisplay(q,[]) || "未答")}${q.explanation ? `　<b>解析：</b>${esc(q.explanation)}` : ""}${renderAnswerImages(q)}</div></div></div>`;
+  <div class="reveal ${(graded||showAnswers)?"open":""}" aria-hidden="${!(graded||showAnswers)}"><div class="reveal-inner"><div class="result${resultClass(q)}"><b>参考答案：</b>${esc(formatBlankAnswer(q))}　<b>你的答案：</b><span class="user-answer">${esc(userDisplay(q,[]) || "未答")}</span>${q.explanation ? `　<b>解析：</b>${esc(q.explanation)}` : ""}${renderAnswerImages(q)}</div></div></div>`;
 }
 
 function renderShortQuestion(q){
@@ -380,7 +374,7 @@ function renderShortQuestion(q){
   return `<div class="stem ${q.code ? "code" : ""}">${esc(q.stem || "")}</div>${renderQuestionImages(q)}
   <textarea class="short-answer" data-qkey="${esc(q.key)}" placeholder="在这里写你的答案，系统会自动保存。">${esc(val)}</textarea>
   <div class="self-note">简答 / 案例 / 计算题按自评处理，提交后查看参考答案。</div>
-  <div class="reveal ${(graded||showAnswers)&&!animateAnswers?"open":""}" aria-hidden="${!(graded||showAnswers)}"><div class="reveal-inner"><div class="result${resultClass(q)}"><b>参考答案：</b>${esc(answerText || "暂无")} ${q.explanation ? `　<b>解析：</b>${esc(q.explanation)}` : ""}${renderAnswerImages(q)}</div></div></div>`;
+  <div class="reveal ${(graded||showAnswers)?"open":""}" aria-hidden="${!(graded||showAnswers)}"><div class="reveal-inner"><div class="result${resultClass(q)}"><b>参考答案：</b>${esc(answerText || "暂无")} ${q.explanation ? `　<b>解析：</b>${esc(q.explanation)}` : ""}${renderAnswerImages(q)}</div></div></div>`;
 }
 function shouldShowQuestion(q){
   if(!typeVisible(q)) return false;
@@ -388,19 +382,20 @@ function shouldShowQuestion(q){
   if(filterMode === "wrong" && (q.type === "short" || !graded || !isAnswered(q) || isCorrect(q))) return false;
   return true;
 }
+function gradeStatus(q){
+  return q.type === "short"
+    ? (isAnswered(q) ? `<span class="status">已写</span>` : `<span class="status">未写</span>`)
+    : (!graded ? "" : (!isAnswered(q) ? `<span class="status">未答</span>` : (isCorrect(q) ? `<span class="status good">正确</span>` : `<span class="status bad">错误</span>`)));
+}
 function renderQuestion(q, displayNo){
   let cls = "q";
   if(graded && q.type !== "short"){ cls += !isAnswered(q) ? " unanswered" : (isCorrect(q) ? " correct" : " wrong"); }
-  if(animateAnswers && graded && q.type !== "short" && isAnswered(q)) cls += isCorrect(q) ? " animate-good" : " animate-wrong";
-  const status = q.type === "short"
-    ? (isAnswered(q) ? `<span class="status">已写</span>` : `<span class="status">未写</span>`)
-    : (!graded ? "" : (!isAnswered(q) ? `<span class="status">未答</span>` : (isCorrect(q) ? `<span class="status good">正确</span>` : `<span class="status bad">错误</span>`)));
   let body = "";
   if(q.type === "blank") body = renderBlankQuestion(q);
   else if(q.type === "short") body = renderShortQuestion(q);
   else body = `<div class="stem ${q.code ? "code" : ""}">${esc(q.stem || "")}</div>${renderQuestionImages(q)}${renderChoiceQuestion(q)}`;
   return `<article class="question ${cls}" id="q-${q.type}-${displayNo}" data-type="${esc(q.type)}" data-qkey="${esc(q.key)}">
-    <div class="question-head"><div class="type-badge">${qLabel(q.type)} ${esc(displayNo)}</div><div class="q-meta">${q.point || q.tag ? `<span class="status">${esc(q.point || q.tag)}</span> ` : ""}${status}</div></div>
+    <div class="question-head"><div class="type-badge">${qLabel(q.type)} ${esc(displayNo)}</div><div class="q-meta">${q.point || q.tag ? `<span class="status">${esc(q.point || q.tag)}</span> ` : ""}<span class="grade-status">${gradeStatus(q)}</span></div></div>
     ${body}
   </article>`;
 }
@@ -421,19 +416,7 @@ function typesetMath(){
     MathJax.typesetPromise([$('app')]).catch(err => console.warn('MathJax typeset failed:', err));
   }
 }
-function render(animate = false){
-  const headerBottom = $("progress").getBoundingClientRect().bottom;
-  const midpoint = (headerBottom + window.innerHeight) / 2;
-  const cardsBefore = animate ? [...document.querySelectorAll(".question")] : [];
-  const inView = cardsBefore.filter(card => {
-    const rect = card.getBoundingClientRect();
-    return rect.bottom > headerBottom && rect.top < window.innerHeight;
-  });
-  const anchor = inView.reduce((best, card) => !best || Math.abs(card.getBoundingClientRect().top - midpoint) < Math.abs(best.getBoundingClientRect().top - midpoint) ? card : best, null);
-  const anchorId = anchor?.id;
-  const anchorTop = anchor?.getBoundingClientRect().top;
-  const priorCards = new Set(cardsBefore.filter(card => card.getBoundingClientRect().top <= anchorTop + 2).map(card => card.id));
-  animateAnswers = animate;
+function render(){
   const groups = groupQuestions();
   const titles = {single:"单选题",multi:"多选题",judge:"判断题",blank:"填空题",short:"简答题"};
   const order = ["single","multi","judge","blank","short"];
@@ -447,21 +430,7 @@ function render(animate = false){
   }).join("") || `<div class="note">当前筛选条件下没有题目。</div>`;
   updateControls();
   updateStats();
-  if (animate) {
-    const cards = [...document.querySelectorAll(".question")];
-    const anchorIndex = cards.findIndex(card => card.id === anchorId);
-    if (anchorIndex >= 0) {
-      cards.filter(card => priorCards.has(card.id)).forEach(card => {
-        const panel = card.querySelector('.reveal[aria-hidden="false"]');
-        if (panel) { panel.style.transition = "none"; panel.classList.add("open"); }
-      });
-      const moved = cards[anchorIndex].getBoundingClientRect().top - anchorTop;
-      window.scrollBy({top:moved, behavior:"instant"});
-    }
-    requestAnimationFrame(() => document.querySelectorAll('.reveal[aria-hidden="false"]').forEach(panel => panel.classList.add("open")));
-  }
   typesetMath();
-  animateAnswers = false;
 }
 function activeQuestions(){return questions.filter(typeVisible);}
 function updateControls(){
@@ -502,7 +471,8 @@ function onChoiceChange(input){
     answers[q.key] = input.value;
   }
   saveAnswers();
-  if (graded || showAnswers) refreshCard(q, graded);
+  if (graded || showAnswers) refreshFeedback(card, q, true);
+  if (input.checked && !graded) animateBadge(input.closest(".opt").querySelector(".letter"));
 }
 function onBlankInput(input){
   const q = questions.find(x=>x.key===input.dataset.qkey);
@@ -520,18 +490,86 @@ function onShortInput(input){
   answers[q.key] = input.value;
   saveAnswers();
 }
-function refreshCard(q, animate = false){
-  const card = [...document.querySelectorAll(".question")].find(el => el.dataset.qkey === q.key);
-  if (!card) return;
-  const displayNo = card.id.match(/-(\d+)$/)?.[1];
-  if (!displayNo) return;
-  if (window.MathJax?.typesetClear) MathJax.typesetClear([card]);
-  const template = document.createElement("template");
-  template.innerHTML = renderQuestion(q, displayNo).trim();
-  const replacement = template.content.firstElementChild;
-  if (animate && isAnswered(q)) replacement.classList.add(isCorrect(q) ? "animate-good" : "animate-wrong");
-  card.replaceWith(replacement);
-  if (window.MathJax?.typesetPromise) MathJax.typesetPromise([replacement]).catch(() => {});
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+function animateBadge(badge, wrong = false){
+  if (!badge || reducedMotion.matches) return;
+  badge.getAnimations().forEach(animation => animation.cancel());
+  const frames = wrong
+    ? ["0", "-4px", "3px", "-2px", "0"].map(x => ({transform:`translateX(${x})`}))
+    : [.88, 1.13, .98, 1].map(scale => ({transform:`scale(${scale})`}));
+  badge.animate(frames, {duration:wrong ? 300 : 360, easing:"cubic-bezier(.18,.8,.3,1)"});
+}
+
+function refreshFeedback(card, q, animate = false){
+  const revealed = graded || showAnswers;
+  const answered = isAnswered(q);
+  const correct = graded && answered && isCorrect(q);
+  const wrong = graded && answered && !correct && q.type !== "short";
+  const correctKeys = normalizeChoiceAnswer(q.answer);
+  for (const option of card.querySelectorAll(".opt")){
+    const input = option.querySelector("input");
+    const correctOption = correctKeys.includes(input.value);
+    option.classList.toggle("correct", revealed && correctOption);
+    option.classList.toggle("wrong", graded && input.checked && !correctOption);
+    if (animate && graded && input.checked) {
+      animateBadge(option.querySelector(".letter"), !correctOption);
+    }
+  }
+  if (q.type === "blank"){
+    const expected = blankExpected(q);
+    for (const input of card.querySelectorAll(".blank-input")){
+      const accepted = (expected[Number(input.dataset.blankIndex)] || []).map(normalizeText);
+      const matches = accepted.includes(normalizeText(input.value));
+      input.classList.toggle("correct", graded && answered && matches);
+      input.classList.toggle("wrong", graded && answered && !matches);
+    }
+  }
+
+  card.classList.toggle("correct", correct);
+  card.classList.toggle("wrong", wrong);
+  card.classList.toggle("unanswered", graded && !answered && q.type !== "short");
+  card.querySelector(".grade-status").innerHTML = gradeStatus(q);
+  const result = card.querySelector(".result");
+  result.classList.toggle("good", correct);
+  result.classList.toggle("bad", wrong);
+  const userAnswer = result.querySelector(".user-answer");
+  if (userAnswer){
+    const answer = userDisplay(q, getOptions(q)) || "未答";
+    if (userAnswer.dataset.value !== answer){
+      if (q.type === "blank") window.MathJax?.typesetClear?.([userAnswer]);
+      userAnswer.textContent = answer;
+      userAnswer.dataset.value = answer;
+      if (q.type === "blank") window.MathJax?.typesetPromise?.([userAnswer])?.catch(() => {});
+    }
+  }
+}
+
+function updateFeedback(){
+  updateControls();
+  updateStats();
+  if (filterMode === "wrong"){ render(); return; }
+
+  const top = document.querySelector(".top").getBoundingClientRect().bottom;
+  const cards = [...$("app").querySelectorAll(".question")];
+  const positions = cards.map(card => card.getBoundingClientRect());
+  const anchorIndex = positions.findIndex(rect => rect.top >= top);
+  const anchorTop = positions[anchorIndex]?.top;
+  const byKey = new Map(questions.map(q => [q.key, q]));
+  const revealed = graded || showAnswers;
+  cards.forEach((card, index) => {
+    const rect = positions[index];
+    const visible = rect.top < window.innerHeight && rect.bottom > top;
+    refreshFeedback(card, byKey.get(card.dataset.qkey), visible);
+    const panel = card.querySelector(".reveal");
+    panel.classList.toggle("animate", visible && (anchorIndex < 0 || index >= anchorIndex));
+    panel.classList.toggle("open", revealed);
+    panel.setAttribute("aria-hidden", !revealed);
+  });
+  if (anchorIndex >= 0){
+    const moved = cards[anchorIndex].getBoundingClientRect().top - anchorTop;
+    if (Math.abs(moved) > 1) window.scrollBy({top:moved, behavior:"instant"});
+  }
 }
 function getSetIdFromUrl(){
   const params = new URLSearchParams(location.search);
@@ -573,8 +611,8 @@ async function loadQuiz(){
 document.addEventListener("change", e=>{if(e.target.matches('input[type="radio"],input[type="checkbox"]')) onChoiceChange(e.target);});
 document.addEventListener("input", e=>{if(e.target.matches(".blank-input")) onBlankInput(e.target); if(e.target.matches(".short-answer")) onShortInput(e.target);});
 document.addEventListener("click", e=>{const btn=e.target.closest("[data-type-filter]"); if(!btn) return; typeFilter=btn.dataset.typeFilter || "all"; saveState(); render();});
-$("btnGrade").addEventListener("click",()=>{graded=true;showAnswers=true;saveState();render(true);});
-$("btnToggleAnswers").addEventListener("click",()=>{showAnswers=!showAnswers;$("btnToggleAnswers").textContent=showAnswers?"隐藏答案":"显示答案";saveState();render(showAnswers);});
+$("btnGrade").addEventListener("click",()=>{graded=true;showAnswers=true;saveState();updateFeedback();});
+$("btnToggleAnswers").addEventListener("click",()=>{showAnswers=!showAnswers;saveState();updateFeedback();});
 $("btnFilterUnanswered").addEventListener("click",()=>{filterMode="unanswered";saveState();render();});
 $("btnFilterWrong").addEventListener("click",()=>{filterMode="wrong";saveState();render();});
 $("btnShowAll").addEventListener("click",()=>{filterMode="all";saveState();render();});
@@ -596,7 +634,7 @@ $("dialog").addEventListener("click", e => { if(e.target === $("dialog")) $("dia
 document.addEventListener("focusout", e => {
   if (!(graded || showAnswers) || !e.target.matches(".blank-input, .short-answer")) return;
   const q = questions.find(item => item.key === e.target.dataset.qkey);
-  if (q) refreshCard(q);
+  if (q) refreshFeedback(e.target.closest(".question"), q);
 });
 loadQuiz();
 </script>
