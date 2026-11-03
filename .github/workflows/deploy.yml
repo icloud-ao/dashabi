@@ -1,0 +1,52 @@
+name: Deploy Dashabi
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dashabi-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Configure SSH
+        env:
+          DEPLOY_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/dashabi_actions
+          chmod 600 ~/.ssh/dashabi_actions
+
+      - name: Deploy website
+        run: |
+          ssh -i ~/.ssh/dashabi_actions \
+            -o IdentitiesOnly=yes \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=accept-new \
+            -p 22 root@5.181.50.84 'bash -se' <<'REMOTE'
+          set -e
+
+          export GIT_SSH_COMMAND="ssh -i /root/.ssh/github_dashabi -o IdentitiesOnly=yes -o BatchMode=yes"
+
+          git -C /opt/site-repos/dashabi pull --ff-only origin main
+
+          rsync -rlt --delete \
+            --exclude='/.git/' \
+            --exclude='/.github/' \
+            --exclude='/.user.ini' \
+            --exclude='/.well-known/' \
+            /opt/site-repos/dashabi/ \
+            /www/wwwroot/dashabi.ao.edu.eu.org/
+
+          echo "Deployment completed"
+          REMOTE
