@@ -63,7 +63,10 @@ textarea.short-answer{width:100%;min-height:100px;margin-top:14px;padding:12px 1
 .reveal{display:grid;grid-template-rows:0fr;opacity:0}.reveal.animate{transition:grid-template-rows .3s cubic-bezier(.25,1,.5,1),opacity .25s ease-out}.reveal.open{grid-template-rows:1fr;opacity:1}.reveal-inner{min-height:0;overflow:hidden}
 @media (any-pointer: coarse) {
   .reveal.animate {
-    transition: none;
+    transition: grid-template-rows 460ms cubic-bezier(.35,0,.35,1), opacity 460ms ease-in-out;
+  }
+  .reveal.open.animate {
+    transition-duration: 560ms;
   }
 }
 .result{display:grid;gap:6px;margin-top:14px;padding:14px 16px;border-radius:14px;background:var(--option);border:.5px solid var(--line);font-size:14px;line-height:1.6}.result.good{background:var(--okbg);border-color:var(--ok-border)}.result.bad{background:var(--badbg);border-color:var(--bad-border)}.result-row{display:flex;align-items:baseline;gap:10px;min-width:0}.result-label{flex:none;color:var(--mut);font-size:12px;font-weight:600;text-transform:uppercase}.result.good .result-label{color:var(--ok)}.result.bad .result-label{color:var(--bad)}.result-value,.result-explanation{min-width:0;white-space:pre-wrap;overflow-wrap:anywhere;font-weight:500}.result-explanation{margin-top:4px;padding-top:8px;border-top:.5px solid var(--line)}.result-explanation .result-label{display:block;margin-bottom:2px}
@@ -515,49 +518,7 @@ function refreshFeedback(card, q, animate = false){
   }
 }
 
-let touchRevealAnimations = [];
-
-function animateTouchReveal(entries, toolbarBottom){
-  // Read the final layout before starting any transforms.
-  const motion = entries.filter(({card}) => !card.hidden).map(({card, oldTop, result}) => {
-    const clip = result.parentElement;
-    const panel = result.getBoundingClientRect();
-    return {
-      card,
-      result,
-      clip,
-      offset: oldTop - card.getBoundingClientRect().top,
-      revealHeight: panel.top < window.innerHeight && panel.bottom > toolbarBottom
-        ? clip.getBoundingClientRect().height
-        : 0
-    };
-  });
-  if (!motion.some(({revealHeight}) => revealHeight > 0)) return;
-
-  const timing = { duration: 420, easing: "cubic-bezier(.25,.65,.35,1)" };
-  for (const {card, result, clip, offset, revealHeight} of motion){
-    if (Math.abs(offset) > 1){
-      touchRevealAnimations.push(card.animate([
-        { transform: `translateY(${offset}px)` }, { transform: "translateY(0)" }
-      ], timing));
-    }
-    if (revealHeight > 0){
-      // Move the clip and its contents in opposite directions so the text stays in place.
-      touchRevealAnimations.push(
-        clip.animate([
-          { transform: `translateY(-${revealHeight}px)` }, { transform: "translateY(0)" }
-        ], timing),
-        result.animate([
-          { transform: `translateY(${revealHeight}px)` }, { transform: "translateY(0)" }
-        ], timing)
-      );
-    }
-  }
-}
-
 function updateFeedback(){
-  for (const animation of touchRevealAnimations) animation.cancel();
-  touchRevealAnimations = [];
   updateControls();
   updateStats();
   const top = document.querySelector(".top").getBoundingClientRect().bottom;
@@ -574,7 +535,14 @@ function updateFeedback(){
     : positions.findIndex((rect, index) => visibleCards[index] && rect.top >= top);
   const anchorTop = positions[anchorIndex]?.top;
   const revealed = showAnswers;
-  const touchReveals = [];
+  // Only animate a touch panel whose answer is inside the reading area.
+  const touchPanelIndex = touch && !reducedMotion.matches ? cards.findIndex((card, index) => {
+    if (!visibleCards[index]) return false;
+    const panel = card.querySelector(".reveal");
+    const rect = panel.getBoundingClientRect();
+    return panel.classList.contains("open") !== revealed &&
+      rect.top < window.innerHeight && rect.bottom >= top;
+  }) : -1;
   cards.forEach((card, index) => {
     const visible = visibleCards[index];
     const animateFeedback = visible && (!touch || index === anchorIndex);
@@ -582,13 +550,10 @@ function updateFeedback(){
     refreshFeedback(card, cardRecords[index].question, animateFeedback);
     const panel = card.querySelector(".reveal");
     const changing = panel.classList.contains("open") !== revealed;
-    const animatePanel = singlePanel
-      ? index === anchorIndex
-      : visible && (anchorIndex < 0 || index >= anchorIndex);
-    if (touch && revealed && changing && visible && !reducedMotion.matches){
-      touchReveals.push({card, oldTop: positions[index].top, result: panel.querySelector(".result")});
-    }
-    panel.classList.toggle("animate", !touch && changing && animatePanel);
+    const animatePanel = touch
+      ? index === touchPanelIndex
+      : singlePanel ? index === anchorIndex : visible && (anchorIndex < 0 || index >= anchorIndex);
+    panel.classList.toggle("animate", changing && animatePanel);
     panel.classList.toggle("open", revealed);
     panel.setAttribute("aria-hidden", !revealed);
   });
@@ -600,7 +565,6 @@ function updateFeedback(){
     cards.forEach(card => card.classList.remove("no-motion"));
   }));
   if (filterMode === "wrong") applyFilters();
-  if (touchReveals.length) animateTouchReveal(touchReveals, top);
 }
 function getSetIdFromUrl(){
   const params = new URLSearchParams(location.search);
