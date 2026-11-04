@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<base href="/">
+<title>答题页</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png">
+<script>
+window.MathJax = {
+  tex: {inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']], processEscapes: true},
+  options: {skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']}
+};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+
+:root{color-scheme:light dark;--font-ios:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","PingFang SC","Helvetica Neue",Helvetica,Arial,sans-serif;--bg:#f2f2f7;--card:#fff;--card-elevated:#fff;--option:#f8f8fa;--option-hover:#f0f0f4;--ink:#1c1c1e;--mut:#8e8e93;--mut-light:#aeaeb2;--line:rgba(60,60,67,.12);--line-strong:rgba(60,60,67,.2);--tc:#007aff;--tc-hover:#0066d6;--on-accent:#fff;--selected:rgba(0,122,255,.08);--selected-border:rgba(0,122,255,.35);--ok:#34c759;--okbg:rgba(52,199,89,.1);--ok-border:rgba(52,199,89,.32);--bad:#ff3b30;--badbg:rgba(255,59,48,.09);--bad-border:rgba(255,59,48,.32);--header:rgba(255,255,255,.70);--header-touch:rgba(255,255,255,.66);--header-border:rgba(60,60,67,.14);--shadow-sm:0 1px 2px rgba(0,0,0,.03),0 2px 6px rgba(0,0,0,.02);--shadow-card:0 2px 8px -1px rgba(0,0,0,.04),0 12px 24px -4px rgba(0,0,0,.03);--shadow-dialog:0 24px 64px rgba(0,0,0,.18),0 4px 16px rgba(0,0,0,.06)}
+@media(prefers-color-scheme:dark){:root{--bg:#000;--card:#1c1c1e;--card-elevated:#2c2c2e;--option:#242426;--option-hover:#2c2c2e;--ink:#f2f2f7;--mut:#8e8e93;--mut-light:#636366;--line:rgba(255,255,255,.12);--line-strong:rgba(255,255,255,.22);--tc:#0a84ff;--tc-hover:#409cff;--on-accent:#fff;--selected:rgba(10,132,255,.16);--selected-border:rgba(10,132,255,.45);--ok:#30d158;--okbg:rgba(48,209,88,.14);--ok-border:rgba(48,209,88,.4);--bad:#ff453a;--badbg:rgba(255,69,58,.14);--bad-border:rgba(255,69,58,.4);--header:rgba(28,28,30,.72);--header-touch:rgba(28,28,30,.70);--header-border:rgba(255,255,255,.12);--shadow-sm:0 1px 2px rgba(0,0,0,.4);--shadow-card:0 2px 8px rgba(0,0,0,.3),0 12px 28px rgba(0,0,0,.25);--shadow-dialog:0 24px 64px rgba(0,0,0,.65)}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{scroll-behavior:smooth;scroll-padding-top:175px}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-ios);line-height:1.55;letter-spacing:-.012em;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}button,input,textarea{font:inherit;color:inherit}button{cursor:pointer;border:0}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--tc);outline-offset:2px}a{color:inherit;text-decoration:none}[hidden]{display:none!important}
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--header);
+  -webkit-backdrop-filter: saturate(150%) blur(14px);
+  backdrop-filter: saturate(150%) blur(14px);
+  border-bottom: .5px solid var(--header-border);
+  transition: background-color .3s, border-color .3s;
+}
+@media (pointer: coarse) {
+  .top {
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-bottom-color: transparent;
+  }
+  .top::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 -24px;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--header-touch);
+    -webkit-backdrop-filter: saturate(165%) blur(16px);
+    backdrop-filter: saturate(165%) blur(16px);
+    -webkit-mask-image: linear-gradient(#000 calc(100% - 36px), transparent);
+    mask-image: linear-gradient(#000 calc(100% - 36px), transparent);
+  }
+}
+.top-inner{max-width:980px;margin:auto;padding:calc(6px + env(safe-area-inset-top)) 16px 8px}.top-row{display:flex;align-items:center;gap:12px;min-width:0;height:44px}.icon{display:inline-flex;align-items:center;justify-content:center;flex:none;width:36px;height:36px;border-radius:50%;background:transparent;color:var(--tc);font-size:20px;font-weight:500;transition:transform .18s cubic-bezier(.25,1,.5,1),background-color .18s}.icon:hover{background:var(--selected)}.icon:active{transform:scale(.92);opacity:.8}.title{flex:1;min-width:0;font-size:17px;font-weight:600;letter-spacing:-.015em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}.progress-label{flex:none;color:var(--mut);font-size:13px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.01em}.progress-label b{color:var(--ink);font-weight:600}
+.bar{height:3.5px;margin:4px 0 8px;border-radius:99px;background:rgba(120,120,128,.16);overflow:hidden}.bar span{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--tc),#5856d6);transition:width .35s cubic-bezier(.25,1,.5,1)}
+.toolbar{display:flex;align-items:center;gap:8px;min-width:0}.filters{display:flex;align-items:center;flex:1;min-width:0;gap:4px;overflow-x:auto;scrollbar-width:none;padding:2px}.filters::-webkit-scrollbar{display:none}.pill,.tool{flex:none;height:32px;border:.5px solid transparent;border-radius:99px;padding:0 12px;font-size:13px;font-weight:550;letter-spacing:-.01em;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;transition:transform .2s cubic-bezier(.25,1,.5,1),background-color .2s,color .2s,border-color .2s}.pill{color:var(--mut);background:transparent}.pill:hover{color:var(--ink);background:rgba(120,120,128,.08)}.pill.active{color:var(--ink);background:var(--card);border-color:var(--line);box-shadow:0 2px 6px rgba(0,0,0,.06),0 .5px 1px rgba(0,0,0,.04)}@media(prefers-color-scheme:dark){.pill.active{background:var(--card-elevated);box-shadow:0 2px 6px rgba(0,0,0,.4)}}.pill:active,.tool:active{transform:scale(.96)}.tool{color:var(--tc);background:rgba(120,120,128,.08)}.tool:hover{background:rgba(120,120,128,.14)}.tool.active{background:var(--selected);color:var(--tc)}.tool.primary{background:var(--tc);color:var(--on-accent);box-shadow:0 2px 8px rgba(0,122,255,.28)}.tool.primary:hover{background:var(--tc-hover)}
+.jump{width:110px;min-width:0;height:32px;border:.5px solid var(--line);border-radius:99px;padding:0 12px;background:rgba(120,120,128,.08);font-size:13px;font-weight:500;transition:background-color .2s,border-color .2s,box-shadow .2s}.jump::placeholder{color:var(--mut-light)}.jump:focus{background:var(--card);border-color:var(--tc);box-shadow:0 0 0 3px rgba(0,122,255,.15)}
+main{max-width:980px;margin:auto;padding:16px 16px calc(48px + env(safe-area-inset-bottom))}.summary{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;margin:4px 4px 14px;color:var(--mut);font-size:13px;font-weight:500}.summary b{color:var(--ink);font-weight:600}.section{margin:0 0 28px}.section h2{margin:0 6px 10px;color:var(--mut);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.03em}.question-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}.question{content-visibility:auto;contain-intrinsic-size:auto 340px;min-width:0;padding:22px 24px;background:var(--card);border:.5px solid var(--line);border-radius:20px;box-shadow:var(--shadow-card);scroll-margin-top:175px;transition:transform .2s cubic-bezier(.25,1,.5,1),box-shadow .2s,border-color .2s}
+.question[data-type="multi"]{--type-color:#30b0c7;--type-bg:rgba(48,176,199,.12)}.question[data-type="judge"]{--type-color:#ff9500;--type-bg:rgba(255,149,0,.12)}.question[data-type="blank"]{--type-color:#af52de;--type-bg:rgba(175,82,222,.12)}.question[data-type="short"]{--type-color:#5856d6;--type-bg:rgba(88,86,214,.12)}.question-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.type-badge,.status{display:inline-flex;align-items:center;font-size:12px;font-weight:600;border-radius:6px;padding:2px 7px;line-height:1.4;letter-spacing:-.01em}.type-badge{background:var(--type-bg,rgba(0,122,255,.1));color:var(--type-color,var(--tc))}.status{color:var(--mut);background:rgba(120,120,128,.08)}.status.good{color:var(--ok);background:var(--okbg)}.status.bad{color:var(--bad);background:var(--badbg)}
+.stem{font-size:16.5px;line-height:1.7;font-weight:550;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink)}.stem.code{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:13.5px;background:var(--option);border:.5px solid var(--line);border-radius:12px;padding:14px}.stem mjx-container,.result mjx-container{max-width:100%;overflow-x:auto;overflow-y:hidden}
+.options{display:grid;gap:9px;margin-top:16px}.opt{display:flex;align-items:center;gap:12px;min-height:50px;padding:10px 14px;border:.5px solid var(--line);border-radius:14px;cursor:pointer;background-color:var(--option);transition:transform .18s cubic-bezier(.25,1,.5,1),border-color .2s,background-color .2s;user-select:none}.opt:hover{background-color:var(--option-hover);border-color:var(--line-strong)}.opt:active,.opt:has(input:active){transform:scale(.985);background-color:var(--option-hover)}.opt:has(input:focus-visible){outline:2px solid var(--tc);outline-offset:2px}.opt input{position:absolute;opacity:0;width:1px;height:1px}.letter{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:9px;background-color:var(--card);color:var(--mut);border:.5px solid var(--line);font-size:13px;font-weight:650;transition:background-color .2s,color .2s,border-color .2s;box-shadow:0 1px 2px rgba(0,0,0,.04)}.opt .text{flex:1;min-width:0;font-size:15px;font-weight:450;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.feedback-icon{flex:0 0 22px;height:22px;border-radius:50%;display:grid;place-items:center;opacity:0;transform:scale(.7);background:var(--ok);color:#fff;font-size:13px;font-weight:700;transition:opacity .25s,transform .25s cubic-bezier(.175,.885,.32,1.275),background-color .2s}.feedback-icon::before{content:"✓"}.opt:has(input:checked){border-color:var(--selected-border);background-color:var(--selected)}.opt:has(input:checked) .letter{background-color:var(--tc);border-color:transparent;color:var(--on-accent);box-shadow:0 2px 8px rgba(0,122,255,.35)}.opt.correct,.opt.correct:has(input:checked){border-color:var(--ok-border);background-color:var(--okbg)}.opt.correct .letter,.opt.correct:has(input:checked) .letter{background-color:var(--ok);border-color:transparent;color:#fff;box-shadow:0 2px 8px rgba(52,199,89,.35)}.opt.correct .feedback-icon{opacity:1;transform:scale(1)}.opt.wrong,.opt.wrong:has(input:checked){border-color:var(--bad-border);background-color:var(--badbg)}.opt.wrong .letter,.opt.wrong:has(input:checked) .letter{background-color:var(--bad);border-color:transparent;color:#fff;box-shadow:0 2px 8px rgba(255,59,48,.35)}.opt.wrong .feedback-icon{opacity:1;transform:scale(1);background:var(--bad)}.opt.wrong .feedback-icon::before{content:"✕"}
+.blank-input{display:inline-block;min-width:110px;max-width:100%;min-height:38px;margin:2px 4px;padding:4px 10px;border:1px solid transparent;border-bottom:2px solid var(--tc);border-radius:8px 8px 0 0;background:rgba(120,120,128,.08);font-size:15px;font-weight:500;transition:background-color .2s,border-color .2s,box-shadow .2s}.blank-input:focus{background:var(--selected);border-bottom-color:var(--tc-hover)}.blank-input.correct{border-bottom-color:var(--ok);color:var(--ok);background:var(--okbg)}.blank-input.wrong{border-bottom-color:var(--bad);color:var(--bad);background:var(--badbg)}
+textarea.short-answer{width:100%;min-height:100px;margin-top:14px;padding:12px 14px;border:.5px solid var(--line);border-radius:14px;background:var(--option);resize:vertical;font-size:15px;line-height:1.6;transition:background-color .2s,border-color .2s,box-shadow .2s}textarea.short-answer:focus{background:var(--card);border-color:var(--tc);box-shadow:0 0 0 3px rgba(0,122,255,.15)}.note,.self-note{margin:8px 2px 0;color:var(--mut);font-size:13px;line-height:1.4}
+.reveal{display:grid;grid-template-rows:0fr;opacity:0}.reveal.animate{transition:grid-template-rows .3s cubic-bezier(.25,1,.5,1),opacity .25s ease-out}.reveal.open{grid-template-rows:1fr;opacity:1}.reveal-inner{min-height:0;overflow:hidden}
+@media (any-pointer: coarse) {
+  .reveal.animate {
+    transition: grid-template-rows 300ms cubic-bezier(.35,0,.35,1), opacity 300ms ease-in-out;
+  }
+  .reveal.open.animate {
+    transition-duration: 300ms;
+  }
+}
+.result{display:grid;gap:6px;margin-top:14px;padding:14px 16px;border-radius:14px;background:var(--option);border:.5px solid var(--line);font-size:14px;line-height:1.6}.result.good{background:var(--okbg);border-color:var(--ok-border)}.result.bad{background:var(--badbg);border-color:var(--bad-border)}.result-row{display:flex;align-items:baseline;gap:10px;min-width:0}.result-label{flex:none;color:var(--mut);font-size:12px;font-weight:600;text-transform:uppercase}.result.good .result-label{color:var(--ok)}.result.bad .result-label{color:var(--bad)}.result-value,.result-explanation{min-width:0;white-space:pre-wrap;overflow-wrap:anywhere;font-weight:500}.result-explanation{margin-top:4px;padding-top:8px;border-top:.5px solid var(--line)}.result-explanation .result-label{display:block;margin-bottom:2px}
+.q-images,.answer-images{margin-top:12px;display:grid;gap:8px}.q-images img,.answer-images img{display:block;max-width:100%;height:auto;border-radius:14px;border:.5px solid var(--line)}figure{margin:0}figcaption{margin-top:4px;color:var(--mut);font-size:12px}
+dialog{width:min(500px,calc(100% - 32px));max-height:min(85dvh,760px);border:.5px solid var(--line);border-radius:22px;padding:0;background:var(--card);color:var(--ink);box-shadow:var(--shadow-dialog);overflow:hidden}dialog[open]{animation:ios-dialog-in .28s cubic-bezier(.25,1,.5,1)}dialog::backdrop{background:rgba(0,0,0,.38);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:backdrop-in .22s ease-out}dialog.closing{animation:ios-dialog-out .2s cubic-bezier(.25,1,.5,1) forwards}dialog.closing::backdrop{animation:backdrop-out .2s ease-in forwards}@keyframes ios-dialog-in{from{opacity:0;transform:scale(.94) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}@keyframes ios-dialog-out{from{opacity:1;transform:scale(1) translateY(0)}to{opacity:0;transform:scale(.96) translateY(8px)}}@keyframes backdrop-in{from{opacity:0}to{opacity:1}}@keyframes backdrop-out{from{opacity:1}to{opacity:0}}
+.dialog-head{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--card);border-bottom:.5px solid var(--line);font-size:16px;font-weight:600}.dialog-body{padding:12px 18px 24px;overflow-y:auto;max-height:calc(min(85dvh,760px) - 72px)}.dialog-body h3{margin:18px 0 8px;font-size:13px;font-weight:600;color:var(--mut);text-transform:uppercase}.dialog-actions{display:flex;flex-wrap:wrap;gap:8px}.dialog-actions button{min-height:40px;border:.5px solid var(--line);border-radius:12px;background:var(--option);padding:8px 16px;font-size:14px;font-weight:600;transition:transform .18s,background-color .18s,color .18s,border-color .18s}.dialog-actions button:hover{background:var(--option-hover)}.dialog-actions button:active{transform:scale(.96)}.dialog-actions button.active{background:var(--selected);color:var(--tc);border-color:var(--selected-border)}.dialog-actions button.danger{color:var(--bad);background:var(--badbg);border-color:var(--bad-border)}
+.empty{padding:60px 20px;text-align:center;color:var(--mut);background:var(--card);border:.5px solid var(--line);border-radius:20px;box-shadow:var(--shadow-sm);font-size:15px}.error{padding:18px 20px;border-radius:16px;background:var(--badbg);color:var(--bad);border:.5px solid var(--bad-border);font-size:14px}
+@media(max-width:640px){.top-inner{padding-left:12px;padding-right:12px}.toolbar{flex-wrap:wrap;gap:6px}.filters{flex-basis:100%;order:2;padding:2px 0}.tool{padding-inline:10px;height:30px;font-size:12.5px}.jump{width:88px;height:30px;font-size:16px}.blank-input,textarea.short-answer{font-size:16px}main{padding:12px 10px calc(40px + env(safe-area-inset-bottom))}.question{padding:16px;border-radius:18px;scroll-margin-top:190px}.stem{font-size:15.5px}.opt{min-height:46px;padding:8px 12px;border-radius:12px}html{scroll-padding-top:195px}}
+.question.no-motion .opt,.question.no-motion .letter,.question.no-motion .feedback-icon,.question.no-motion .blank-input,.question.no-motion .short-answer{transition:none!important}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+
+/* Phone-only header: stable solid background, then a short transparent fade.
+   The iPad/desktop styles above are intentionally untouched. */
+@media (max-width: 640px) {
+  .top {
+    background: #fff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-bottom-color: transparent;
+  }
+  .top::before {
+    content: none;
+    display: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .top::after {
+    content: "";
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    height: 18px;
+    pointer-events: none;
+    background: linear-gradient(to bottom,
+      rgba(255, 255, 255, 1),
+      rgba(255, 255, 255, .55) 45%,
+      rgba(255, 255, 255, 0));
+  }
+}
+@media (max-width: 640px) and (prefers-color-scheme: dark) {
+  .top { background: #1c1c1e; }
+  .top::after {
+    background: linear-gradient(to bottom,
+      rgba(28, 28, 30, 1),
+      rgba(28, 28, 30, .55) 45%,
+      rgba(28, 28, 30, 0));
+  }
+}
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <div class="top-row">
+      <a class="icon" href="/" aria-label="返回主页">‹</a>
+      <div class="title" id="title">答题页</div>
+      <div class="progress-label" id="statsTop"><b id="answeredCount">0</b> / <span id="totalCount">0</span> 已答</div>
+      <button class="icon" id="settings" type="button" aria-label="设置">⋯</button>
+    </div>
+    <div class="bar" role="progressbar" aria-label="答题进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress"><span></span></div>
+    <div class="toolbar">
+      <div class="filters" id="typeBar" aria-label="题型筛选">
+        <button class="pill type-btn active" type="button" data-type-filter="all">全部</button>
+        <button class="pill type-btn" type="button" data-type-filter="single">单选</button>
+        <button class="pill type-btn" type="button" data-type-filter="multi">多选</button>
+        <button class="pill type-btn" type="button" data-type-filter="judge">判断</button>
+        <button class="pill type-btn" type="button" data-type-filter="blank">填空</button>
+        <button class="pill type-btn" type="button" data-type-filter="short">简答</button>
+        <button class="pill" type="button" id="btnFilterUnanswered">未答</button>
+        <button class="pill" type="button" id="btnFilterWrong">错题</button>
+      </div>
+      <input class="jump" id="jumpInput" aria-label="跳题" title="数字=单选，M=多选，J=判断，F=填空，Q=简答。输入后按回车" placeholder="跳题 如 M10">
+      <button class="tool" id="btnToggleAnswers" type="button">显示答案</button>
+      <button class="tool primary" id="btnGrade" type="button">交卷判分</button>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="summary"><span id="statusBar" aria-live="polite">未判分</span><span id="subtitle"></span></div>
+  <div id="app"><div class="empty">正在加载题库...</div></div>
+</main>
+<dialog id="dialog" aria-labelledby="dialogTitle">
+  <div class="dialog-head"><span id="dialogTitle">设置</span><button class="icon" id="closeDialog" type="button" aria-label="关闭">×</button></div>
+  <div class="dialog-body">
+    <h3>筛选和题序</h3>
+    <div class="dialog-actions"><button id="btnShowAll" type="button">显示全部</button><button id="btnReshuffle" type="button">重新乱序</button></div>
+    <p class="note">乱序只改变显示顺序，答案仍按原始选项判分。</p>
+    <h3>作答记录</h3>
+    <div class="dialog-actions"><button id="btnClear" type="button">清空作答</button><button class="danger" id="btnReset" type="button">清空本题库保存</button></div>
+    <p class="note">作答保存在当前浏览器。</p>
+  </div>
+</dialog>
+<script>
+
+const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const LIST_URL = "./data/list.json";
+let setId = "";
+let setInfo = null;
+let rawData = null;
+let questions = [];
+let answers = {};
+let graded = false;
+let showAnswers = false;
+let filterMode = "all";
+let typeFilter = "all";
+let seed = "";
+let cardRecords = [];
+let sectionRecords = [];
+let lastAnswered = null;
+// Keep track of cards near the viewport. On phones this avoids reading the
+// layout of every question during each global answer toggle.
+let cardObserver = null;
+const nearbyCardIndexes = new Set();
+let motionRestoreFrame = 0;
+function observeCards(){
+  if(cardObserver) cardObserver.disconnect();
+  nearbyCardIndexes.clear();
+  if(!('IntersectionObserver' in window)) return;
+  cardObserver = new IntersectionObserver(entries => {
+    for(const entry of entries){
+      const index = Number(entry.target.dataset.visIndex);
+      if(!Number.isInteger(index)) continue;
+      if(entry.isIntersecting && !entry.target.hidden){
+        nearbyCardIndexes.add(index);
+        // Re-enable normal option feedback once the card enters the screen.
+        entry.target.classList.remove('no-motion');
+      }else nearbyCardIndexes.delete(index);
+    }
+  }, {root:null, rootMargin:'64px 0px', threshold:0});
+  cardRecords.forEach((record,index) => {
+    record.card.dataset.visIndex = String(index);
+    cardObserver.observe(record.card);
+  });
+}
+
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[m]));
+function imageList(q){
+  const list = [];
+  if(q.image) list.push({src:q.image, caption:q.imageCaption || q.caption || ""});
+  if(Array.isArray(q.images)){
+    q.images.forEach(item=>{
+      if(typeof item === "string") list.push({src:item, caption:""});
+      else if(item && item.src) list.push({src:item.src, caption:item.caption || item.title || ""});
+    });
+  }
+  return list;
+}
+function renderQuestionImages(q){
+  const imgs = imageList(q);
+  if(!imgs.length) return "";
+  return renderImageBlock(imgs, "q-images", q.stem || "题目图片");
+}
+function mediaListFrom(q, singleKeys, multiKeys){
+  const list = [];
+  singleKeys.forEach(key=>{
+    if(q[key]) list.push({src:q[key], caption:q[`${key}Caption`] || ""});
+  });
+  multiKeys.forEach(key=>{
+    if(Array.isArray(q[key])){
+      q[key].forEach(item=>{
+        if(typeof item === "string") list.push({src:item, caption:""});
+        else if(item && item.src) list.push({src:item.src, caption:item.caption || item.title || ""});
+      });
+    }
+  });
+  return list;
+}
+function renderImageBlock(imgs, className, altText){
+  return `<div class="${className}">${imgs.map(img=>`<figure><img src="${esc(img.src)}" alt="${esc(img.caption || altText || "图片")}" loading="lazy"/>${img.caption ? `<figcaption>${esc(img.caption)}</figcaption>` : ""}</figure>`).join("")}</div>`;
+}
+function renderAnswerImages(q){
+  const imgs = mediaListFrom(q, ["answerImage", "solutionImage", "explanationImage"], ["answerImages", "solutionImages", "explanationImages"]);
+  if(!imgs.length) return "";
+  return renderImageBlock(imgs, "answer-images", "答案图片");
+}
+const answerKey = () => `quiz_answers_${setId}`;
+const seedKey = () => `quiz_seed_${setId}`;
+const stateKey = () => `quiz_state_${setId}`;
+function readJSON(key, fallback){try{return JSON.parse(localStorage.getItem(key) || "")}catch{return fallback}}
+function saveAnswers(){localStorage.setItem(answerKey(), JSON.stringify(answers)); updateStats();}
+function saveState(){localStorage.setItem(stateKey(), JSON.stringify({graded,showAnswers,filterMode,typeFilter}));}
+function normalizeText(s){return String(s ?? "").trim().replace(/\s+/g," ").toLowerCase();}
+function normalizeChoiceAnswer(ans){return String(ans ?? "").toUpperCase().replace(/[^A-Z]/g,"").split("");}
+function sameSet(a,b){const aa=[...new Set(a)].sort().join("");const bb=[...new Set(b)].sort().join("");return aa===bb;}
+function hashString(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0;}
+function mulberry32(a){return function(){let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return ((t^t>>>14)>>>0)/4294967296}}
+function shuffleDet(arr, key){const out=[...arr];const rnd=mulberry32(hashString(`${seed}|${key}`));for(let i=out.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out;}
+function qKey(type, num, idx){return `${type}:${num ?? idx+1}`;}
+function qLabel(type){return {single:"单选",multi:"多选",judge:"判断",blank:"填空",short:"简答"}[type] || type;}
+function typeVisible(q){return typeFilter === "all" || q.type === typeFilter;}
+function normalizeQuestion(q, type, idx){
+  const num = q.num ?? q.id ?? idx + 1;
+  let options = q.options;
+  if(type === "judge" && !options) options = {A:"对",B:"错"};
+  return {...q, type, num, key:qKey(type,num,idx), options};
+}
+function normalizeData(data){
+  if(Array.isArray(data.questions)){
+    return data.questions.map((q,idx)=>normalizeQuestion(q, q.type || "single", idx));
+  }
+  const list=[];
+  (data.single||[]).forEach((q,i)=>list.push(normalizeQuestion(q,"single",i)));
+  (data.multi||[]).forEach((q,i)=>list.push(normalizeQuestion(q,"multi",i)));
+  (data.judge||[]).forEach((q,i)=>list.push(normalizeQuestion(q,"judge",i)));
+  (data.blank||data.fill||[]).forEach((q,i)=>list.push(normalizeQuestion(q,"blank",i)));
+  (data.short||[]).forEach((q,i)=>list.push(normalizeQuestion(q,"short",i)));
+  return list;
+}
+function getOptions(q){
+  const entries = Object.entries(q.options || {});
+  const shouldShuffle = setInfo?.shuffleOptions !== false && !(q.type === "judge" && setInfo?.shuffleJudge !== true);
+  const ordered = shouldShuffle ? shuffleDet(entries, q.key) : entries;
+  return ordered.map(([origKey,text], idx)=>({origKey:String(origKey).toUpperCase(), text, display:LETTERS[idx]}));
+}
+function correctDisplay(q, opts){
+  if(q.type === "short") return String(q.answer ?? q.reference ?? "");
+  if(q.type === "blank") return formatBlankAnswer(q);
+  const ans = normalizeChoiceAnswer(q.answer);
+  return opts.filter(o=>ans.includes(o.origKey)).map(o=>o.display).join("");
+}
+function userDisplay(q, opts){
+  const val = answers[q.key];
+  if(q.type === "short") return String(val || "");
+  if(q.type === "blank") return Array.isArray(val) ? val.join(" / ") : (val || "");
+  const arr = Array.isArray(val) ? val : normalizeChoiceAnswer(val);
+  return opts.filter(o=>arr.includes(o.origKey)).map(o=>o.display).join("");
+}
+function blankExpected(q){
+  const src = q.answers ?? q.answer ?? [];
+  if(Array.isArray(src)) return src.map(x => Array.isArray(x) ? x.map(String) : [String(x)]);
+  return [[String(src)]];
+}
+function formatBlankAnswer(q){return blankExpected(q).map(x=>x.join(" / ")).join("；");}
+function isAnswered(q){
+  const val = answers[q.key];
+  if(q.type === "multi") return Array.isArray(val) && val.length > 0;
+  if(q.type === "blank") return Array.isArray(val) && val.some(x=>String(x||"").trim());
+  if(q.type === "short") return String(val || "").trim() !== "";
+  return String(val || "").trim() !== "";
+}
+function isCorrect(q){
+  if(q.type === "short") return false;
+  if(!isAnswered(q)) return false;
+  if(q.type === "multi") return sameSet(answers[q.key] || [], normalizeChoiceAnswer(q.answer));
+  if(q.type === "blank"){
+    const got = Array.isArray(answers[q.key]) ? answers[q.key] : [answers[q.key]];
+    const expected = blankExpected(q);
+    if(got.length < expected.length) return false;
+    return expected.every((accepts,i)=>accepts.map(normalizeText).includes(normalizeText(got[i])));
+  }
+  return sameSet([answers[q.key]], normalizeChoiceAnswer(q.answer));
+}
+function renderStemWithBlanks(q){
+  const expected = blankExpected(q);
+  let used = 0;
+  const stem = esc(q.stem || "").replace(/\{\{blank\}\}|_{3,}/g, () => blankInput(q, used++));
+  if(used < expected.length){
+    const remaining = expected.slice(used).map((_,i)=>blankInput(q, used+i)).join(" ");
+    return stem + `<div style="margin-top:10px">${remaining}</div>`;
+  }
+  return stem;
+}
+function blankInput(q, i){
+  const vals = Array.isArray(answers[q.key]) ? answers[q.key] : [];
+  let cls = "blank-input";
+  if(graded && isAnswered(q)){
+    const ok = (blankExpected(q)[i] || []).map(normalizeText).includes(normalizeText(vals[i]));
+    cls += ok ? " correct" : " wrong";
+  }
+  return `<input class="${cls}" data-qkey="${esc(q.key)}" data-blank-index="${i}" value="${esc(vals[i] || "")}" placeholder="填空 ${i+1}" />`;
+}
+function resultClass(q){
+  return graded && q.type !== "short" && isAnswered(q) ? (isCorrect(q) ? " good" : " bad") : "";
+}
+function renderAnswerPanel(q, label, answer, userAnswer = null){
+  const userRow = userAnswer === null ? "" : `<div class="result-row"><span class="result-label">你的答案</span><span class="result-value user-answer" data-value="${esc(userAnswer)}">${esc(userAnswer)}</span></div>`;
+  const explanation = q.explanation ? `<div class="result-explanation"><span class="result-label">解析</span>${esc(q.explanation)}</div>` : "";
+  return `<div class="reveal ${showAnswers?"open":""}" aria-hidden="${!showAnswers}"><div class="reveal-inner"><div class="result${resultClass(q)}"><div class="result-row"><span class="result-label">${label}</span><span class="result-value">${esc(answer || "暂无")}</span></div>${userRow}${explanation}${renderAnswerImages(q)}</div></div></div>`;
+}
+function renderChoiceQuestion(q){
+  const opts = getOptions(q);
+  const val = answers[q.key];
+  const selected = Array.isArray(val) ? val : normalizeChoiceAnswer(val);
+  const correctOrig = normalizeChoiceAnswer(q.answer);
+  return `<div class="options">${opts.map(o=>{
+    const checked = selected.includes(o.origKey) ? "checked" : "";
+    const inputType = q.type === "multi" ? "checkbox" : "radio";
+    let cls = "opt";
+    if(correctOrig.includes(o.origKey) && (showAnswers || (graded && selected.includes(o.origKey)))) cls += " correct";
+    if(graded && selected.includes(o.origKey) && !correctOrig.includes(o.origKey)) cls += " wrong";
+    return `<label class="${cls}"><input type="${inputType}" name="${esc(q.key)}" data-qkey="${esc(q.key)}" value="${esc(o.origKey)}" ${checked}/><span class="letter">${o.display}</span><span class="text">${esc(o.text)}</span><span class="feedback-icon" aria-hidden="true"></span></label>`;
+  }).join("")}</div>${renderAnswerPanel(q, "正确答案", correctDisplay(q,opts), userDisplay(q,opts) || "未答")}`;
+}
+function renderBlankQuestion(q){
+  return `<div class="stem ${q.code ? "code" : ""}">${renderStemWithBlanks(q)}</div>${renderQuestionImages(q)}${renderAnswerPanel(q, "参考答案", formatBlankAnswer(q), userDisplay(q,[]) || "未答")}`;
+}
+function renderShortQuestion(q){
+  const val = String(answers[q.key] || "");
+  const answerText = String(q.answer ?? q.reference ?? "");
+  return `<div class="stem ${q.code ? "code" : ""}">${esc(q.stem || "")}</div>${renderQuestionImages(q)}
+  <textarea class="short-answer" data-qkey="${esc(q.key)}" placeholder="在这里写你的答案，系统会自动保存。">${esc(val)}</textarea>
+  <div class="self-note">简答 / 案例 / 计算题按自评处理，提交后查看参考答案。</div>${renderAnswerPanel(q, "参考答案", answerText)}`;
+}
+function shouldShowQuestion(q){
+  if(!typeVisible(q)) return false;
+  if(filterMode === "unanswered" && isAnswered(q)) return false;
+  if(filterMode === "wrong" && (q.type === "short" || !graded || !isAnswered(q) || isCorrect(q))) return false;
+  return true;
+}
+function gradeStatus(q){
+  return q.type === "short"
+    ? (isAnswered(q) ? `<span class="status">已写</span>` : `<span class="status">未写</span>`)
+    : (!graded ? "" : (!isAnswered(q) ? `<span class="status">未答</span>` : (isCorrect(q) ? `<span class="status good">正确</span>` : `<span class="status bad">错误</span>`)));
+}
+function renderQuestion(q, displayNo){
+  let cls = "q";
+  if(graded && q.type !== "short"){ cls += !isAnswered(q) ? " unanswered" : (isCorrect(q) ? " correct" : " wrong"); }
+  let body = "";
+  if(q.type === "blank") body = renderBlankQuestion(q);
+  else if(q.type === "short") body = renderShortQuestion(q);
+  else body = `<div class="stem ${q.code ? "code" : ""}">${esc(q.stem || "")}</div>${renderQuestionImages(q)}${renderChoiceQuestion(q)}`;
+  return `<article class="question ${cls}" id="q-${q.type}-${displayNo}" data-type="${esc(q.type)}" data-qkey="${esc(q.key)}">
+    <div class="question-head"><div class="type-badge">${qLabel(q.type)} ${esc(displayNo)}</div><div class="q-meta">${q.point || q.tag ? `<span class="status">${esc(q.point || q.tag)}</span> ` : ""}<span class="grade-status">${gradeStatus(q)}</span></div></div>
+    ${body}
+  </article>`;
+}
+function groupQuestions(){
+  let list = [...questions];
+  if(setInfo?.shuffleQuestions) list = shuffleDet(list, "question-order");
+  return {
+    single:list.filter(q=>q.type==="single"),
+    multi:list.filter(q=>q.type==="multi"),
+    judge:list.filter(q=>q.type==="judge"),
+    blank:list.filter(q=>q.type==="blank"),
+    short:list.filter(q=>q.type==="short")
+  };
+}
+function typesetMath(){
+  if(window.MathJax && MathJax.typesetPromise){
+    MathJax.typesetPromise([$("app")]).catch(err => console.warn("MathJax typeset failed:", err));
+  }
+}
+function render(){
+  const groups = groupQuestions();
+  const titles = {single:"单选题",multi:"多选题",judge:"判断题",blank:"填空题",short:"简答题"};
+  const order = ["single","multi","judge","blank","short"];
+  if (window.MathJax?.typesetClear) MathJax.typesetClear([$("app")]);
+  $("app").innerHTML = order.map(type => {
+    if (!groups[type].length) return "";
+    const html = groups[type].map((q,i) => renderQuestion(q, i + 1)).join("");
+    return `<div class="section" id="sec-${type}"><h2>${titles[type]}（共 ${groups[type].length} 题）</h2><div class="question-grid">${html}</div></div>`;
+  }).join("") + '<div class="empty" id="filterEmpty" hidden>当前筛选条件下没有题目。</div>';
+  const orderedQuestions = order.flatMap(type => groups[type]);
+  cardRecords = [...$("app").querySelectorAll(".question")].map((card,index) => ({card, question:orderedQuestions[index]}));
+  sectionRecords = [...$("app").querySelectorAll(".section")].map(section => ({section, cards:[...section.querySelectorAll(".question")]}));
+  applyFilters(false);
+  observeCards();
+  typesetMath();
+}
+function applyFilters(preservePosition = true){
+  const top = document.querySelector(".top").getBoundingClientRect().bottom;
+  const wasVisible = cardRecords.filter(record => !record.card.hidden);
+  const anchor = preservePosition && window.scrollY > top
+    ? wasVisible.find(record => record.card.getBoundingClientRect().bottom > top)
+    : null;
+  const oldTop = anchor?.card.getBoundingClientRect().top;
+  const visible = cardRecords.map(record => shouldShowQuestion(record.question));
+  let target = anchor && visible[cardRecords.indexOf(anchor)] ? anchor : null;
+  if (anchor && !target){
+    const anchorIndex = cardRecords.indexOf(anchor);
+    let distance = Infinity;
+    visible.forEach((show, index) => {
+      const delta = Math.abs(index - anchorIndex);
+      if (show && delta < distance) { target = cardRecords[index]; distance = delta; }
+    });
+  }
+
+  cardRecords.forEach((record,index) => { record.card.hidden = !visible[index]; });
+  sectionRecords.forEach(({section,cards}) => { section.hidden = cards.every(card => card.hidden); });
+  $("filterEmpty").hidden = visible.some(Boolean);
+  updateControls();
+  updateStats();
+  if (target){
+    const targetTop = target === anchor ? oldTop : Math.max(top + 8, oldTop);
+    const delta = target.card.getBoundingClientRect().top - targetTop;
+    if (Math.abs(delta) > 1) window.scrollBy({top:delta, behavior:"instant"});
+  }
+}
+function activeQuestions(){return questions.filter(typeVisible);}
+function updateControls(){
+  document.querySelectorAll("[data-type-filter]").forEach(btn=>{
+    const active = btn.dataset.typeFilter === typeFilter;
+    btn.classList.toggle("active", active);
+    btn.setAttribute("aria-pressed", active);
+  });
+  $("btnToggleAnswers").textContent = showAnswers ? "隐藏答案" : "显示答案";
+  $("btnFilterUnanswered").classList.toggle("active", filterMode === "unanswered");
+  $("btnFilterWrong").classList.toggle("active", filterMode === "wrong");
+  $("btnFilterUnanswered").setAttribute("aria-pressed", filterMode === "unanswered");
+  $("btnFilterWrong").setAttribute("aria-pressed", filterMode === "wrong");
+  $("btnShowAll").classList.toggle("active", filterMode === "all");
+}
+function updateStats(){
+  const scope = activeQuestions();
+  const total = scope.length;
+  const answered = scope.filter(isAnswered).length;
+  const objective = scope.filter(q=>q.type !== "short");
+  const correct = graded ? objective.filter(q=>isAnswered(q)&&isCorrect(q)).length : 0;
+  const wrong = graded ? objective.filter(q=>isAnswered(q)&&!isCorrect(q)).length : 0;
+  const typeName = typeFilter === "all" ? "全部" : qLabel(typeFilter);
+  const counter = $("answeredCount");
+  counter.textContent = answered;
+  $("totalCount").textContent = total;
+  if (lastAnswered !== null && lastAnswered !== answered && !reducedMotion.matches){
+    counter.getAnimations().forEach(animation => animation.cancel());
+    counter.animate([{opacity:.55},{opacity:1}], {duration:180, easing:"ease-out"});
+  }
+  lastAnswered = answered;
+  const percent = total ? Math.round(answered / total * 100) : 0;
+  $("progress").setAttribute("aria-valuenow", percent);
+  $("progress").firstElementChild.style.width = `${percent}%`;
+  $("statusBar").innerHTML = graded ? `${typeName} · 正确 <b>${correct}</b> · 错误 <b>${wrong}</b> · 未答 <b>${total-answered}</b>` : `${typeName} · 未判分`;
+  $("btnGrade").textContent = graded ? "重新判分" : "交卷判分";
+}
+function onChoiceChange(input){
+  const card = input.closest(".q");
+  const q = questions.find(x=>x.key===input.dataset.qkey);
+  if(!q) return;
+  if(q.type === "multi"){
+    answers[q.key] = [...card.querySelectorAll(`input[data-qkey="${CSS.escape(q.key)}"]:checked`)].map(x=>x.value);
+  }else{
+    answers[q.key] = input.value;
+  }
+  saveAnswers();
+  if (graded || showAnswers) refreshFeedback(card, q, true);
+}
+function onBlankInput(input){
+  const q = questions.find(x=>x.key===input.dataset.qkey);
+  if(!q) return;
+  const expected = blankExpected(q);
+  const vals = Array.isArray(answers[q.key]) ? [...answers[q.key]] : Array(expected.length).fill("");
+  vals[Number(input.dataset.blankIndex)] = input.value;
+  answers[q.key] = vals;
+  saveAnswers();
+  if (graded || showAnswers) refreshFeedback(input.closest(".question"), q);
+}
+
+function onShortInput(input){
+  const q = questions.find(x=>x.key===input.dataset.qkey);
+  if(!q) return;
+  answers[q.key] = input.value;
+  saveAnswers();
+  input.closest(".question").querySelector(".grade-status").innerHTML = gradeStatus(q);
+}
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const touchInput = window.matchMedia("(any-pointer: coarse)");
+
+const optionShakes = new WeakMap();
+function setWrongFeedback(option, wrong, animate){
+  const wasWrong = option.classList.contains("wrong");
+  option.classList.toggle("wrong", wrong);
+  if (!wrong){
+    optionShakes.get(option)?.cancel();
+    optionShakes.delete(option);
+  } else if (!wasWrong && animate && !reducedMotion.matches){
+    optionShakes.get(option)?.cancel();
+    const animation = option.animate([
+      {transform:"translateX(0)"}, {transform:"translateX(-3px)"},
+      {transform:"translateX(2px)"}, {transform:"translateX(0)"}
+    ], {duration:260, easing:"ease-out"});
+    optionShakes.set(option, animation);
+  }
+}
+
+function refreshFeedback(card, q, animate = false){
+  const answered = isAnswered(q);
+  const correct = graded && answered && isCorrect(q);
+  const wrong = graded && answered && !correct && q.type !== "short";
+  const correctKeys = normalizeChoiceAnswer(q.answer);
+  for (const option of card.querySelectorAll(".opt")){
+    const input = option.querySelector("input");
+    const correctOption = correctKeys.includes(input.value);
+    option.classList.toggle("correct", correctOption && (showAnswers || (graded && input.checked)));
+    setWrongFeedback(option, graded && input.checked && !correctOption, animate);
+  }
+  if (q.type === "blank"){
+    const expected = blankExpected(q);
+    for (const input of card.querySelectorAll(".blank-input")){
+      const accepted = (expected[Number(input.dataset.blankIndex)] || []).map(normalizeText);
+      const matches = accepted.includes(normalizeText(input.value));
+      input.classList.toggle("correct", graded && answered && matches);
+      input.classList.toggle("wrong", graded && answered && !matches);
+    }
+  }
+
+  card.classList.toggle("correct", correct);
+  card.classList.toggle("wrong", wrong);
+  card.classList.toggle("unanswered", graded && !answered && q.type !== "short");
+  card.querySelector(".grade-status").innerHTML = gradeStatus(q);
+  const result = card.querySelector(".result");
+  result.classList.toggle("good", correct);
+  result.classList.toggle("bad", wrong);
+  const userAnswer = result.querySelector(".user-answer");
+  if (userAnswer){
+    const answer = userDisplay(q, getOptions(q)) || "未答";
+    if (userAnswer.dataset.value !== answer){
+      if (q.type === "blank") window.MathJax?.typesetClear?.([userAnswer]);
+      userAnswer.textContent = answer;
+      userAnswer.dataset.value = answer;
+      if (q.type === "blank") window.MathJax?.typesetPromise?.([userAnswer])?.catch(() => {});
+    }
+  }
+}
+
+function updateFeedback(){
+  updateControls();
+  updateStats();
+  const top = document.querySelector(".top").getBoundingClientRect().bottom;
+  const cards = cardRecords.map(record => record.card);
+  // iPad/desktop retain the existing position logic; phones only measure
+  // the cards tracked by IntersectionObserver. The empty-set fallback handles
+  // first-load clicks before the initial observer callback.
+  const phone = window.matchMedia('(max-width: 640px)').matches && touchInput.matches;
+  const inspectAll = !phone || nearbyCardIndexes.size === 0;
+  const positions = cards.map((card,index) =>
+    inspectAll || nearbyCardIndexes.has(index) ? card.getBoundingClientRect() : null);
+  const visibleCards = positions.map((rect, index) =>
+    !!rect && !cards[index].hidden && rect.top < window.innerHeight && rect.bottom > top
+  );
+  const touch = touchInput.matches;
+  const singlePanel = touch || cards.length > 100;
+  // On touch and large banks, animate the first card intersecting the reading area.
+  const anchorIndex = singlePanel
+    ? visibleCards.indexOf(true)
+    : positions.findIndex((rect, index) => visibleCards[index] && rect.top >= top);
+  const anchorTop = positions[anchorIndex]?.top;
+  const revealed = showAnswers;
+  // Only animate a touch panel whose answer is inside the reading area.
+  // Keep the original touch logic on iPad. Only phones use the improved
+  // stable-owner selection for collapsed/out-of-viewport answer regions.
+  let touchPanelIndex = -1;
+  if(touch && !reducedMotion.matches){
+    if(!phone){
+      touchPanelIndex = cards.findIndex((card,index) => {
+        if(!visibleCards[index]) return false;
+        const panel = card.querySelector(".reveal");
+        const rect = panel.getBoundingClientRect();
+        return panel.classList.contains("open") !== revealed &&
+          rect.top < window.innerHeight && rect.bottom >= top;
+      });
+    }else{
+      for(let index=0; index<cards.length; index++){
+        if(!visibleCards[index]) continue;
+        const panel = cards[index].querySelector('.reveal');
+        if(panel.classList.contains('open') === revealed) continue;
+        const rect = panel.getBoundingClientRect();
+        if((rect.top >= top-20 && rect.top <= window.innerHeight+35) ||
+           (rect.top < top && rect.bottom > top)){
+          touchPanelIndex = index;
+          break;
+        }
+      }
+      if(touchPanelIndex < 0) touchPanelIndex = anchorIndex;
+    }
+  }
+  cards.forEach((card, index) => {
+    const visible = visibleCards[index];
+    const animateFeedback = visible && (!touch || index === anchorIndex);
+    card.classList.toggle("no-motion", !animateFeedback);
+    refreshFeedback(card, cardRecords[index].question, animateFeedback);
+    const panel = card.querySelector(".reveal");
+    const changing = panel.classList.contains("open") !== revealed;
+    const animatePanel = touch
+      ? index === touchPanelIndex
+      : singlePanel ? index === anchorIndex : visible && (anchorIndex < 0 || index >= anchorIndex);
+    // Preserve an in-flight transition when grading updates an already open panel.
+    if(changing){
+      // Preserve the iPad/desktop animation path exactly as before.
+      if(!phone){
+        panel.classList.toggle("animate", animatePanel);
+      }else if(animatePanel || panel.classList.contains('in-motion')){
+        // Keep transitions alive across a quick show/hide reversal.
+        panel.classList.add('animate','in-motion');
+      }else panel.classList.remove('animate');
+    }
+    panel.classList.toggle("open", revealed);
+    panel.setAttribute("aria-hidden", !revealed);
+  });
+  if (anchorIndex >= 0){
+    const moved = cards[anchorIndex].getBoundingClientRect().top - anchorTop;
+    if (Math.abs(moved) > 1) window.scrollBy({top:moved, behavior:"instant"});
+  }
+  // Only the phones retain no-motion on off-screen cards. The observer
+  // clears it as cards become visible. No 292-element repaint after 2 frames.
+  if(phone){
+    if(motionRestoreFrame) cancelAnimationFrame(motionRestoreFrame);
+    motionRestoreFrame = requestAnimationFrame(() => {
+      motionRestoreFrame = 0;
+      visibleCards.forEach((visible,index) => {
+        if(visible) cards[index].classList.remove('no-motion');
+      });
+    });
+  }else{
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      cards.forEach(card => card.classList.remove("no-motion"));
+    }));
+  }
+  if (filterMode === "wrong") applyFilters();
+}
+function getSetIdFromUrl(){
+  const params = new URLSearchParams(location.search);
+  const fromQuery = params.get("set");
+  if(fromQuery) return fromQuery;
+  const match = location.pathname.match(/^\/q\/([^/]+)\/?$/);
+  if(match) return decodeURIComponent(match[1]);
+  return "";
+}
+async function loadQuiz(){
+  setId = getSetIdFromUrl();
+  if(!setId){
+    $("app").innerHTML = `<div class="error"><b>缺少题库参数。</b><br/>请从 <a href="/">主页</a> 选择题库，或使用 <code>/q/题库ID</code> 打开。旧链接 <code>quiz.html?set=题库ID</code> 仍兼容。</div>`;
+    return;
+  }
+  try{
+    const listRes = await fetch(LIST_URL, {cache:"no-store"});
+    if(!listRes.ok) throw new Error(`list.json HTTP ${listRes.status}`);
+    const list = await listRes.json();
+    setInfo = list.find(x=>x.id===setId);
+    if(!setInfo) throw new Error(`list.json 中没有找到题库 ID：${setId}`);
+    const dataRes = await fetch(setInfo.file, {cache:"no-store"});
+    if(!dataRes.ok) throw new Error(`${setInfo.file} HTTP ${dataRes.status}`);
+    rawData = await dataRes.json();
+    questions = normalizeData(rawData);
+    answers = readJSON(answerKey(), {});
+    const st = readJSON(stateKey(), {});
+    graded = !!st.graded; showAnswers = !!st.showAnswers; filterMode = st.filterMode || "all"; typeFilter = st.typeFilter || "all";
+    seed = localStorage.getItem(seedKey());
+    if(!seed){ seed = `${Date.now()}-${Math.random()}`; localStorage.setItem(seedKey(), seed); }
+    $("title").textContent = rawData.meta?.title || setInfo.title || "答题页";
+    document.title = $("title").textContent;
+    $("subtitle").textContent = `${setInfo.desc || ""} ${setInfo.shuffleOptions !== false ? "· 选项乱序已开启" : "· 选项固定"}`;
+    render();
+  }catch(err){
+    $("app").innerHTML = `<div class="error"><b>题库加载失败。</b><br/>${esc(err.message)}<br/><br/>检查：1）是否通过服务器访问；2）data/list.json 的 id 和 file 是否正确；3）题库 JSON 是否是合法 JSON。</div>`;
+  }
+}
+document.addEventListener('transitionend', event => {
+  if(event.propertyName !== 'grid-template-rows' ||
+     !event.target.classList?.contains('reveal') ||
+     !event.target.classList.contains('in-motion')) return;
+  event.target.classList.remove('in-motion','animate');
+});
+document.addEventListener("change", e=>{if(e.target.matches('input[type="radio"],input[type="checkbox"]')) onChoiceChange(e.target);});
+document.addEventListener("input", e=>{if(e.target.matches(".blank-input")) onBlankInput(e.target); if(e.target.matches(".short-answer")) onShortInput(e.target);});
+document.addEventListener("click", e=>{const btn=e.target.closest("[data-type-filter]"); if(!btn) return; typeFilter=btn.dataset.typeFilter || "all"; saveState(); applyFilters();});
+$("btnGrade").addEventListener("click",()=>{graded=true;showAnswers=true;saveState();updateFeedback();});
+$("btnToggleAnswers").addEventListener("click",()=>{showAnswers=!showAnswers;saveState();updateFeedback();});
+$("btnFilterUnanswered").addEventListener("click",()=>{filterMode="unanswered";saveState();applyFilters();});
+$("btnFilterWrong").addEventListener("click",()=>{filterMode="wrong";saveState();applyFilters();});
+$("btnShowAll").addEventListener("click",()=>{filterMode="all";saveState();applyFilters();});
+$("btnClear").addEventListener("click",()=>{answers={};graded=false;showAnswers=false;if(filterMode === "wrong") filterMode="all";saveAnswers();saveState();render();});
+$("btnReset").addEventListener("click",()=>{if(confirm("确定清空本题库的作答、判分状态和乱序种子？")){localStorage.removeItem(answerKey());localStorage.removeItem(stateKey());localStorage.removeItem(seedKey());answers={};graded=false;showAnswers=false;filterMode="all";typeFilter="all";seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed);render();}});
+$("btnReshuffle").addEventListener("click",()=>{if(confirm("重新生成选项/题序乱序？已选答案会保留，但显示位置可能变化。")){seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed);render();}});
+$("jumpInput").addEventListener("keydown", e=>{
+  if(e.key !== "Enter") return;
+  const v = e.target.value.trim().toUpperCase(); if(!v) return;
+  const m = v.match(/^([SMJFQ])?\s*(\d+)$/); if(!m) return;
+  const map = {S:"single",M:"multi",J:"judge",F:"blank",Q:"short"};
+  const type = map[m[1] || "S"]; const num = m[2];
+  filterMode="all"; typeFilter=type; saveState(); applyFilters(false);
+  setTimeout(()=>{const el = $(`q-${type}-${num}`); if(el) el.scrollIntoView({behavior:"smooth",block:"start"});},30);
+});
+function closeSettings(){
+  const dialog = $("dialog");
+  if (!dialog.open || dialog.classList.contains("closing")) return;
+  if (reducedMotion.matches){ dialog.close(); return; }
+  dialog.classList.add("closing");
+  const finish = event => {
+    if (event.target !== dialog || event.animationName !== "ios-dialog-out") return;
+    dialog.removeEventListener("animationend", finish);
+    dialog.classList.remove("closing");
+    dialog.close();
+  };
+  dialog.addEventListener("animationend", finish);
+}
+$("settings").addEventListener("click", () => $("dialog").showModal());
+$("closeDialog").addEventListener("click", closeSettings);
+$("dialog").addEventListener("cancel", event => { event.preventDefault(); closeSettings(); });
+$("dialog").addEventListener("click", event => { if(event.target === $("dialog")) closeSettings(); });
+document.addEventListener("focusout", e => {
+  if (!(graded || showAnswers) || !e.target.matches(".blank-input, .short-answer")) return;
+  const q = questions.find(item => item.key === e.target.dataset.qkey);
+  if (q) refreshFeedback(e.target.closest(".question"), q);
+});
+loadQuiz();
+</script>
+</body>
+</html>
