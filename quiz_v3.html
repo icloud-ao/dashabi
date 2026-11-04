@@ -59,13 +59,6 @@ textarea.short-answer{width:100%;min-height:100px;margin-top:14px;padding:12px 1
   .reveal.animate {
     transition: none;
   }
-  .reveal.open.animate .result {
-    animation: touch-reveal-in 220ms cubic-bezier(.2,.75,.3,1);
-  }
-}
-@keyframes touch-reveal-in {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 .result{display:grid;gap:6px;margin-top:14px;padding:14px 16px;border-radius:14px;background:var(--option);border:.5px solid var(--line);font-size:14px;line-height:1.6}.result.good{background:var(--okbg);border-color:var(--ok-border)}.result.bad{background:var(--badbg);border-color:var(--bad-border)}.result-row{display:flex;align-items:baseline;gap:10px;min-width:0}.result-label{flex:none;color:var(--mut);font-size:12px;font-weight:600;text-transform:uppercase}.result.good .result-label{color:var(--ok)}.result.bad .result-label{color:var(--bad)}.result-value,.result-explanation{min-width:0;white-space:pre-wrap;overflow-wrap:anywhere;font-weight:500}.result-explanation{margin-top:4px;padding-top:8px;border-top:.5px solid var(--line)}.result-explanation .result-label{display:block;margin-bottom:2px}
 .q-images,.answer-images{margin-top:12px;display:grid;gap:8px}.q-images img,.answer-images img{display:block;max-width:100%;height:auto;border-radius:14px;border:.5px solid var(--line)}figure{margin:0}figcaption{margin-top:4px;color:var(--mut);font-size:12px}
@@ -516,7 +509,41 @@ function refreshFeedback(card, q, animate = false){
   }
 }
 
+let touchRevealAnimations = [];
+
+function animateTouchReveal(entries, toolbarBottom){
+  // Read the final layout before starting any transforms.
+  const motion = entries.filter(({card}) => !card.hidden).map(({card, oldTop, result}) => {
+    const panel = result.getBoundingClientRect();
+    return {
+      card,
+      result,
+      offset: oldTop - card.getBoundingClientRect().top,
+      revealHeight: panel.top < window.innerHeight && panel.bottom > toolbarBottom
+        ? panel.bottom - result.parentElement.getBoundingClientRect().top
+        : 0
+    };
+  });
+  if (!motion.some(({revealHeight}) => revealHeight > 0)) return;
+
+  const timing = { duration: 320, easing: "cubic-bezier(.25,.8,.25,1)" };
+  for (const {card, result, offset, revealHeight} of motion){
+    if (Math.abs(offset) > 1){
+      touchRevealAnimations.push(card.animate([
+        { transform: `translateY(${offset}px)` }, { transform: "translateY(0)" }
+      ], timing));
+    }
+    if (revealHeight > 0){
+      touchRevealAnimations.push(result.animate([
+        { transform: `translateY(-${revealHeight}px)` }, { transform: "translateY(0)" }
+      ], timing));
+    }
+  }
+}
+
 function updateFeedback(){
+  for (const animation of touchRevealAnimations) animation.cancel();
+  touchRevealAnimations = [];
   updateControls();
   updateStats();
   const top = document.querySelector(".top").getBoundingClientRect().bottom;
@@ -533,6 +560,7 @@ function updateFeedback(){
     : positions.findIndex((rect, index) => visibleCards[index] && rect.top >= top);
   const anchorTop = positions[anchorIndex]?.top;
   const revealed = showAnswers;
+  const touchReveals = [];
   cards.forEach((card, index) => {
     const visible = visibleCards[index];
     const animateFeedback = visible && (!touch || index === anchorIndex);
@@ -543,7 +571,10 @@ function updateFeedback(){
     const animatePanel = singlePanel
       ? index === anchorIndex
       : visible && (anchorIndex < 0 || index >= anchorIndex);
-    panel.classList.toggle("animate", changing && animatePanel);
+    if (touch && revealed && changing && visible && !reducedMotion.matches){
+      touchReveals.push({card, oldTop: positions[index].top, result: panel.querySelector(".result")});
+    }
+    panel.classList.toggle("animate", !touch && changing && animatePanel);
     panel.classList.toggle("open", revealed);
     panel.setAttribute("aria-hidden", !revealed);
   });
@@ -555,6 +586,7 @@ function updateFeedback(){
     cards.forEach(card => card.classList.remove("no-motion"));
   }));
   if (filterMode === "wrong") applyFilters();
+  if (touchReveals.length) animateTouchReveal(touchReveals, top);
 }
 function getSetIdFromUrl(){
   const params = new URLSearchParams(location.search);
