@@ -118,7 +118,7 @@ dialog{width:min(500px,calc(100% - 32px));max-height:min(85dvh,760px);border:.5p
 
 
 /* The scroll position is controlled by the mobile reading anchor during reveal. */
-@media(max-width:640px){
+@media(any-pointer:coarse){
  html.reading-anchor-active{overflow-anchor:none}
  .question.buffer-animating{content-visibility:visible}
 }
@@ -605,7 +605,9 @@ function stopReadingAnchor(){
   document.documentElement.classList.remove('reading-anchor-active');
 }
 function stabilizeReadingAnchor(card, initialTop){
-  stopReadingAnchor();
+  readingAnchorToken++;
+  if(readingAnchorFrame) cancelAnimationFrame(readingAnchorFrame);
+  readingAnchorFrame=0;
   if(!card || reducedMotion.matches) return;
   const token=readingAnchorToken;
   const start=performance.now();
@@ -626,12 +628,19 @@ function stabilizeReadingAnchor(card, initialTop){
   };
   readingAnchorFrame=requestAnimationFrame(tick);
 }
+// User navigation always wins over answer-position compensation.
+for(const eventName of ['touchmove','wheel','pointerdown']){
+  window.addEventListener(eventName,stopReadingAnchor,{passive:true});
+}
+window.addEventListener('keydown',event=>{
+  if(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' '].includes(event.key))stopReadingAnchor();
+});
 function updateFeedback(){
   updateControls();
   updateStats();
   const top=document.querySelector('.top').getBoundingClientRect().bottom;
   const cards=cardRecords.map(record=>record.card);
-  const phone=window.matchMedia('(max-width: 640px)').matches && touchInput.matches;
+  const phone=touchInput.matches;
   const touch=touchInput.matches;
   const revealed=showAnswers;
   const viewportBottom=window.innerHeight;
@@ -695,8 +704,21 @@ function updateFeedback(){
 
   if(phone){
     if(bufferReleaseTimer)clearTimeout(bufferReleaseTimer);
-    for(const oldCard of activeBufferCards)oldCard.classList.remove('buffer-animating');
+    // Keep overlapping cards rendered during rapid reversals.
+    for(const oldCard of activeBufferCards){
+      const index=cards.indexOf(oldCard);
+      if(!animationIndexes.has(index))oldCard.classList.remove('buffer-animating');
+    }
     activeBufferCards=new Set();
+    for(const index of animationIndexes){
+      cards[index].classList.add('buffer-animating');
+      activeBufferCards.add(cards[index]);
+    }
+    // Materialize skipped content in its CURRENT state before changing the target.
+    // One batched layout, rather than alternating reads and writes per card.
+    if(activeBufferCards.size) document.getElementById('app').offsetHeight;
+    if(readingCard) readingTop=readingCard.getBoundingClientRect().top;
+    document.documentElement.classList.add('reading-anchor-active');
   }
   cards.forEach((card,index)=>{
     const visible=visibleCards[index];
