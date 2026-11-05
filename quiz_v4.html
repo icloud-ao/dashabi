@@ -116,6 +116,12 @@ dialog{width:min(500px,calc(100% - 32px));max-height:min(85dvh,760px);border:.5p
   }
 }
 
+
+/* The scroll position is controlled by the mobile reading anchor during reveal. */
+@media(max-width:640px){
+ html.reading-anchor-active{overflow-anchor:none}
+ .question.buffer-animating{content-visibility:visible}
+}
 </style>
 </head>
 <body>
@@ -413,6 +419,7 @@ function typesetMath(){
   }
 }
 function render(){
+  stopReadingAnchor();
   const groups = groupQuestions();
   const titles = {single:"单选题",multi:"多选题",judge:"判断题",blank:"填空题",short:"简答题"};
   const order = ["single","multi","judge","blank","short"];
@@ -430,6 +437,7 @@ function render(){
   typesetMath();
 }
 function applyFilters(preservePosition = true){
+  stopReadingAnchor();
   const top = document.querySelector(".top").getBoundingClientRect().bottom;
   const wasVisible = cardRecords.filter(record => !record.card.hidden);
   const anchor = preservePosition && window.scrollY > top
@@ -584,100 +592,170 @@ function refreshFeedback(card, q, animate = false){
   }
 }
 
+// Phone-only animation coordinator. It keeps the main reading card at the
+// same viewport position while neighboring panels expand/collapse together.
+let readingAnchorFrame=0;
+let readingAnchorToken=0;
+let bufferReleaseTimer=0;
+let activeBufferCards=new Set();
+function stopReadingAnchor(){
+  readingAnchorToken++;
+  if(readingAnchorFrame) cancelAnimationFrame(readingAnchorFrame);
+  readingAnchorFrame=0;
+  document.documentElement.classList.remove('reading-anchor-active');
+}
+function stabilizeReadingAnchor(card, initialTop){
+  stopReadingAnchor();
+  if(!card || reducedMotion.matches) return;
+  const token=readingAnchorToken;
+  const start=performance.now();
+  document.documentElement.classList.add('reading-anchor-active');
+  const tick=now=>{
+    if(token!==readingAnchorToken) return;
+    if(!card.isConnected){stopReadingAnchor();return;}
+    // Change scroll position only by the displacement of the reading card.
+    // This compensates for growth above it on every animation frame.
+    const displacement=card.getBoundingClientRect().top-initialTop;
+    if(Math.abs(displacement)>.35) window.scrollBy({top:displacement,behavior:'instant'});
+    if(now-start<360){
+      readingAnchorFrame=requestAnimationFrame(tick);
+    }else{
+      readingAnchorFrame=0;
+      document.documentElement.classList.remove('reading-anchor-active');
+    }
+  };
+  readingAnchorFrame=requestAnimationFrame(tick);
+}
 function updateFeedback(){
   updateControls();
   updateStats();
-  const top = document.querySelector(".top").getBoundingClientRect().bottom;
-  const cards = cardRecords.map(record => record.card);
-  // iPad/desktop retain the existing position logic; phones only measure
-  // the cards tracked by IntersectionObserver. The empty-set fallback handles
-  // first-load clicks before the initial observer callback.
-  const phone = window.matchMedia('(max-width: 640px)').matches && touchInput.matches;
-  const inspectAll = !phone || nearbyCardIndexes.size === 0;
-  const positions = cards.map((card,index) =>
-    inspectAll || nearbyCardIndexes.has(index) ? card.getBoundingClientRect() : null);
-  const visibleCards = positions.map((rect, index) =>
-    !!rect && !cards[index].hidden && rect.top < window.innerHeight && rect.bottom > top
-  );
-  const touch = touchInput.matches;
-  const singlePanel = touch || cards.length > 100;
-  // On touch and large banks, animate the first card intersecting the reading area.
-  const anchorIndex = singlePanel
-    ? visibleCards.indexOf(true)
-    : positions.findIndex((rect, index) => visibleCards[index] && rect.top >= top);
-  const anchorTop = positions[anchorIndex]?.top;
-  const revealed = showAnswers;
-  // Only animate a touch panel whose answer is inside the reading area.
-  // Keep the original touch logic on iPad. Only phones use the improved
-  // stable-owner selection for collapsed/out-of-viewport answer regions.
-  let touchPanelIndex = -1;
-  if(touch && !reducedMotion.matches){
-    if(!phone){
-      touchPanelIndex = cards.findIndex((card,index) => {
-        if(!visibleCards[index]) return false;
-        const panel = card.querySelector(".reveal");
-        const rect = panel.getBoundingClientRect();
-        return panel.classList.contains("open") !== revealed &&
-          rect.top < window.innerHeight && rect.bottom >= top;
-      });
-    }else{
-      for(let index=0; index<cards.length; index++){
-        if(!visibleCards[index]) continue;
-        const panel = cards[index].querySelector('.reveal');
-        if(panel.classList.contains('open') === revealed) continue;
-        const rect = panel.getBoundingClientRect();
-        if((rect.top >= top-20 && rect.top <= window.innerHeight+35) ||
-           (rect.top < top && rect.bottom > top)){
-          touchPanelIndex = index;
-          break;
-        }
-      }
-      if(touchPanelIndex < 0) touchPanelIndex = anchorIndex;
-    }
-  }
-  cards.forEach((card, index) => {
-    const visible = visibleCards[index];
-    const animateFeedback = visible && (!touch || index === anchorIndex);
-    card.classList.toggle("no-motion", !animateFeedback);
-    refreshFeedback(card, cardRecords[index].question, animateFeedback);
-    const panel = card.querySelector(".reveal");
-    const changing = panel.classList.contains("open") !== revealed;
-    const animatePanel = touch
-      ? index === touchPanelIndex
-      : singlePanel ? index === anchorIndex : visible && (anchorIndex < 0 || index >= anchorIndex);
-    // Preserve an in-flight transition when grading updates an already open panel.
-    if(changing){
-      // Preserve the iPad/desktop animation path exactly as before.
-      if(!phone){
-        panel.classList.toggle("animate", animatePanel);
-      }else if(animatePanel || panel.classList.contains('in-motion')){
-        // Keep transitions alive across a quick show/hide reversal.
-        panel.classList.add('animate','in-motion');
-      }else panel.classList.remove('animate');
-    }
-    panel.classList.toggle("open", revealed);
-    panel.setAttribute("aria-hidden", !revealed);
-  });
-  if (anchorIndex >= 0){
-    const moved = cards[anchorIndex].getBoundingClientRect().top - anchorTop;
-    if (Math.abs(moved) > 1) window.scrollBy({top:moved, behavior:"instant"});
-  }
-  // Only the phones retain no-motion on off-screen cards. The observer
-  // clears it as cards become visible. No 292-element repaint after 2 frames.
+  const top=document.querySelector('.top').getBoundingClientRect().bottom;
+  const cards=cardRecords.map(record=>record.card);
+  const phone=window.matchMedia('(max-width: 640px)').matches && touchInput.matches;
+  const touch=touchInput.matches;
+  const revealed=showAnswers;
+  const viewportBottom=window.innerHeight;
+  // Preserve the previously tested desktop/iPad strategy unchanged.
+  const inspectAll=!phone || nearbyCardIndexes.size===0;
+  const positions=cards.map((card,index)=>
+    inspectAll||nearbyCardIndexes.has(index)?card.getBoundingClientRect():null);
+  const visibleCards=positions.map((rect,index)=>
+    !!rect&&!cards[index].hidden&&rect.top<viewportBottom&&rect.bottom>top);
+  const singlePanel=touch||cards.length>100;
+  const anchorIndex=singlePanel
+    ?visibleCards.indexOf(true)
+    :positions.findIndex((rect,index)=>visibleCards[index]&&rect.top>=top);
+  const anchorTop=positions[anchorIndex]?.top;
+
+  let animationIndexes=null;
+  let readingIndex=-1;
+  let readingTop=null;
+  let readingCard=null;
   if(phone){
-    if(motionRestoreFrame) cancelAnimationFrame(motionRestoreFrame);
-    motionRestoreFrame = requestAnimationFrame(() => {
-      motionRestoreFrame = 0;
-      visibleCards.forEach((visible,index) => {
-        if(visible) cards[index].classList.remove('no-motion');
-      });
+    // A small sliver from the previous card must not displace the main card.
+    // Use the card with the largest visible area as the reading anchor.
+    let largest=-1;
+    for(let index=0;index<cards.length;index++){
+      if(!visibleCards[index])continue;
+      const rect=positions[index];
+      const area=Math.max(0,Math.min(rect.bottom,viewportBottom)-Math.max(rect.top,top));
+      if(area>largest){largest=area;readingIndex=index;}
+    }
+    readingCard=readingIndex>=0?cards[readingIndex]:null;
+    readingTop=readingCard?.getBoundingClientRect().top;
+    // Animate ALL visible cards, plus two visible-in-the-list before/after.
+    // Filtering may hide cards, so count unhidden question cards only.
+    const first=visibleCards.indexOf(true);
+    const last=visibleCards.lastIndexOf(true);
+    animationIndexes=new Set();
+    if(first>=0){
+      for(let index=first;index<=last;index++){
+        if(!cards[index].hidden)animationIndexes.add(index);
+      }
+      let n=0;
+      for(let index=first-1;index>=0&&n<2;index--){
+        if(!cards[index].hidden){animationIndexes.add(index);n++;}
+      }
+      n=0;
+      for(let index=last+1;index<cards.length&&n<2;index++){
+        if(!cards[index].hidden){animationIndexes.add(index);n++;}
+      }
+    }
+  }
+  let touchPanelIndex=-1;
+  if(!phone&&touch&&!reducedMotion.matches){
+    touchPanelIndex=cards.findIndex((card,index)=>{
+      if(!visibleCards[index])return false;
+      const panel=card.querySelector('.reveal');
+      const rect=panel.getBoundingClientRect();
+      return panel.classList.contains('open')!==revealed&&
+        rect.top<viewportBottom&&rect.bottom>=top;
+    });
+  }
+
+  if(phone){
+    if(bufferReleaseTimer)clearTimeout(bufferReleaseTimer);
+    for(const oldCard of activeBufferCards)oldCard.classList.remove('buffer-animating');
+    activeBufferCards=new Set();
+  }
+  cards.forEach((card,index)=>{
+    const visible=visibleCards[index];
+    const animated=phone ? animationIndexes.has(index) :
+      (touch?index===touchPanelIndex:
+        singlePanel?index===anchorIndex:visible&&(anchorIndex<0||index>=anchorIndex));
+    if(phone){
+      card.classList.toggle('buffer-animating',animated&&!reducedMotion.matches);
+      if(animated&&!reducedMotion.matches)activeBufferCards.add(card);
+    }
+    const animateFeedback=phone ? animated :visible&&(!touch||index===anchorIndex);
+    card.classList.toggle('no-motion',!animateFeedback);
+    refreshFeedback(card,cardRecords[index].question,animateFeedback);
+    const panel=card.querySelector('.reveal');
+    const changing=panel.classList.contains('open')!==revealed;
+    if(changing){
+      if(phone){
+        if(!reducedMotion.matches&&(animated||panel.classList.contains('in-motion'))){
+          panel.classList.add('animate','in-motion');
+        }else{
+          panel.classList.remove('animate','in-motion');
+        }
+      }else{
+        panel.classList.toggle('animate',animated);
+      }
+    }
+    panel.classList.toggle('open',revealed);
+    panel.setAttribute('aria-hidden',String(!revealed));
+  });
+  if(phone){
+    bufferReleaseTimer=setTimeout(()=>{
+      bufferReleaseTimer=0;
+      for(const card of activeBufferCards)card.classList.remove('buffer-animating');
+      activeBufferCards.clear();
+    },420);
+    // First compensate the synchronous relayout, then track the 300ms
+    // transition itself. Cancelling a previous tracker avoids stacked RAFs.
+    if(readingCard&&readingTop!==null){
+      const delta=readingCard.getBoundingClientRect().top-readingTop;
+      if(Math.abs(delta)>1)window.scrollBy({top:delta,behavior:'instant'});
+      stabilizeReadingAnchor(readingCard,readingTop);
+    }else stopReadingAnchor();
+  }else if(anchorIndex>=0){
+    const moved=cards[anchorIndex].getBoundingClientRect().top-anchorTop;
+    if(Math.abs(moved)>1)window.scrollBy({top:moved,behavior:'instant'});
+  }
+  if(phone){
+    if(motionRestoreFrame)cancelAnimationFrame(motionRestoreFrame);
+    motionRestoreFrame=requestAnimationFrame(()=>{
+      motionRestoreFrame=0;
+      // Buffer cards also participate in the normal option transitions.
+      for(const index of animationIndexes)cards[index].classList.remove('no-motion');
     });
   }else{
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      cards.forEach(card => card.classList.remove("no-motion"));
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      cards.forEach(card=>card.classList.remove('no-motion'));
     }));
   }
-  if (filterMode === "wrong") applyFilters();
+  if(filterMode==='wrong')applyFilters();
 }
 function getSetIdFromUrl(){
   const params = new URLSearchParams(location.search);
