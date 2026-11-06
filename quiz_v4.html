@@ -132,6 +132,9 @@ dialog{width:min(500px,calc(100% - 32px));max-height:min(85dvh,760px);border:.5p
  .question.buffer-animating{content-visibility:visible}
  html.phone-anim-contain .question.buffer-animating{contain:content}
 }
+@media(max-width:640px) and (any-pointer:coarse){
+ html.phone-anim-contain .reveal.animate{transition-duration:260ms}
+}
 </style>
 </head>
 <body>
@@ -872,7 +875,7 @@ function updateFeedback(){
       if(!readingAnchorFrame)document.documentElement.classList.remove('reading-anchor-active');
     };
     bufferReleaseTimer=setTimeout(releaseWhenSettled,340);
-    // First compensate the synchronous relayout, then track the 300ms
+    // First compensate the synchronous relayout, then track the
     // transition itself. Cancelling a previous tracker avoids stacked RAFs.
     if(readingCard&&readingTop!==null){
       const delta=readingCard.getBoundingClientRect().top-readingTop;
