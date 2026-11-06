@@ -29,26 +29,6 @@ window.MathJax = {
   border-bottom: .5px solid var(--header-border);
   transition: background-color .3s, border-color .3s;
 }
-@media (pointer: coarse) {
-  .top {
-    background: transparent;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    border-bottom-color: transparent;
-  }
-  .top::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 -24px;
-    z-index: -1;
-    pointer-events: none;
-    background: var(--header-touch);
-    -webkit-backdrop-filter: saturate(165%) blur(16px);
-    backdrop-filter: saturate(165%) blur(16px);
-    -webkit-mask-image: linear-gradient(#000 calc(100% - 36px), transparent);
-    mask-image: linear-gradient(#000 calc(100% - 36px), transparent);
-  }
-}
 .top-inner{max-width:980px;margin:auto;padding:calc(6px + env(safe-area-inset-top)) 16px 8px}.top-row{display:flex;align-items:center;gap:12px;min-width:0;height:44px}.icon{display:inline-flex;align-items:center;justify-content:center;flex:none;width:36px;height:36px;border-radius:50%;background:transparent;color:var(--tc);font-size:20px;font-weight:500;transition:transform .18s cubic-bezier(.25,1,.5,1),background-color .18s}.icon:hover{background:var(--selected)}.icon:active{transform:scale(.92);opacity:.8}.title{flex:1;min-width:0;font-size:17px;font-weight:600;letter-spacing:-.015em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}.progress-label{flex:none;color:var(--mut);font-size:13px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.01em}.progress-label b{color:var(--ink);font-weight:600}
 .bar{height:3.5px;margin:4px 0 8px;border-radius:99px;background:rgba(120,120,128,.16);overflow:hidden}.bar span{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--tc),#5856d6);transition:width .35s cubic-bezier(.25,1,.5,1)}
 .toolbar{display:flex;align-items:center;gap:8px;min-width:0}.filters{display:flex;align-items:center;flex:1;min-width:0;gap:4px;overflow-x:auto;scrollbar-width:none;padding:2px}.filters::-webkit-scrollbar{display:none}.pill,.tool{flex:none;height:32px;border:.5px solid transparent;border-radius:99px;padding:0 12px;font-size:13px;font-weight:550;letter-spacing:-.01em;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;transition:transform .2s cubic-bezier(.25,1,.5,1),background-color .2s,color .2s,border-color .2s}.pill{color:var(--mut);background:transparent}.pill:hover{color:var(--ink);background:rgba(120,120,128,.08)}.pill.active{color:var(--ink);background:var(--card);border-color:var(--line);box-shadow:0 2px 6px rgba(0,0,0,.06),0 .5px 1px rgba(0,0,0,.04)}@media(prefers-color-scheme:dark){.pill.active{background:var(--card-elevated);box-shadow:0 2px 6px rgba(0,0,0,.4)}}.pill:active,.tool:active{transform:scale(.96)}.tool{color:var(--tc);background:rgba(120,120,128,.08)}.tool:hover{background:rgba(120,120,128,.14)}.tool.active{background:var(--selected);color:var(--tc)}.tool.primary{background:var(--tc);color:var(--on-accent);box-shadow:0 2px 8px rgba(0,122,255,.28)}.tool.primary:hover{background:var(--tc-hover)}
@@ -79,52 +59,28 @@ dialog{width:min(500px,calc(100% - 32px));max-height:min(85dvh,760px);border:.5p
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 
 
-/* Touch header: opaque title/progress area with a translucent lower edge. */
-@media (max-width: 640px), (hover: none) and (pointer: coarse) {
-  .top {
-    background: linear-gradient(to bottom,
-      rgba(255, 255, 255, 1) 0,
-      rgba(255, 255, 255, 1) calc(64px + env(safe-area-inset-top)),
-      rgba(255, 255, 255, .90) calc(96px + env(safe-area-inset-top)),
-      rgba(255, 255, 255, .72) 100%);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    border-bottom-color: transparent;
-  }
-  .top::before {
-    content: none;
-    display: none;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-  .top::after {
-    content: "";
-    position: absolute;
-    top: 100%; left: 0; right: 0;
-    height: 44px;
-    pointer-events: none;
-    background: linear-gradient(to bottom,
-      rgba(255, 255, 255, .72) 0%,
-      rgba(255, 255, 255, .38) 55%,
-      rgba(255, 255, 255, 0) 100%);
-  }
+/* One continuous surface avoids a seam between the header and its fade. */
+:root{--touch-header-rgb:255,255,255;--header-fade:24px}
+@media(prefers-color-scheme:dark){:root{--touch-header-rgb:28,28,30}}
+.top::before{
+  content:"";display:none;position:absolute;inset:0 0 calc(-1 * var(--header-fade));
+  z-index:-1;pointer-events:none;
+  background:linear-gradient(to bottom,
+    rgba(var(--touch-header-rgb),1) 0,
+    rgba(var(--touch-header-rgb),1) calc(64px + env(safe-area-inset-top)),
+    rgba(var(--touch-header-rgb),.90) calc(96px + env(safe-area-inset-top)),
+    rgba(var(--touch-header-rgb),.64) calc(100% - var(--header-fade)),
+    rgba(var(--touch-header-rgb),.28) calc(100% - 10px),
+    rgba(var(--touch-header-rgb),0) 100%);
 }
-@media (max-width: 640px) and (prefers-color-scheme: dark), (hover: none) and (pointer: coarse) and (prefers-color-scheme: dark) {
-  .top {
-    background: linear-gradient(to bottom,
-      rgba(28, 28, 30, 1) 0,
-      rgba(28, 28, 30, 1) calc(64px + env(safe-area-inset-top)),
-      rgba(28, 28, 30, .90) calc(96px + env(safe-area-inset-top)),
-      rgba(28, 28, 30, .72) 100%);
-  }
-  .top::after {
-    background: linear-gradient(to bottom,
-      rgba(28, 28, 30, .72) 0%,
-      rgba(28, 28, 30, .38) 55%,
-      rgba(28, 28, 30, 0) 100%);
-  }
+@media (max-width:640px), (hover:none) and (pointer:coarse){
+  .top{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;border-bottom:0}
+  .top::before{display:block}
+  .top::after{content:none;display:none}
 }
-
+html.ipad-device .top{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;border-bottom:0}
+html.ipad-device .top::before{display:block}
+html.ipad-device .top::after{content:none;display:none}
 
 /* The scroll position is controlled by the mobile reading anchor during reveal. */
 @media(max-width:640px){
@@ -680,6 +636,7 @@ function restoreInnerScroll(mathReady){
     },{once:true});
   }
 }
+document.documentElement.classList.toggle('ipad-device',isIPad);
 if(!isIPad)document.documentElement.classList.add('phone-anim-contain');
 function layoutTop(element){
   let y=0;
@@ -750,7 +707,7 @@ function cancelAnchorForNavigation(event){
   if(!isIPad && readingAnchorSession && event.target instanceof Element &&
      event.target.closest('#btnToggleAnswers,#btnGrade') &&
      (event.type==='pointerdown' || (event.type==='keydown' && event.key===' ')))return;
-  if(readingAnchorFrame)stopReadingAnchor(true);
+  if(readingAnchorFrame || readingAnchorSession)stopReadingAnchor(true);
 }
 for(const name of ['touchmove','wheel','pointerdown']){
   window.addEventListener(name,cancelAnchorForNavigation,{passive:true});
@@ -758,9 +715,151 @@ for(const name of ['touchmove','wheel','pointerdown']){
 window.addEventListener('keydown',event=>{
   if(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' '].includes(event.key))cancelAnchorForNavigation(event);
 });
+// Expand from the upper readable question. Taller questions below it must
+// not pull the question being read upward when their answers are revealed.
+function updatePhoneFeedback(){
+  const top=document.querySelector('.top').getBoundingClientRect().bottom;
+  const bottom=quizScroll ? quizScroll.getBoundingClientRect().bottom : window.innerHeight;
+  const cards=cardRecords.map(record=>record.card);
+  const positions=cards.map((card,index)=>
+    !card.hidden && (!nearbyCardIndexes.size || nearbyCardIndexes.has(index))
+      ?card.getBoundingClientRect():null);
+  const visible=positions.map(rect=>!!rect && rect.top<bottom && rect.bottom>top);
+  const inspect=index=>{
+    if(cards[index].hidden)return false;
+    const rect=positions[index] || cards[index].getBoundingClientRect();
+    positions[index]=rect;
+    visible[index]=rect.top<bottom && rect.bottom>top;
+    return visible[index];
+  };
+  const knownFirst=visible.indexOf(true),knownLast=visible.lastIndexOf(true);
+  if(knownFirst<0){
+    for(let i=0;i<cards.length;i++)inspect(i);
+  }else{
+    for(let i=knownFirst+1;i<knownLast;i++)inspect(i);
+    for(let i=knownFirst-1;i>=0;i--){if(!cards[i].hidden && !inspect(i))break;}
+    for(let i=knownLast+1;i<cards.length;i++){if(!cards[i].hidden && !inspect(i))break;}
+  }
+  const first=visible.indexOf(true),last=visible.lastIndexOf(true);
+  const previous=readingAnchorSession;
+  let readingIndex=previous ? cards.indexOf(previous.card):-1;
+  if(readingIndex<0 || !visible[readingIndex]){
+    readingIndex=-1;
+    for(let i=Math.max(0,first);i<=last;i++){
+      if(!visible[i])continue;
+      const rect=positions[i],panelTop=cards[i].querySelector('.reveal').getBoundingClientRect().top;
+      const bodyVisible=Math.max(0,Math.min(panelTop,bottom)-Math.max(rect.top,top));
+      const cardVisible=Math.max(0,Math.min(rect.bottom,bottom)-Math.max(rect.top,top));
+      // Keep a readable line/input, or a substantial visible answer; ignore
+      // only a small fragment left over from the preceding question.
+      if(bodyVisible>=24 || cardVisible>=64){readingIndex=i;break;}
+    }
+    if(readingIndex<0)readingIndex=first;
+  }
+  const readingCard=readingIndex>=0?cards[readingIndex]:null;
+  const session=readingCard
+    ? previous?.card===readingCard ? previous
+      : {card:readingCard,baseLayout:layoutTop(readingCard),baseScroll:scrollPosition(),lastTarget:scrollPosition()}
+    : null;
+  stopReadingAnchor(true);
+  readingAnchorSession=session;
+  const token=readingAnchorToken;
+  if(bufferReleaseTimer)clearTimeout(bufferReleaseTimer);
+  document.documentElement.classList.add('reading-anchor-active');
+  const animated=new Set(),prepared=new Set();
+  if(readingIndex>=0){
+    for(let i=readingIndex;i<=last;i++)if(!cards[i].hidden){animated.add(i);prepared.add(i);}
+    let n=0;
+    for(let i=last+1;i<cards.length && n<2;i++){
+      if(!cards[i].hidden){animated.add(i);prepared.add(i);n++;}
+    }
+    n=0;
+    for(let i=readingIndex-1;i>=0 && n<2;i--){
+      if(!cards[i].hidden){prepared.add(i);n++;}
+    }
+  }
+  for(const oldCard of activeBufferCards){
+    const i=cards.indexOf(oldCard);
+    if(!prepared.has(i))oldCard.classList.remove('buffer-animating');
+    if(!animated.has(i))oldCard.querySelector('.reveal').classList.remove('animate','in-motion');
+  }
+  activeBufferCards=new Set();
+  for(const i of prepared){
+    cards[i].classList.add('buffer-animating');
+    activeBufferCards.add(cards[i]);
+  }
+  // Resolve the starting state once so newly materialized lower panels also
+  // receive a real transition, including a quick reversal in the same area.
+  if(prepared.size)void $("app").offsetHeight;
+  cards.forEach((card,i)=>{
+    const animate=animated.has(i) && !reducedMotion.matches;
+    card.classList.toggle('buffer-animating',prepared.has(i));
+    card.classList.toggle('no-motion',!animate);
+    refreshFeedback(card,cardRecords[i].question,animate);
+    const panel=card.querySelector('.reveal');
+    if(!animate)panel.classList.remove('animate','in-motion');
+    else if(panel.classList.contains('open')!==showAnswers)panel.classList.add('animate','in-motion');
+    panel.classList.toggle('open',showAnswers);
+    panel.setAttribute('aria-hidden',String(!showAnswers));
+  });
+  const correctPosition=()=>{
+    if(!session || readingAnchorSession!==session || token!==readingAnchorToken || !session.card.isConnected)return;
+    const target=session.baseScroll+layoutTop(session.card)-session.baseLayout;
+    if(Math.abs(target-session.lastTarget)>.35){session.lastTarget=target;scrollPageTo(target);}
+  };
+  // Changes above the reader settle immediately, then one correction keeps
+  // the reading position. Animations below never need continuous scrolling.
+  correctPosition();
+  // The browser may refresh cached sizes of skipped questions after the
+  // viewport moves. Measure after layout, and scroll only for an actual
+  // upstream displacement; the animation below the reader stays independent.
+  if(session && 'ResizeObserver' in window){
+    let observer=null;
+    try{
+      observer=new ResizeObserver(correctPosition);
+      observer.observe($("app"));
+      for(const i of prepared)if(i<readingIndex)observer.observe(cards[i]);
+      readingAnchorObserver=observer;
+    }catch{observer?.disconnect();}
+  }
+  if(session && !readingAnchorObserver){
+    const tick=()=>{
+      if(token!==readingAnchorToken || readingAnchorSession!==session)return;
+      correctPosition();
+      readingAnchorFrame=requestAnimationFrame(tick);
+    };
+    readingAnchorFrame=requestAnimationFrame(tick);
+  }
+  const releaseCards=activeBufferCards,started=performance.now();
+  const release=()=>{
+    if(activeBufferCards!==releaseCards)return;
+    const running=[...releaseCards].some(card=>card.querySelector('.reveal').getAnimations().some(a=>
+      a.transitionProperty==='grid-template-rows' && (a.playState==='running'||a.pending)));
+    if(running && performance.now()-started<1500){bufferReleaseTimer=setTimeout(release,50);return;}
+    bufferReleaseTimer=0;
+    for(const card of releaseCards){
+      card.classList.remove('buffer-animating');
+      card.querySelector('.reveal').classList.remove('animate','in-motion');
+    }
+    releaseCards.clear();
+    if(readingAnchorSession===session)stopReadingAnchor();
+    else if(!readingAnchorFrame && !readingAnchorSession)document.documentElement.classList.remove('reading-anchor-active');
+  };
+  bufferReleaseTimer=setTimeout(release,reducedMotion.matches?50:300);
+  if(motionRestoreFrame)cancelAnimationFrame(motionRestoreFrame);
+  motionRestoreFrame=requestAnimationFrame(()=>{
+    motionRestoreFrame=0;
+    for(const i of animated)cards[i].classList.remove('no-motion');
+  });
+  if(filterMode==='wrong' && cardRecords.some(r=>r.card.hidden===shouldShowQuestion(r.question)))applyFilters();
+}
 function updateFeedback(){
   updateControls();
   updateStats();
+  if(!isIPad && touchInput.matches && window.matchMedia('(max-width:640px)').matches){
+    updatePhoneFeedback();
+    return;
+  }
   const top=document.querySelector('.top').getBoundingClientRect().bottom;
   const cards=cardRecords.map(record=>record.card);
   const phone=window.matchMedia('(max-width: 640px)').matches && touchInput.matches;
