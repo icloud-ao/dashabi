@@ -16,10 +16,20 @@ window.MathJax = {
   },
   options: {
     skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  output: {
+    displayAlign: 'left',
+    displayIndent: '0',
+    displayOverflow: 'linebreak',
+    linebreaks: {
+      inline: true,
+      width: '100%',
+      lineleading: 0.2
+    }
   }
 };
 </script>
-<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js"></script>
 <style>
 :root{
   --bg:#070b12;
@@ -221,6 +231,21 @@ h1{margin:0;font-size:24px;line-height:1.15;letter-spacing:.2px;font-weight:900}
 word-break:break-word}
 .answer-line.show{display:block}
 .answer-line b{color:#f8fafc}
+/* MathJax 4: readable display math with a safe overflow fallback. */
+.stem mjx-container[display="true"],
+.answer-line mjx-container[display="true"],
+.opt .text mjx-container[display="true"]{
+  display:block;
+  max-width:100%;
+  margin:.45em 0!important;
+  text-align:left!important;
+  overflow-x:auto;
+}
+.stem mjx-container:not([display="true"]),
+.answer-line mjx-container:not([display="true"]),
+.opt .text mjx-container:not([display="true"]){
+  overflow:visible;
+}
 .bottom-bar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:linear-gradient(180deg,rgba(7,11,18,.54),rgba(7,11,18,.94));backdrop-filter:blur(18px);border-top:1px solid var(--border)}
 .bottom-inner{max-width:1120px;margin:0 auto;padding:12px 18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
 .status{font-size:13px;color:var(--muted)}
@@ -647,11 +672,12 @@ function groupQuestions(){
 }
 function typesetMath(){
   if(window.MathJax && MathJax.typesetPromise){
-    MathJax.typesetClear && MathJax.typesetClear();
     MathJax.typesetPromise([$('app')]).catch(err => console.warn('MathJax typeset failed:', err));
   }
 }
 function render(){
+  // Clear old math while it is still in the DOM (MathJax 4).
+  if(window.MathJax?.typesetClear) MathJax.typesetClear([$('app')]);
   const groups = groupQuestions();
   const titles = {single:"单选题",multi:"多选题",judge:"判断题",blank:"填空题",short:"简答题"};
   const order = ["single","multi","judge","blank","short"];
