@@ -79,8 +79,8 @@ dialog{width:min(500px,calc(100% - 32px));max-height:min(85dvh,760px);border:.5p
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 
 
-/* Phone header: an opaque title/progress area with a translucent lower edge. */
-@media (max-width: 640px) {
+/* Touch header: opaque title/progress area with a translucent lower edge. */
+@media (max-width: 640px), (hover: none) and (pointer: coarse) {
   .top {
     background: linear-gradient(to bottom,
       rgba(255, 255, 255, 1) 0,
@@ -109,7 +109,7 @@ dialog{width:min(500px,calc(100% - 32px));max-height:min(85dvh,760px);border:.5p
       rgba(255, 255, 255, 0) 100%);
   }
 }
-@media (max-width: 640px) and (prefers-color-scheme: dark) {
+@media (max-width: 640px) and (prefers-color-scheme: dark), (hover: none) and (pointer: coarse) and (prefers-color-scheme: dark) {
   .top {
     background: linear-gradient(to bottom,
       rgba(28, 28, 30, 1) 0,
@@ -128,7 +128,7 @@ dialog{width:min(500px,calc(100% - 32px));max-height:min(85dvh,760px);border:.5p
 
 /* The scroll position is controlled by the mobile reading anchor during reveal. */
 @media(max-width:640px){
- html.reading-anchor-active{overflow-anchor:none}
+ html.reading-anchor-active,html.reading-anchor-active body{overflow-anchor:none}
  .question.buffer-animating{content-visibility:visible}
 }
 </style>
@@ -607,15 +607,15 @@ let readingAnchorFrame=0;
 let readingAnchorToken=0;
 let bufferReleaseTimer=0;
 let activeBufferCards=new Set();
-function stopReadingAnchor(){
+function stopReadingAnchor(keepSuppression=false){
   readingAnchorToken++;
   if(readingAnchorFrame) cancelAnimationFrame(readingAnchorFrame);
   readingAnchorFrame=0;
-  document.documentElement.classList.remove('reading-anchor-active');
+  if(!keepSuppression)document.documentElement.classList.remove('reading-anchor-active');
 }
 function stabilizeReadingAnchor(card, initialTop){
-  stopReadingAnchor();
-  if(!card || reducedMotion.matches) return;
+  stopReadingAnchor(true);
+  if(!card || reducedMotion.matches){stopReadingAnchor();return;}
   const token=readingAnchorToken;
   const start=performance.now();
   document.documentElement.classList.add('reading-anchor-active');
@@ -635,6 +635,16 @@ function stabilizeReadingAnchor(card, initialTop){
   };
   readingAnchorFrame=requestAnimationFrame(tick);
 }
+// A reader's own navigation takes priority over position correction.
+function cancelAnchorForNavigation(){
+  if(readingAnchorFrame)stopReadingAnchor(true);
+}
+for(const name of ['touchmove','wheel','pointerdown']){
+  window.addEventListener(name,cancelAnchorForNavigation,{passive:true});
+}
+window.addEventListener('keydown',event=>{
+  if(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' '].includes(event.key))cancelAnchorForNavigation();
+});
 function updateFeedback(){
   updateControls();
   updateStats();
@@ -650,6 +660,33 @@ function updateFeedback(){
     inspectAll||nearbyCardIndexes.has(index)?card.getBoundingClientRect():null);
   const visibleCards=positions.map((rect,index)=>
     !!rect&&!cards[index].hidden&&rect.top<viewportBottom&&rect.bottom>top);
+  // Observer callbacks are asynchronous; after a jump they may describe the old viewport.
+  let needsPreparation=phone && (!cardObserver || nearbyCardIndexes.size===0);
+  if(phone){
+    const inspect=index=>{
+      if(cards[index].hidden)return false;
+      const alreadyMeasured=!!positions[index];
+      const rect=positions[index] || cards[index].getBoundingClientRect();
+      positions[index]=rect;
+      visibleCards[index]=rect.top<viewportBottom&&rect.bottom>top;
+      if(!alreadyMeasured && visibleCards[index])needsPreparation=true;
+      return visibleCards[index];
+    };
+    const first=visibleCards.indexOf(true),last=visibleCards.lastIndexOf(true);
+    if(first<0){
+      for(let i=0;i<cards.length;i++)inspect(i);
+    }else{
+      for(let i=first+1;i<last;i++)inspect(i);
+      for(let i=first-1;i>=0;i--){
+        if(cards[i].hidden)continue;
+        if(!inspect(i))break;
+      }
+      for(let i=last+1;i<cards.length;i++){
+        if(cards[i].hidden)continue;
+        if(!inspect(i))break;
+      }
+    }
+  }
   const singlePanel=touch||cards.length>100;
   const anchorIndex=singlePanel
     ?visibleCards.indexOf(true)
@@ -703,9 +740,26 @@ function updateFeedback(){
   }
 
   if(phone){
+    // Avoid native and manual scroll anchoring fighting each other during the transition.
+    document.documentElement.classList.add('reading-anchor-active');
     if(bufferReleaseTimer)clearTimeout(bufferReleaseTimer);
-    for(const oldCard of activeBufferCards)oldCard.classList.remove('buffer-animating');
+    // Preserve running transitions for cards that remain in the animation area.
+    for(const oldCard of activeBufferCards){
+      const index=cards.indexOf(oldCard);
+      if(!animationIndexes.has(index)){
+        oldCard.classList.remove('buffer-animating');
+        oldCard.querySelector('.reveal').classList.remove('in-motion','animate');
+      }
+    }
     activeBufferCards=new Set();
+    if(!reducedMotion.matches){
+      for(const index of animationIndexes){
+        cards[index].classList.add('buffer-animating');
+        activeBufferCards.add(cards[index]);
+      }
+      // Materialize the new viewport only when observer data is stale.
+      if(needsPreparation && activeBufferCards.size)void $('app').offsetHeight;
+    }
   }
   cards.forEach((card,index)=>{
     const visible=visibleCards[index];
@@ -721,9 +775,11 @@ function updateFeedback(){
     refreshFeedback(card,cardRecords[index].question,animateFeedback);
     const panel=card.querySelector('.reveal');
     const changing=panel.classList.contains('open')!==revealed;
+    // Cards outside the visible and buffered area should settle immediately.
+    if(phone && !animated)panel.classList.remove('in-motion','animate');
     if(changing){
       if(phone){
-        if(!reducedMotion.matches&&(animated||panel.classList.contains('in-motion'))){
+        if(!reducedMotion.matches&&animated){
           panel.classList.add('animate','in-motion');
         }else{
           panel.classList.remove('animate','in-motion');
@@ -736,11 +792,26 @@ function updateFeedback(){
     panel.setAttribute('aria-hidden',String(!revealed));
   });
   if(phone){
-    bufferReleaseTimer=setTimeout(()=>{
+    const releaseCards=activeBufferCards;
+    const releaseStarted=performance.now();
+    const releaseWhenSettled=()=>{
+      if(activeBufferCards!==releaseCards)return;
+      const running=[...releaseCards].some(card=>
+        card.querySelector('.reveal').getAnimations().some(animation=>
+          animation.transitionProperty==='grid-template-rows' && animation.playState==='running'));
+      if(running && performance.now()-releaseStarted<750){
+        bufferReleaseTimer=setTimeout(releaseWhenSettled,50);
+        return;
+      }
       bufferReleaseTimer=0;
-      for(const card of activeBufferCards)card.classList.remove('buffer-animating');
-      activeBufferCards.clear();
-    },420);
+      for(const card of releaseCards){
+        card.classList.remove('buffer-animating');
+        card.querySelector('.reveal').classList.remove('in-motion','animate');
+      }
+      releaseCards.clear();
+      if(!readingAnchorFrame)document.documentElement.classList.remove('reading-anchor-active');
+    };
+    bufferReleaseTimer=setTimeout(releaseWhenSettled,340);
     // First compensate the synchronous relayout, then track the 300ms
     // transition itself. Cancelling a previous tracker avoids stacked RAFs.
     if(readingCard&&readingTop!==null){
@@ -764,7 +835,8 @@ function updateFeedback(){
       cards.forEach(card=>card.classList.remove('no-motion'));
     }));
   }
-  if(filterMode==='wrong')applyFilters();
+  // Re-filter only if grading or an edited answer actually changed membership.
+  if(filterMode==='wrong' && cardRecords.some(record=>record.card.hidden===shouldShowQuestion(record.question)))applyFilters();
 }
 function getSetIdFromUrl(){
   const params = new URLSearchParams(location.search);
@@ -855,5 +927,6 @@ loadQuiz();
 </script>
 </body>
 </html>
+
 
 
