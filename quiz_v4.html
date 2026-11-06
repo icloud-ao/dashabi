@@ -59,18 +59,19 @@ dialog{width:min(500px,calc(100% - 32px));max-height:min(85dvh,760px);border:.5p
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 
 
-/* One continuous surface avoids a seam between the header and its fade. */
-:root{--touch-header-rgb:255,255,255;--header-fade:24px}
+/* Fade ends at the type pills; one eased surface has no lower seam. */
+:root{--touch-header-rgb:255,255,255;--header-solid:calc(60px + env(safe-area-inset-top))}
 @media(prefers-color-scheme:dark){:root{--touch-header-rgb:28,28,30}}
 .top::before{
-  content:"";display:none;position:absolute;inset:0 0 calc(-1 * var(--header-fade));
+  content:"";display:none;position:absolute;inset:0 0 10px;
   z-index:-1;pointer-events:none;
   background:linear-gradient(to bottom,
     rgba(var(--touch-header-rgb),1) 0,
-    rgba(var(--touch-header-rgb),1) calc(64px + env(safe-area-inset-top)),
-    rgba(var(--touch-header-rgb),.90) calc(96px + env(safe-area-inset-top)),
-    rgba(var(--touch-header-rgb),.64) calc(100% - var(--header-fade)),
-    rgba(var(--touch-header-rgb),.28) calc(100% - 10px),
+    rgba(var(--touch-header-rgb),1) var(--header-solid),
+    rgba(var(--touch-header-rgb),.896) calc(var(--header-solid) + (100% - var(--header-solid)) * .2),
+    rgba(var(--touch-header-rgb),.648) calc(var(--header-solid) + (100% - var(--header-solid)) * .4),
+    rgba(var(--touch-header-rgb),.352) calc(var(--header-solid) + (100% - var(--header-solid)) * .6),
+    rgba(var(--touch-header-rgb),.104) calc(var(--header-solid) + (100% - var(--header-solid)) * .8),
     rgba(var(--touch-header-rgb),0) 100%);
 }
 @media (max-width:640px), (hover:none) and (pointer:coarse){
@@ -81,6 +82,26 @@ dialog{width:min(500px,calc(100% - 32px));max-height:min(85dvh,760px);border:.5p
 html.ipad-device .top{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;border-bottom:0}
 html.ipad-device .top::before{display:block}
 html.ipad-device .top::after{content:none;display:none}
+
+/* Native-size text inside two opposing clipping windows. Only a handful of
+   cards intersecting the old/new viewport receive compositor animations. */
+.question.phone-reveal-prepared{content-visibility:visible}
+.question.phone-reveal-ready{
+  position:relative;isolation:isolate;contain:layout style;
+  background:transparent;border-color:transparent;
+  box-shadow:none;transition:none;
+}
+.phone-reveal-ready .card-surface{
+  position:absolute;z-index:-1;pointer-events:none;
+  border:.5px solid var(--line);
+  border-radius:inherit;background:var(--card);box-shadow:var(--shadow-card);transform-origin:top;
+}
+.phone-reveal-ready .reveal{
+  display:block;height:0;overflow:hidden;opacity:1;transition:none;grid-template-rows:none;
+}
+.phone-reveal-ready .reveal.open{height:auto}
+.phone-reveal-ready .reveal-inner{height:auto;overflow:hidden}
+@media(prefers-reduced-motion:reduce){.reveal{transition:none!important}}
 
 /* The scroll position is controlled by the mobile reading anchor during reveal. */
 @media(max-width:640px){
@@ -165,10 +186,12 @@ let lastAnswered = null;
 // layout of every question during each global answer toggle.
 let cardObserver = null;
 const nearbyCardIndexes = new Set();
+const pendingFeedbackCards = new Set();
 let motionRestoreFrame = 0;
 function observeCards(){
   if(cardObserver) cardObserver.disconnect();
   nearbyCardIndexes.clear();
+  pendingFeedbackCards.clear();
   if(!('IntersectionObserver' in window)) return;
   cardObserver = new IntersectionObserver(entries => {
     for(const entry of entries){
@@ -176,6 +199,10 @@ function observeCards(){
       if(!Number.isInteger(index)) continue;
       if(entry.isIntersecting && !entry.target.hidden){
         nearbyCardIndexes.add(index);
+        if(pendingFeedbackCards.delete(entry.target)){
+          entry.target.classList.add('no-motion');
+          refreshFeedback(entry.target,cardRecords[index].question,false);
+        }
         // Re-enable normal option feedback once the card enters the screen.
         entry.target.classList.remove('no-motion');
       }else nearbyCardIndexes.delete(index);
@@ -398,6 +425,7 @@ function typesetMath(){
   return Promise.resolve(window.MathJax?.startup?.promise).catch(err => console.warn("MathJax startup failed:", err));
 }
 function render(){
+  finishPhoneReveal();
   stopReadingAnchor();
   const groups = groupQuestions();
   const titles = {single:"单选题",multi:"多选题",judge:"判断题",blank:"填空题",short:"简答题"};
@@ -411,11 +439,16 @@ function render(){
   const orderedQuestions = order.flatMap(type => groups[type]);
   cardRecords = [...$("app").querySelectorAll(".question")].map((card,index) => ({card, question:orderedQuestions[index]}));
   sectionRecords = [...$("app").querySelectorAll(".section")].map(section => ({section, cards:[...section.querySelectorAll(".question")]}));
+  if(usePhoneReveal()){
+    document.documentElement.classList.add('phone-reveal-enabled');
+    initializePhoneRevealCards(cardRecords.map(record=>record.card));
+  }
   applyFilters(false);
   observeCards();
   return typesetMath();
 }
 function applyFilters(preservePosition = true){
+  finishPhoneReveal();
   stopReadingAnchor();
   const top = document.querySelector(".top").getBoundingClientRect().bottom;
   const wasVisible = cardRecords.filter(record => !record.card.hidden);
@@ -715,148 +748,242 @@ for(const name of ['touchmove','wheel','pointerdown']){
 window.addEventListener('keydown',event=>{
   if(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' '].includes(event.key))cancelAnchorForNavigation(event);
 });
-// Expand from the upper readable question. Taller questions below it must
-// not pull the question being read upward when their answers are revealed.
+// Keep text at its natural size. Only the card surface, clipping windows and
+// neighboring cards move; the question list does not reflow on every frame.
+let phoneRevealMotion=null;
+let phoneRevealBorder=.5;
+function usePhoneReveal(){
+  return !isIPad && touchInput.matches && (/iPhone|iPod|Android.+Mobile/i.test(navigator.userAgent) ||
+    window.matchMedia('(max-width:640px)').matches ||
+    document.documentElement.classList.contains('phone-reveal-enabled'));
+}
+function initializePhoneRevealCards(cards){
+  if(cards.length && cards.some(card=>!card.classList.contains('phone-reveal-ready')))
+    phoneRevealBorder=parseFloat(getComputedStyle(cards[0]).borderTopWidth);
+  for(const card of cards)ensurePhoneRevealCard(card);
+}
+function ensurePhoneRevealCard(card,border=phoneRevealBorder){
+  let surface=card.querySelector('.card-surface');
+  if(!surface){
+    surface=document.createElement('div');surface.className='card-surface';
+    surface.setAttribute('aria-hidden','true');
+    surface.style.top=surface.style.bottom=surface.style.left=surface.style.right=`${-border}px`;
+    card.append(surface);card.classList.add('phone-reveal-ready');
+  }
+  return surface;
+}
+function finishPhoneReveal(keepPrepared=false){
+  const motion=phoneRevealMotion;
+  if(!motion)return;
+  phoneRevealMotion=null;
+  if(motion.timer)clearTimeout(motion.timer);
+  motion.sizeObserver?.disconnect();
+  for(const animation of motion.animations)animation.cancel();
+  for(const entry of motion.entries){
+    entry.card.classList.remove('phone-reveal-motion');
+    for(const [element,property,value,priority] of entry.restore) {
+      if(value)element.style.setProperty(property,value,priority);else element.style.removeProperty(property);
+    }
+  }
+  if(keepPrepared!==true){
+    motion.correctPosition?.();
+    for(const card of motion.prepared)card.classList.remove('phone-reveal-prepared');
+  }
+  if(readingAnchorSession===motion.session){
+    motion.correctPosition?.();
+    stopReadingAnchor();
+  }else if(!readingAnchorSession)document.documentElement.classList.remove('reading-anchor-active');
+}
 function updatePhoneFeedback(){
   const top=document.querySelector('.top').getBoundingClientRect().bottom;
   const bottom=quizScroll ? quizScroll.getBoundingClientRect().bottom : window.innerHeight;
   const cards=cardRecords.map(record=>record.card);
-  const positions=cards.map((card,index)=>
-    !card.hidden && (!nearbyCardIndexes.size || nearbyCardIndexes.has(index))
-      ?card.getBoundingClientRect():null);
-  const visible=positions.map(rect=>!!rect && rect.top<bottom && rect.bottom>top);
-  const inspect=index=>{
-    if(cards[index].hidden)return false;
-    const rect=positions[index] || cards[index].getBoundingClientRect();
-    positions[index]=rect;
-    visible[index]=rect.top<bottom && rect.bottom>top;
-    return visible[index];
-  };
-  const knownFirst=visible.indexOf(true),knownLast=visible.lastIndexOf(true);
-  if(knownFirst<0){
-    for(let i=0;i<cards.length;i++)inspect(i);
-  }else{
-    for(let i=knownFirst+1;i<knownLast;i++)inspect(i);
-    for(let i=knownFirst-1;i>=0;i--){if(!cards[i].hidden && !inspect(i))break;}
-    for(let i=knownLast+1;i<cards.length;i++){if(!cards[i].hidden && !inspect(i))break;}
+  document.documentElement.classList.add('phone-reveal-enabled');
+  initializePhoneRevealCards(cards);
+  // These are two batched layout snapshots, never a per-frame position loop.
+  const before=cards.map(card=>card.hidden?null:card.getBoundingClientRect());
+  const visible=before.map(rect=>!!rect && rect.top<bottom && rect.bottom>top);
+  const previous=phoneRevealMotion;
+  const oldPanels=new Map();
+  if(previous)for(const entry of previous.entries){
+    const transform=getComputedStyle(entry.inner).transform;
+    const y=transform==='none'?0:new DOMMatrixReadOnly(transform).m42;
+    oldPanels.set(entry.card,{
+      shown:Math.max(0,Math.min(entry.fullHeight,entry.fullHeight+y)),
+      height:entry.surface.getBoundingClientRect().height,
+      opacity:Number(getComputedStyle(entry.result).opacity)
+    });
   }
-  const first=visible.indexOf(true),last=visible.lastIndexOf(true);
-  const previous=readingAnchorSession;
-  let readingIndex=previous ? cards.indexOf(previous.card):-1;
+  let readingIndex=previous?.session && readingAnchorSession===previous.session
+    ?cards.indexOf(previous.session.card):-1;
   if(readingIndex<0 || !visible[readingIndex]){
-    readingIndex=-1;
-    for(let i=Math.max(0,first);i<=last;i++){
-      if(!visible[i])continue;
-      const rect=positions[i],panelTop=cards[i].querySelector('.reveal').getBoundingClientRect().top;
-      const bodyVisible=Math.max(0,Math.min(panelTop,bottom)-Math.max(rect.top,top));
-      const cardVisible=Math.max(0,Math.min(rect.bottom,bottom)-Math.max(rect.top,top));
-      // Keep a readable line/input, or a substantial visible answer; ignore
-      // only a small fragment left over from the preceding question.
-      if(bodyVisible>=24 || cardVisible>=64){readingIndex=i;break;}
+    // Prefer the question whose heading/stem is actually being read. An old
+    // question's last option must not take priority over a complete question.
+    readingIndex=cards.findIndex((card,i)=>{
+      if(!visible[i])return false;
+      const head=card.querySelector('.question-head').getBoundingClientRect();
+      const stem=card.querySelector('.stem').getBoundingClientRect();
+      return head.top>=top-2 && head.top<bottom-48 ||
+        stem.top>=top-8 && stem.top<bottom-48;
+    });
+    if(readingIndex<0){
+      let largest=0;
+      visible.forEach((show,i)=>{
+        if(!show)return;
+        const area=Math.min(before[i].bottom,bottom)-Math.max(before[i].top,top);
+        if(area>largest){largest=area;readingIndex=i;}
+      });
     }
-    if(readingIndex<0)readingIndex=first;
   }
   const readingCard=readingIndex>=0?cards[readingIndex]:null;
-  const session=readingCard
-    ? previous?.card===readingCard ? previous
-      : {card:readingCard,baseLayout:layoutTop(readingCard),baseScroll:scrollPosition(),lastTarget:scrollPosition()}
-    : null;
-  stopReadingAnchor(true);
-  readingAnchorSession=session;
-  const token=readingAnchorToken;
-  if(bufferReleaseTimer)clearTimeout(bufferReleaseTimer);
-  document.documentElement.classList.add('reading-anchor-active');
-  const animated=new Set(),prepared=new Set();
-  if(readingIndex>=0){
-    for(let i=readingIndex;i<=last;i++)if(!cards[i].hidden){animated.add(i);prepared.add(i);}
-    let n=0;
-    for(let i=last+1;i<cards.length && n<2;i++){
-      if(!cards[i].hidden){animated.add(i);prepared.add(i);n++;}
-    }
-    n=0;
-    for(let i=readingIndex-1;i>=0 && n<2;i--){
-      if(!cards[i].hidden){prepared.add(i);n++;}
-    }
-  }
-  for(const oldCard of activeBufferCards){
-    const i=cards.indexOf(oldCard);
-    if(!prepared.has(i))oldCard.classList.remove('buffer-animating');
-    if(!animated.has(i))oldCard.querySelector('.reveal').classList.remove('animate','in-motion');
-  }
-  activeBufferCards=new Set();
-  for(const i of prepared){
-    cards[i].classList.add('buffer-animating');
-    activeBufferCards.add(cards[i]);
-  }
-  // Resolve the starting state once so newly materialized lower panels also
-  // receive a real transition, including a quick reversal in the same area.
-  if(prepared.size)void $("app").offsetHeight;
-  cards.forEach((card,i)=>{
-    const animate=animated.has(i) && !reducedMotion.matches;
-    card.classList.toggle('buffer-animating',prepared.has(i));
-    card.classList.toggle('no-motion',!animate);
-    refreshFeedback(card,cardRecords[i].question,animate);
+  const desiredTop=before[readingIndex]?.top;
+  const snapshots=cards.map((card,i)=>{
+    if(!before[i])return null;
     const panel=card.querySelector('.reveal');
-    if(!animate)panel.classList.remove('animate','in-motion');
-    else if(panel.classList.contains('open')!==showAnswers)panel.classList.add('animate','in-motion');
+    const open=panel.classList.contains('open');
+    return oldPanels.get(card) || {shown:open?(visible[i]?panel.getBoundingClientRect().height:null):0,
+      height:before[i].height,opacity:open?1:0};
+  });
+  const prepared=new Set(cards.filter((card,i)=>visible[i]));
+  if(previous)for(const card of previous.prepared)prepared.add(card);
+  for(const card of prepared)card.classList.add('phone-reveal-prepared');
+  finishPhoneReveal(true);
+  stopReadingAnchor(true);
+  if(bufferReleaseTimer)clearTimeout(bufferReleaseTimer);
+  bufferReleaseTimer=0;
+  for(const card of activeBufferCards)card.classList.remove('buffer-animating');
+  activeBufferCards.clear();
+  document.documentElement.classList.add('reading-anchor-active');
+  cards.forEach((card,i)=>{
+    const animate=visible[i] && i>=readingIndex && !reducedMotion.matches;
+    card.classList.toggle('no-motion',!animate);
+    // Judge from the full data as usual; defer only offscreen DOM decoration.
+    if(visible[i] || !cardObserver){
+      pendingFeedbackCards.delete(card);
+      refreshFeedback(card,cardRecords[i].question,animate);
+    }else pendingFeedbackCards.add(card);
+    const panel=card.querySelector('.reveal');
+    panel.classList.remove('animate','in-motion');
     panel.classList.toggle('open',showAnswers);
     panel.setAttribute('aria-hidden',String(!showAnswers));
   });
+  let session=null;
+  if(readingCard){
+    const moved=readingCard.getBoundingClientRect().top-desiredTop;
+    if(Math.abs(moved)>.35)scrollPageBy(moved);
+    session={card:readingCard,baseLayout:layoutTop(readingCard),
+      baseScroll:scrollPosition(),lastTarget:scrollPosition()};
+  }
+  readingAnchorSession=session;
+  const token=readingAnchorToken;
   const correctPosition=()=>{
     if(!session || readingAnchorSession!==session || token!==readingAnchorToken || !session.card.isConnected)return;
     const target=session.baseScroll+layoutTop(session.card)-session.baseLayout;
     if(Math.abs(target-session.lastTarget)>.35){session.lastTarget=target;scrollPageTo(target);}
   };
-  // Changes above the reader settle immediately, then one correction keeps
-  // the reading position. Animations below never need continuous scrolling.
-  correctPosition();
-  // The browser may refresh cached sizes of skipped questions after the
-  // viewport moves. Measure after layout, and scroll only for an actual
-  // upstream displacement; the animation below the reader stays independent.
-  if(session && 'ResizeObserver' in window){
-    let observer=null;
-    try{
-      observer=new ResizeObserver(correctPosition);
-      observer.observe($("app"));
-      for(const i of prepared)if(i<readingIndex)observer.observe(cards[i]);
-      readingAnchorObserver=observer;
-    }catch{observer?.disconnect();}
-  }
-  if(session && !readingAnchorObserver){
-    const tick=()=>{
-      if(token!==readingAnchorToken || readingAnchorSession!==session)return;
-      correctPosition();
-      readingAnchorFrame=requestAnimationFrame(tick);
-    };
-    readingAnchorFrame=requestAnimationFrame(tick);
-  }
-  const releaseCards=activeBufferCards,started=performance.now();
-  const release=()=>{
-    if(activeBufferCards!==releaseCards)return;
-    const running=[...releaseCards].some(card=>card.querySelector('.reveal').getAnimations().some(a=>
-      a.transitionProperty==='grid-template-rows' && (a.playState==='running'||a.pending)));
-    if(running && performance.now()-started<1500){bufferReleaseTimer=setTimeout(release,50);return;}
-    bufferReleaseTimer=0;
-    for(const card of releaseCards){
-      card.classList.remove('buffer-animating');
-      card.querySelector('.reveal').classList.remove('animate','in-motion');
+  let after=cards.map(card=>card.hidden?null:card.getBoundingClientRect());
+  let refreshed=false;
+  cards.forEach((card,i)=>{
+    const rect=after[i];
+    if(rect && rect.top<bottom && rect.bottom>top){
+      if(!prepared.has(card)){prepared.add(card);card.classList.add('phone-reveal-prepared');refreshed=true;}
+      if(pendingFeedbackCards.delete(card)){refreshFeedback(card,cardRecords[i].question,false);refreshed=true;}
     }
-    releaseCards.clear();
-    if(readingAnchorSession===session)stopReadingAnchor();
-    else if(!readingAnchorFrame && !readingAnchorSession)document.documentElement.classList.remove('reading-anchor-active');
-  };
-  bufferReleaseTimer=setTimeout(release,reducedMotion.matches?50:300);
-  if(motionRestoreFrame)cancelAnimationFrame(motionRestoreFrame);
-  motionRestoreFrame=requestAnimationFrame(()=>{
-    motionRestoreFrame=0;
-    for(const i of animated)cards[i].classList.remove('no-motion');
   });
+  if(refreshed){
+    correctPosition();
+    after=cards.map(card=>card.hidden?null:card.getBoundingClientRect());
+  }
+  const entries=[];
+  if(!reducedMotion.matches)cards.forEach((card,i)=>{
+    if(i<readingIndex || !before[i] || !after[i])return;
+    const inFinalView=after[i].top<bottom && after[i].bottom>top;
+    if(!visible[i] && !inFinalView)return;
+    const panel=card.querySelector('.reveal'),inner=panel.firstElementChild;
+    const result=inner.firstElementChild,style=getComputedStyle(card);
+    const panelRect=panel.getBoundingClientRect(),resultRect=result.getBoundingClientRect();
+    const fullHeight=resultRect.height+parseFloat(getComputedStyle(result).marginTop);
+    const baseHeight=after[i].height-panelRect.height;
+    const start=snapshots[i];
+    const oldShown=start.shown??fullHeight;
+    if(Math.abs((showAnswers?fullHeight:0)-oldShown)<.1 &&
+       Math.abs(before[i].top-after[i].top)<.1 && Math.abs(start.height-after[i].height)<.1)return;
+    entries.push({card,panel,inner,result,fullHeight,baseHeight,resultHeight:resultRect.height,
+      fullCardHeight:baseHeight+fullHeight,finalHeight:after[i].height,
+      oldShown:Math.min(fullHeight,start.shown??fullHeight),
+      oldHeight:visible[i]?start.height:baseHeight+(start.shown??fullHeight),oldOpacity:start.opacity,
+      shift:before[i].top-after[i].top,panelTop:panelRect.top-after[i].top-parseFloat(style.borderTopWidth),
+      inset:parseFloat(style.paddingLeft),border:parseFloat(style.borderTopWidth)});
+  });
+  const motion={entries,prepared,animations:[],session,correctPosition,timer:0,sizeObserver:null};
+  phoneRevealMotion=motion;
+  for(const entry of entries){
+    const surface=ensurePhoneRevealCard(entry.card);
+    entry.surface=surface;entry.restore=[];
+    const set=(element,property,value)=>{
+      entry.restore.push([element,property,element.style.getPropertyValue(property),element.style.getPropertyPriority(property)]);
+      element.style.setProperty(property,typeof value==='number'?`${value}px`:value);
+    };
+    set(entry.card,'height',entry.finalHeight);
+    set(entry.panel,'position','absolute');set(entry.inner,'height','100%');
+    set(entry.panel,'height',entry.fullHeight);set(entry.panel,'top',entry.panelTop);
+    set(entry.panel,'left',entry.inset);set(entry.panel,'right',entry.inset);
+    set(surface,'height',entry.fullCardHeight);
+    entry.card.classList.add('phone-reveal-motion');
+    entry.card.classList.remove('no-motion');
+  }
+  // The two translated clipping windows cancel their text movement, so math
+  // and body text reveal at full size without scaling or height animation.
+  const ratio=entries.reduce((n,e)=>Math.max(n,
+    Math.abs((showAnswers?e.fullHeight:0)-e.oldShown)/Math.max(1,e.fullHeight)),0);
+  const timing={duration:260*Math.max(.55,Math.min(1,ratio)),
+    easing:'cubic-bezier(.25,.1,.25,1)',fill:'both'};
+  const animate=(element,keyframes)=>{
+    const animation=element.animate(keyframes,timing);
+    motion.animations.push(animation);
+  };
+  for(const entry of entries){
+    const {card,inner,result,surface,fullHeight,fullCardHeight}=entry;
+    const finalShown=showAnswers?fullHeight:0;
+    if(Math.abs(entry.shift)>.1)animate(card,[{transform:`translateY(${entry.shift}px)`},{transform:'translateY(0)'}]);
+    animate(surface,[{transform:`scaleY(${entry.oldHeight/fullCardHeight})`},
+      {transform:`scaleY(${entry.finalHeight/fullCardHeight})`}]);
+    animate(inner,[{transform:`translateY(${entry.oldShown-fullHeight}px)`},
+      {transform:`translateY(${finalShown-fullHeight}px)`}]);
+    animate(result,[{transform:`translateY(${fullHeight-entry.oldShown}px)`,opacity:entry.oldOpacity},
+      {transform:`translateY(${fullHeight-finalShown}px)`,opacity:showAnswers?1:0}]);
+  }
+  // Only late image/font size changes can require another anchor correction.
+  // Compositor transforms do not resize the observed list on every frame.
+  if(session && 'ResizeObserver' in window){
+    try{readingAnchorObserver=new ResizeObserver(correctPosition);readingAnchorObserver.observe($('app'));}catch{}
+  }
+  if(entries.length && 'ResizeObserver' in window){
+    try{
+      motion.sizeObserver=new ResizeObserver(changes=>{
+        if(phoneRevealMotion!==motion)return;
+        if(changes.some(change=>{
+          const entry=entries.find(e=>e.result===change.target);
+          return entry && Math.abs(entry.result.getBoundingClientRect().height-entry.resultHeight)>1;
+        }))finishPhoneReveal();
+      });
+      for(const entry of entries)motion.sizeObserver.observe(entry.result);
+    }catch{motion.sizeObserver?.disconnect();}
+  }
+  const finish=()=>{if(phoneRevealMotion===motion)finishPhoneReveal();};
+  if(motion.animations.length){
+    Promise.allSettled(motion.animations.map(a=>a.finished)).then(finish);
+    motion.timer=setTimeout(finish,500);
+  }else if(session){
+    // Even without motion, let skipped-card geometry settle before releasing.
+    motion.timer=setTimeout(finish,50);
+  }else finish();
   if(filterMode==='wrong' && cardRecords.some(r=>r.card.hidden===shouldShowQuestion(r.question)))applyFilters();
 }
 function updateFeedback(){
   updateControls();
   updateStats();
-  if(!isIPad && touchInput.matches && window.matchMedia('(max-width:640px)').matches){
+  if(usePhoneReveal()){
     updatePhoneFeedback();
     return;
   }
@@ -1131,6 +1258,11 @@ $("jumpInput").addEventListener("keydown", e=>{
   filterMode="all"; typeFilter=type; saveState(); applyFilters(false);
   setTimeout(()=>{const el = $(`q-${type}-${num}`); if(el) el.scrollIntoView({behavior:"smooth",block:"start"});},30);
 });
+let phoneRevealWidth=window.innerWidth;
+window.addEventListener('resize',()=>{
+  const width=window.innerWidth;
+  if(width!==phoneRevealWidth){phoneRevealWidth=width;finishPhoneReveal();}
+},{passive:true});
 function closeSettings(){
   const dialog = $("dialog");
   if (!dialog.open || dialog.classList.contains("closing")) return;
