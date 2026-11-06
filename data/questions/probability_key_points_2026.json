@@ -243,12 +243,12 @@
     },
     {
       "num": 12,
-      "stem": "二维分布函数的两个极限：\n\\(F(-\\infty,+\\infty)=\\) {{blank}}\n\\(F(-\\infty,-\\infty)=\\) {{blank}}",
+      "stem": "二维分布函数的两个极限：\n\\(F(+\\infty,+\\infty)=\\) {{blank}}\n\\(F(-\\infty,-\\infty)=\\) {{blank}}",
       "answer": [
-        "0",
+        "1",
         "0"
       ],
-      "explanation": "正确极限：\\[F(-\\infty,+\\infty)=0,\\qquad F(-\\infty,-\\infty)=0.\\]无穷表示相应自变量趋于无穷时的极限；原笔记的\\(F(-\\infty,+\\infty)=1\\)属于笔误。",
+      "explanation": "",
       "source": "第三章 多维随机变量及其分布｜指定公式与知识点汇总",
       "origin": "指定公式｜第三章｜二维分布函数的极限",
       "chapter": "第三章 多维随机变量及其分布",
