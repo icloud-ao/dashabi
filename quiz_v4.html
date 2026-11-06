@@ -135,9 +135,17 @@ dialog{width:min(500px,calc(100% - 32px));max-height:min(85dvh,760px);border:.5p
 @media(max-width:640px) and (any-pointer:coarse){
  html.phone-anim-contain .reveal.animate{transition-duration:260ms}
 }
+/* Avoid root programmatic scroll glitches on older iPhone WebKit. */
+html.ios-inner-scroll,html.ios-inner-scroll body{height:100%;overflow:hidden}
+html.ios-inner-scroll #quizScroll{
+  height:100%;height:100dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  scroll-padding-top:175px;overflow-anchor:none;
+}
+@media(max-width:640px){html.ios-inner-scroll #quizScroll{scroll-padding-top:195px}}
 </style>
 </head>
 <body>
+<div id="quizScroll">
 <header class="top">
   <div class="top-inner">
     <div class="top-row">
@@ -168,6 +176,7 @@ dialog{width:min(500px,calc(100% - 32px));max-height:min(85dvh,760px);border:.5p
   <div class="summary"><span id="statusBar" aria-live="polite">未判分</span><span id="subtitle"></span></div>
   <div id="app"><div class="empty">正在加载题库...</div></div>
 </main>
+</div>
 <dialog id="dialog" aria-labelledby="dialogTitle">
   <div class="dialog-head"><span id="dialogTitle">设置</span><button class="icon" id="closeDialog" type="button" aria-label="关闭">×</button></div>
   <div class="dialog-body">
@@ -215,7 +224,7 @@ function observeCards(){
         entry.target.classList.remove('no-motion');
       }else nearbyCardIndexes.delete(index);
     }
-  }, {root:null, rootMargin:'64px 0px', threshold:0});
+  }, {root:quizScroll, rootMargin:'64px 0px', threshold:0});
   cardRecords.forEach((record,index) => {
     record.card.dataset.visIndex = String(index);
     cardObserver.observe(record.card);
@@ -428,8 +437,9 @@ function groupQuestions(){
 }
 function typesetMath(){
   if(window.MathJax && MathJax.typesetPromise){
-    MathJax.typesetPromise([$("app")]).catch(err => console.warn("MathJax typeset failed:", err));
+    return MathJax.typesetPromise([$("app")]).catch(err => console.warn("MathJax typeset failed:", err));
   }
+  return Promise.resolve(window.MathJax?.startup?.promise).catch(err => console.warn("MathJax startup failed:", err));
 }
 function render(){
   stopReadingAnchor();
@@ -447,13 +457,13 @@ function render(){
   sectionRecords = [...$("app").querySelectorAll(".section")].map(section => ({section, cards:[...section.querySelectorAll(".question")]}));
   applyFilters(false);
   observeCards();
-  typesetMath();
+  return typesetMath();
 }
 function applyFilters(preservePosition = true){
   stopReadingAnchor();
   const top = document.querySelector(".top").getBoundingClientRect().bottom;
   const wasVisible = cardRecords.filter(record => !record.card.hidden);
-  const anchor = preservePosition && window.scrollY > top
+  const anchor = preservePosition && scrollPosition() > top
     ? wasVisible.find(record => record.card.getBoundingClientRect().bottom > top)
     : null;
   const oldTop = anchor?.card.getBoundingClientRect().top;
@@ -476,7 +486,7 @@ function applyFilters(preservePosition = true){
   if (target){
     const targetTop = target === anchor ? oldTop : Math.max(top + 8, oldTop);
     const delta = target.card.getBoundingClientRect().top - targetTop;
-    if (Math.abs(delta) > 1) window.scrollBy({top:delta, behavior:"instant"});
+    if (Math.abs(delta) > 1) scrollPageBy(delta);
   }
 }
 function activeQuestions(){return questions.filter(typeVisible);}
@@ -625,6 +635,51 @@ function stopReadingAnchor(keepSuppression=false){
 // iPadOS can use a narrow split view with a desktop-like user agent.
 const isIPad = /iPad/i.test(navigator.userAgent) ||
   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+// Safari's native scroll anchoring arrived after the affected iOS releases.
+const iosInnerScroll=!isIPad && /iPhone|iPod/i.test(navigator.userAgent) &&
+  !(window.CSS && CSS.supports && CSS.supports('overflow-anchor','auto'));
+const quizScroll=iosInnerScroll ? $('quizScroll') : null;
+if(quizScroll)document.documentElement.classList.add('ios-inner-scroll');
+function scrollPosition(){return quizScroll ? quizScroll.scrollTop : window.scrollY;}
+function scrollPageTo(top){
+  if(quizScroll)quizScroll.scrollTop=top;
+  else window.scrollTo({top,behavior:'instant'});
+}
+function scrollPageBy(top){
+  if(quizScroll)quizScroll.scrollTop+=top;
+  else window.scrollBy({top,behavior:'instant'});
+}
+// Preserve normal reload/back scroll restoration for the element scroller.
+if(quizScroll){
+  window.addEventListener('pagehide',()=>{
+    if(!setId)return;
+    try{sessionStorage.setItem(`quiz_viewport_${setId}`,String(quizScroll.scrollTop));}catch{}
+  });
+}
+function restoreInnerScroll(mathReady){
+  if(!quizScroll)return;
+  let saved=null;
+  try{
+    const nav=performance.getEntriesByType?.('navigation')?.[0];
+    if(nav && nav.type!=='reload' && nav.type!=='back_forward')return;
+    const value=sessionStorage.getItem(`quiz_viewport_${setId}`);
+    if(value!==null && Number.isFinite(Number(value)))saved=Number(value);
+  }catch{return;}
+  if(saved===null)return;
+  let cancelled=false;
+  const cancel=()=>{cancelled=true;};
+  for(const name of ['pointerdown','touchstart','wheel','keydown'])
+    window.addEventListener(name,cancel,{capture:true,once:true,passive:true});
+  const apply=()=>{if(!cancelled)quizScroll.scrollTop=saved;};
+  requestAnimationFrame(apply);
+  Promise.resolve(mathReady).then(()=>requestAnimationFrame(apply)).catch(()=>{});
+  if(!window.MathJax?.typesetPromise){
+    const script=document.querySelector('script[src*="mathjax"]');
+    script?.addEventListener('load',()=>{
+      Promise.resolve(window.MathJax?.startup?.promise).then(()=>requestAnimationFrame(apply)).catch(()=>{});
+    },{once:true});
+  }
+}
 if(!isIPad)document.documentElement.classList.add('phone-anim-contain');
 function layoutTop(element){
   let y=0;
@@ -646,7 +701,7 @@ function stabilizeReadingAnchor(card, initialTop, initialTarget){
     const target=session.baseScroll+layoutTop(card)-session.baseLayout;
     if(Math.abs(target-session.lastTarget)>.35){
       session.lastTarget=target;
-      window.scrollTo({top:target,behavior:'instant'});
+      scrollPageTo(target);
     }
   };
   // ResizeObserver runs after layout and before paint. The active cards are
@@ -671,7 +726,7 @@ function stabilizeReadingAnchor(card, initialTop, initialTarget){
     if(!card.isConnected){stopReadingAnchor();return;}
     if(isIPad){
       const displacement=card.getBoundingClientRect().top-initialTop;
-      if(Math.abs(displacement)>.35)window.scrollBy({top:displacement,behavior:'instant'});
+      if(Math.abs(displacement)>.35)scrollPageBy(displacement);
     }else if(!readingAnchorObserver){
       correctPhonePosition();
     }
@@ -711,7 +766,7 @@ function updateFeedback(){
   const phone=window.matchMedia('(max-width: 640px)').matches && touchInput.matches;
   const touch=touchInput.matches;
   const revealed=showAnswers;
-  const viewportBottom=window.innerHeight;
+  const viewportBottom=quizScroll ? quizScroll.getBoundingClientRect().bottom : window.innerHeight;
   // Preserve the previously tested desktop/iPad strategy unchanged.
   const inspectAll=!phone || nearbyCardIndexes.size===0;
   const positions=cards.map((card,index)=>
@@ -880,23 +935,23 @@ function updateFeedback(){
     if(readingCard&&readingTop!==null){
       const delta=readingCard.getBoundingClientRect().top-readingTop;
       const continuing=!isIPad && readingAnchorFrame && readingAnchorSession?.card===readingCard;
-      const initialTarget=window.scrollY+(!continuing&&Math.abs(delta)>1?delta:0);
+      const initialTarget=scrollPosition()+(!continuing&&Math.abs(delta)>1?delta:0);
       if(continuing){
         // Reversing can synchronously resize unrendered cards above this one.
         const target=readingAnchorSession.baseScroll+layoutTop(readingCard)-readingAnchorSession.baseLayout;
         if(Math.abs(target-readingAnchorSession.lastTarget)>.35){
           readingAnchorSession.lastTarget=target;
-          window.scrollTo({top:target,behavior:'instant'});
+          scrollPageTo(target);
         }
       }else if(Math.abs(delta)>1){
-        if(isIPad)window.scrollBy({top:delta,behavior:'instant'});
-        else window.scrollTo({top:initialTarget,behavior:'instant'});
+        if(isIPad)scrollPageBy(delta);
+        else scrollPageTo(initialTarget);
       }
       stabilizeReadingAnchor(readingCard,readingTop,initialTarget);
     }else stopReadingAnchor();
   }else if(anchorIndex>=0){
     const moved=cards[anchorIndex].getBoundingClientRect().top-anchorTop;
-    if(Math.abs(moved)>1)window.scrollBy({top:moved,behavior:'instant'});
+    if(Math.abs(moved)>1)scrollPageBy(moved);
   }
   if(phone){
     if(motionRestoreFrame)cancelAnimationFrame(motionRestoreFrame);
@@ -945,7 +1000,8 @@ async function loadQuiz(){
     $("title").textContent = rawData.meta?.title || setInfo.title || "答题页";
     document.title = $("title").textContent;
     $("subtitle").textContent = `${setInfo.desc || ""} ${setInfo.shuffleOptions !== false ? "· 选项乱序已开启" : "· 选项固定"}`;
-    render();
+    const mathReady=render();
+    restoreInnerScroll(mathReady);
   }catch(err){
     $("app").innerHTML = `<div class="error"><b>题库加载失败。</b><br/>${esc(err.message)}<br/><br/>检查：1）是否通过服务器访问；2）data/list.json 的 id 和 file 是否正确；3）题库 JSON 是否是合法 JSON。</div>`;
   }
