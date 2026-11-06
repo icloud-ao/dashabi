@@ -9,7 +9,6 @@
 
 <script>
 window.MathJax = {
-  loader: {load: ['ui/lazy']},
   tex: {
     inlineMath: [['$', '$'], ['\\(', '\\)']],
     displayMath: [['$$', '$$'], ['\\[', '\\]']],
@@ -17,26 +16,11 @@ window.MathJax = {
   },
   options: {
     skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-    // Disable MathJax 4's click-to-explore overlay and contextual help/menu.
-    enableMenu: false,
-    enableExplorer: false,
-    enableExplorerHelp: false,
-    lazyMargin: '600px'
-  },
-  output: {
-    font: 'mathjax-stix2',
-    displayAlign: 'left',
-    displayIndent: '0',
-    displayOverflow: 'linebreak',
-    linebreaks: {
-      inline: true,
-      width: '100%',
-      lineleading: 0.2
-    }
+    enableMenu: false
   }
 };
 </script>
-<script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml-nofont.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <style>
 :root{
   --bg:#070b12;
@@ -244,7 +228,7 @@ word-break:break-word}
 .answer-explanation{padding-top:10px;border-top:1px solid var(--border)}
 .answer-label{display:block;color:#f8fafc;font-size:12px;font-weight:750}
 .math-prose{min-width:0;white-space:pre-line;overflow-wrap:anywhere;line-height:1.7}
-/* MathJax 4: readable display math with a safe overflow fallback. */
+/* Display math: compact spacing, left alignment and overflow fallback. */
 .stem mjx-container[display="true"],
 .answer-line mjx-container[display="true"],
 .opt .text mjx-container[display="true"]{
@@ -851,20 +835,6 @@ $("jumpInput").addEventListener("keydown", e=>{
   filterMode="all"; typeFilter=type; saveState(); render();
   setTimeout(()=>{const el = $(`q-${type}-${num}`); if(el) el.scrollIntoView({behavior:"smooth",block:"start"});},30);
 });
-
-/* Breaks in display math are fixed at typesetting; reflow after meaningful width changes. */
-let mathResizeTimer=0;
-let mathLastWidth=document.documentElement.clientWidth;
-window.addEventListener("resize",()=>{
-  clearTimeout(mathResizeTimer);
-  mathResizeTimer=setTimeout(()=>{
-    const width=document.documentElement.clientWidth;
-    if(Math.abs(width-mathLastWidth)<24)return;
-    mathLastWidth=width;
-    const doc=window.MathJax?.startup?.document;
-    if(doc?.rerenderPromise)doc.rerenderPromise().catch(err=>console.warn("MathJax reflow failed:",err));
-  },450);
-},{passive:true});
 
 loadQuiz();
 </script>
