@@ -9,6 +9,7 @@
 
 <script>
 window.MathJax = {
+  loader: {load: ['ui/lazy']},
   tex: {
     inlineMath: [['$', '$'], ['\\(', '\\)']],
     displayMath: [['$$', '$$'], ['\\[', '\\]']],
@@ -19,9 +20,11 @@ window.MathJax = {
     // Disable MathJax 4's click-to-explore overlay and contextual help/menu.
     enableMenu: false,
     enableExplorer: false,
-    enableExplorerHelp: false
+    enableExplorerHelp: false,
+    lazyMargin: '600px'
   },
   output: {
+    font: 'mathjax-stix2',
     displayAlign: 'left',
     displayIndent: '0',
     displayOverflow: 'linebreak',
@@ -33,7 +36,7 @@ window.MathJax = {
   }
 };
 </script>
-<script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml-nofont.js"></script>
 <style>
 :root{
   --bg:#070b12;
@@ -235,14 +238,21 @@ h1{margin:0;font-size:24px;line-height:1.15;letter-spacing:.2px;font-weight:900}
 word-break:break-word}
 .answer-line.show{display:block}
 .answer-line b{color:#f8fafc}
+.answer-line{white-space:normal;min-width:0}
+.answer-field{display:grid;gap:4px;min-width:0}
+.answer-field+.answer-field,.answer-explanation{margin-top:10px}
+.answer-explanation{padding-top:10px;border-top:1px solid var(--border)}
+.answer-label{display:block;color:#f8fafc;font-size:12px;font-weight:750}
+.math-prose{min-width:0;white-space:pre-line;overflow-wrap:anywhere;line-height:1.7}
 /* MathJax 4: readable display math with a safe overflow fallback. */
 .stem mjx-container[display="true"],
 .answer-line mjx-container[display="true"],
 .opt .text mjx-container[display="true"]{
   display:block;
   max-width:100%;
-  margin:.45em 0!important;
+  margin:.38em 0!important;
   text-align:left!important;
+  white-space:normal;
   overflow-x:auto;
 }
 .stem mjx-container:not([display="true"]),
@@ -479,6 +489,42 @@ let seed = "";
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[m]));
+
+/* Formatting only: never mutate source JSON or scoring answers. */
+function alignLongDisplayMath(tex){
+  const expr = tex.trim();
+  if(expr.length < 60 || /\\begin\{|\\end\{|\\left\b|\\right\b|\\\\|&/.test(expr)) return tex;
+  const parts = [];
+  let token = "", depth = 0;
+  for(let i=0;i<expr.length;i++){
+    const ch=expr[i];
+    if(ch==="\\" && i+1<expr.length){token+=ch+expr[++i];continue;}
+    if(ch==="{") depth++;
+    if(ch==="}") depth--;
+    if(depth<0) return tex;
+    if(ch==="=" && depth===0){parts.push(token.trim());token="";}else token+=ch;
+  }
+  parts.push(token.trim());
+  if(depth!==0 || parts.length<3 || parts.some(x=>!x)) return tex;
+  return "\\begin{aligned}"+parts[0]+"&="+parts[1]+
+    parts.slice(2).map(x=>"\\\\\n&="+x).join("")+"\\end{aligned}";
+}
+function renderMathText(value){
+  return esc(String(value??"").replace(/\\\[([\s\S]*?)\\\]/g,
+    (_,tex)=>"\\[\n"+alignLongDisplayMath(tex)+"\n\\]"));
+}
+function renderAnswerLine(q,label,reference,mine=null){
+  const field=(name,value)=>'<div class="answer-field"><span class="answer-label">'+name+
+    '</span><div class="math-prose">'+renderMathText(value)+'</div></div>';
+  const explanation=q.explanation
+    ? '<div class="answer-explanation"><span class="answer-label">解析</span>'+
+      '<div class="math-prose">'+renderMathText(q.explanation)+'</div></div>'
+    : '';
+  return '<div class="answer-line '+((graded||showAnswers)?'show':'')+'">'+
+    field(label,reference||'暂无')+(mine===null?'':field('你的答案',mine||'未答'))+
+    explanation+renderAnswerImages(q)+'</div>';
+}
+
 function imageList(q){
   const list = [];
   if(q.image) list.push({src:q.image, caption:q.imageCaption || q.caption || ""});
@@ -598,7 +644,7 @@ function isCorrect(q){
 function renderStemWithBlanks(q){
   const expected = blankExpected(q);
   let used = 0;
-  const stem = esc(q.stem || "").replace(/\{\{blank\}\}|_{3,}/g, () => blankInput(q, used++));
+  const stem = renderMathText(q.stem || "").replace(/\{\{blank\}\}|_{3,}/g, () => blankInput(q, used++));
   if(used === 0){
     return stem + `<div style="margin-top:10px">${expected.map((_,i)=>blankInput(q,i)).join(" ")}</div>`;
   }
@@ -625,22 +671,22 @@ function renderChoiceQuestion(q){
     let cls = "opt";
     if((graded || showAnswers) && correctOrig.includes(o.origKey)) cls += " correct";
     if(graded && selected.includes(o.origKey) && !correctOrig.includes(o.origKey)) cls += " wrong";
-    return `<label class="${cls}"><input type="${inputType}" name="${esc(q.key)}" data-qkey="${esc(q.key)}" value="${esc(o.origKey)}" ${checked}/><span class="letter">${o.display}</span><span class="text">${esc(o.text)}</span></label>`;
+    return `<label class="${cls}"><input type="${inputType}" name="${esc(q.key)}" data-qkey="${esc(q.key)}" value="${esc(o.origKey)}" ${checked}/><span class="letter">${o.display}</span><span class="text">${renderMathText(o.text)}</span></label>`;
   }).join("")}</div>
-  <div class="answer-line ${(graded||showAnswers)?"show":""}"><b>正确答案：</b>${esc(correctDisplay(q,opts))}　<b>你的答案：</b>${esc(userDisplay(q,opts) || "未答")}${q.explanation ? `　<b>解析：</b>${esc(q.explanation)}` : ""}${renderAnswerImages(q)}</div>`;
+  ${renderAnswerLine(q, "正确答案", correctDisplay(q,opts), userDisplay(q,opts))}`;
 }
 function renderBlankQuestion(q){
   return `<div class="stem ${q.code ? "code" : ""}">${renderStemWithBlanks(q)}</div>${renderQuestionImages(q)}
-  <div class="answer-line ${(graded||showAnswers)?"show":""}"><b>参考答案：</b>${esc(formatBlankAnswer(q))}　<b>你的答案：</b>${esc(userDisplay(q,[]) || "未答")}${q.explanation ? `　<b>解析：</b>${esc(q.explanation)}` : ""}${renderAnswerImages(q)}</div>`;
+  ${renderAnswerLine(q, "参考答案", formatBlankAnswer(q), userDisplay(q,[]))}`;
 }
 
 function renderShortQuestion(q){
   const val = String(answers[q.key] || "");
   const answerText = String(q.answer ?? q.reference ?? "");
-  return `<div class="stem ${q.code ? "code" : ""}">${esc(q.stem || "")}</div>${renderQuestionImages(q)}
+  return `<div class="stem ${q.code ? "code" : ""}">${renderMathText(q.stem || "")}</div>${renderQuestionImages(q)}
   <textarea class="short-answer" data-qkey="${esc(q.key)}" placeholder="在这里写你的答案，系统会自动保存。">${esc(val)}</textarea>
   <div class="self-note">简答 / 案例 / 计算题按自评处理，提交后查看参考答案。</div>
-  <div class="answer-line ${(graded||showAnswers)?"show":""}"><b>参考答案：</b>${esc(answerText || "暂无")} ${q.explanation ? `　<b>解析：</b>${esc(q.explanation)}` : ""}${renderAnswerImages(q)}</div>`;
+  ${renderAnswerLine(q, "参考答案", answerText)}`;
 }
 function shouldShowQuestion(q){
   if(!typeVisible(q)) return false;
@@ -657,7 +703,7 @@ function renderQuestion(q, displayNo){
   let body = "";
   if(q.type === "blank") body = renderBlankQuestion(q);
   else if(q.type === "short") body = renderShortQuestion(q);
-  else body = `<div class="stem ${q.code ? "code" : ""}">${esc(q.stem || "")}</div>${renderQuestionImages(q)}${renderChoiceQuestion(q)}`;
+  else body = `<div class="stem ${q.code ? "code" : ""}">${renderMathText(q.stem || "")}</div>${renderQuestionImages(q)}${renderChoiceQuestion(q)}`;
   return `<article class="${cls}" id="q-${q.type}-${displayNo}" data-qkey="${esc(q.key)}">
     <div class="q-head"><div class="q-title">${qLabel(q.type)} ${esc(displayNo)}</div><div class="q-meta"><span class="tag">${esc(q.point || q.tag || "")}</span>${status}</div></div>
     ${body}
@@ -799,6 +845,21 @@ $("jumpInput").addEventListener("keydown", e=>{
   filterMode="all"; typeFilter=type; saveState(); render();
   setTimeout(()=>{const el = $(`q-${type}-${num}`); if(el) el.scrollIntoView({behavior:"smooth",block:"start"});},30);
 });
+
+/* Breaks in display math are fixed at typesetting; reflow after meaningful width changes. */
+let mathResizeTimer=0;
+let mathLastWidth=document.documentElement.clientWidth;
+window.addEventListener("resize",()=>{
+  clearTimeout(mathResizeTimer);
+  mathResizeTimer=setTimeout(()=>{
+    const width=document.documentElement.clientWidth;
+    if(Math.abs(width-mathLastWidth)<24)return;
+    mathLastWidth=width;
+    const doc=window.MathJax?.startup?.document;
+    if(doc?.rerenderPromise)doc.rerenderPromise().catch(err=>console.warn("MathJax reflow failed:",err));
+  },450);
+},{passive:true});
+
 loadQuiz();
 </script>
 </body>
