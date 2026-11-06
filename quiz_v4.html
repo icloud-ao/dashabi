@@ -130,6 +130,7 @@ dialog{width:min(500px,calc(100% - 32px));max-height:min(85dvh,760px);border:.5p
 @media(max-width:640px){
  html.reading-anchor-active,html.reading-anchor-active body{overflow-anchor:none}
  .question.buffer-animating{content-visibility:visible}
+ html.phone-anim-contain .question.buffer-animating{contain:content}
 }
 </style>
 </head>
@@ -606,11 +607,14 @@ function refreshFeedback(card, q, animate = false){
 let readingAnchorFrame=0;
 let readingAnchorToken=0;
 let readingAnchorSession=null;
+let readingAnchorObserver=null;
 let bufferReleaseTimer=0;
 let activeBufferCards=new Set();
 function stopReadingAnchor(keepSuppression=false){
   readingAnchorToken++;
   if(readingAnchorFrame) cancelAnimationFrame(readingAnchorFrame);
+  if(readingAnchorObserver)readingAnchorObserver.disconnect();
+  readingAnchorObserver=null;
   readingAnchorFrame=0;
   readingAnchorSession=null;
   if(!keepSuppression)document.documentElement.classList.remove('reading-anchor-active');
@@ -618,6 +622,7 @@ function stopReadingAnchor(keepSuppression=false){
 // iPadOS can use a narrow split view with a desktop-like user agent.
 const isIPad = /iPad/i.test(navigator.userAgent) ||
   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+if(!isIPad)document.documentElement.classList.add('phone-anim-contain');
 function layoutTop(element){
   let y=0;
   for(let node=element;node;node=node.offsetParent)y+=node.offsetTop;
@@ -634,27 +639,46 @@ function stabilizeReadingAnchor(card, initialTop, initialTarget){
   const session=isIPad ? null : (previous || {card,baseLayout:layoutTop(card),baseScroll:initialTarget,lastTarget:initialTarget});
   readingAnchorSession=session;
   document.documentElement.classList.add('reading-anchor-active');
+  const correctPhonePosition=()=>{
+    const target=session.baseScroll+layoutTop(card)-session.baseLayout;
+    if(Math.abs(target-session.lastTarget)>.35){
+      session.lastTarget=target;
+      window.scrollTo({top:target,behavior:'instant'});
+    }
+  };
+  // ResizeObserver runs after layout and before paint. The active cards are
+  // materialized during the transition, so their changing size signals each
+  // relevant movement without forcing layout at the start of every frame.
+  if(!isIPad && 'ResizeObserver' in window){
+    let observer=null;
+    try{
+      observer=new ResizeObserver(()=>{
+        if(token===readingAnchorToken && readingAnchorSession===session && card.isConnected)correctPhonePosition();
+      });
+      observer.observe($('app'));
+      for(const bufferedCard of activeBufferCards)observer.observe(bufferedCard);
+      readingAnchorObserver=observer;
+    }catch(error){
+      observer?.disconnect();
+      readingAnchorObserver=null;
+    }
+  }
   const tick=now=>{
     if(token!==readingAnchorToken) return;
     if(!card.isConnected){stopReadingAnchor();return;}
     if(isIPad){
       const displacement=card.getBoundingClientRect().top-initialTop;
       if(Math.abs(displacement)>.35)window.scrollBy({top:displacement,behavior:'instant'});
-    }else{
-      const target=session.baseScroll+layoutTop(card)-session.baseLayout;
-      if(Math.abs(target-session.lastTarget)>.35){
-        session.lastTarget=target;
-        window.scrollTo({top:target,behavior:'instant'});
-      }
+    }else if(!readingAnchorObserver){
+      correctPhonePosition();
     }
-    // Timers and CSS transition startup may be delayed independently on a
-    // busy phone. Keep tracking until buffered transitions actually finish.
-    // The buffer cleanup already checks transition state, so reuse its
-    // pending timer rather than inspecting every panel on every frame.
+    // Keep tracking while the buffered transitions actually settle.
     const stillMoving=!isIPad && now-start>=360 && now-start<1500 && !!bufferReleaseTimer;
     if(now-start<360 || stillMoving){
       readingAnchorFrame=requestAnimationFrame(tick);
     }else{
+      if(readingAnchorObserver)readingAnchorObserver.disconnect();
+      readingAnchorObserver=null;
       readingAnchorFrame=0;
       readingAnchorSession=null;
       document.documentElement.classList.remove('reading-anchor-active');
