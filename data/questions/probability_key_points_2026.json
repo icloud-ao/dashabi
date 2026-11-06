@@ -1,0 +1,512 @@
+{
+  "meta": {
+    "id": "probability-key-points-2026",
+    "title": "概率论重点题目汇编（第一至第四章）",
+    "desc": "25道重点题＋9道公式与知识点附录（含六种常见分布均值表）｜答案与解析",
+    "subject": "概率论",
+    "semesterGroup": "current",
+    "tags": [
+      "本学期",
+      "概率论",
+      "重点题",
+      "第一至第四章",
+      "公式填空",
+      "答案解析",
+      "计算题"
+    ],
+    "shuffleOptions": false,
+    "shuffleJudge": false,
+    "shuffleQuestions": false,
+    "durationMinutes": 0,
+    "enabled": true
+  },
+  "single": [
+    {
+      "num": 1,
+      "stem": "若 \\(P(AB)=P(A)P(B)\\)，则 \\(A\\) 与 \\(B\\)（　　）",
+      "answer": "B",
+      "explanation": "对于两个随机事件，\\(P(AB)=P(A)P(B)\\) 是相互独立的充要条件，因此选 B。",
+      "source": "第一章 随机事件及其概率｜第6页｜第一章检测题",
+      "origin": "一、选择题第7题",
+      "chapter": "第一章 随机事件及其概率",
+      "tag": "第1章 · 第6页",
+      "sequence": 8,
+      "options": {
+        "A": "互不相容",
+        "B": "相互独立",
+        "C": "不相互独立",
+        "D": "相容"
+      }
+    },
+    {
+      "num": 2,
+      "stem": "设随机变量 \\(X\\) 的分布函数为 \\(F(x)\\)，则（　　）",
+      "answer": "C",
+      "explanation": "任意随机变量的分布函数满足 \\(\\lim_{x\\to-\\infty}F(x)=0\\) 和 \\(\\lim_{x\\to+\\infty}F(x)=1\\)；\\(F(0)\\) 不一定等于0，因此选 C。",
+      "source": "第二章 随机变量及其分布｜第14页｜第二章检测题",
+      "origin": "一、选择题第3题",
+      "chapter": "第二章 随机变量及其分布",
+      "tag": "第2章 · 第14页",
+      "sequence": 15,
+      "options": {
+        "A": "\\(F(-\\infty)=1\\)",
+        "B": "\\(F(0)=0\\)",
+        "C": "\\(F(+\\infty)=1\\)",
+        "D": "\\(F(+\\infty)=0\\)"
+      }
+    },
+    {
+      "num": 3,
+      "stem": "设随机变量 \\(X\\) 服从 \\((0,3)\\) 上的均匀分布，则\n\\(P\\{1<X<5\\}=\\)（　　）",
+      "answer": "C",
+      "explanation": "因为 \\(X\\sim U(0,3)\\)，所以在其取值范围内，\\(1<X<5\\) 等价于 \\(1<X<3\\)：\n\\[\nP(1<X<5)=\\frac{3-1}{3-0}=\\boxed{\\frac23}.\n\\]故选 C。",
+      "source": "第二章 随机变量及其分布｜第14页｜第二章检测题",
+      "origin": "一、选择题第5题",
+      "chapter": "第二章 随机变量及其分布",
+      "tag": "第2章 · 第14页",
+      "sequence": 16,
+      "options": {
+        "A": "\\(\\frac34\\)",
+        "B": "\\(\\frac35\\)",
+        "C": "\\(\\frac23\\)",
+        "D": "\\(\\frac13\\)"
+      }
+    }
+  ],
+  "multi": [],
+  "judge": [],
+  "blank": [
+    {
+      "num": 1,
+      "stem": "设事件 \\(AB=\\varnothing\\)，\\(P(A)=0.1\\)，\\(P(B)=0.8\\)，则\n\\(P(A\\cup B)=\\) {{blank}}。",
+      "answer": [
+        "0.9"
+      ],
+      "explanation": "由概率加法公式：\n\\[\nP(A\\cup B)=P(A)+P(B)-P(AB).\n\\]因为 \\(AB=\\varnothing\\)，所以 \\(P(AB)=0\\)。因此\n\\[\nP(A\\cup B)=0.1+0.8-0=\\boxed{0.9}.\n\\]",
+      "source": "第一章 随机事件及其概率｜第2页｜第二节 随机事件的概率",
+      "origin": "练习题第1题",
+      "chapter": "第一章 随机事件及其概率",
+      "tag": "第1章 · 第2页",
+      "sequence": 1
+    },
+    {
+      "num": 2,
+      "stem": "设事件 \\(A\\supset B\\)，且 \\(P(A)=0.8\\)，\\(P(B)=0.4\\)，则概率\n\\(P(A-B)=\\) {{blank}}。",
+      "answer": [
+        "0.4"
+      ],
+      "explanation": "由概率减法公式：\n\\[\nP(A-B)=P(A)-P(AB).\n\\]因为 \\(B\\subset A\\)，所以 \\(AB=B\\)，故\n\\[\nP(A-B)=P(A)-P(B)=0.8-0.4=\\boxed{0.4}.\n\\]",
+      "source": "第一章 随机事件及其概率｜第2页｜第二节 随机事件的概率",
+      "origin": "练习题第2题",
+      "chapter": "第一章 随机事件及其概率",
+      "tag": "第1章 · 第2页",
+      "sequence": 2
+    },
+    {
+      "num": 3,
+      "stem": "设 \\(A,B\\) 是两个事件，且\n\\[\nP(A)=0.5,\\quad P(B)=0.7,\\quad P(A\\cup B)=0.8,\n\\]则 \\(P(AB)=\\) {{blank}}。",
+      "answer": [
+        "0.4"
+      ],
+      "explanation": "由概率加法公式：\n\\[\nP(AB)=P(A)+P(B)-P(A\\cup B)=0.5+0.7-0.8=\\boxed{0.4}.\n\\]",
+      "source": "第一章 随机事件及其概率｜第7页｜第一章检测题",
+      "origin": "二、填空题第5题",
+      "chapter": "第一章 随机事件及其概率",
+      "tag": "第1章 · 第7页",
+      "sequence": 9
+    },
+    {
+      "num": 4,
+      "stem": "事件 \\(A\\cap B=\\varnothing\\)，即 \\(A,B\\) 互不相容，\\(P(A)=0.5\\)，\\(P(B)=0.3\\)，则\n\\(P(A\\cup B)=\\) {{blank}}。",
+      "answer": [
+        "0.8"
+      ],
+      "explanation": "因为 \\(A,B\\) 互不相容，所以 \\(P(AB)=0\\)，故\n\\[\nP(A\\cup B)=P(A)+P(B)=0.5+0.3=\\boxed{0.8}.\n\\]",
+      "source": "第一章 随机事件及其概率｜第7页｜第一章检测题",
+      "origin": "二、填空题第7题",
+      "chapter": "第一章 随机事件及其概率",
+      "tag": "第1章 · 第7页",
+      "sequence": 10
+    },
+    {
+      "num": 5,
+      "stem": "设随机变量 \\(X\\) 的分布律为：\n\\[\n\\begin{array}{c|ccc}\\hline X & 1 & 2 & 3 \\\\ \\hline P & 0.3 & 0.2 & 0.5 \\\\ \\hline\\end{array}\n\\]则 \\(P\\{X\\le2\\}=\\) {{blank}}。",
+      "answer": [
+        "0.5"
+      ],
+      "explanation": "满足 \\(X\\le2\\) 的取值为1和2，所以\n\\[\nP(X\\le2)=P(X=1)+P(X=2)=0.3+0.2=\\boxed{0.5}.\n\\]",
+      "source": "第二章 随机变量及其分布｜第8页｜第二节 离散型随机变量",
+      "origin": "练习题第1题",
+      "chapter": "第二章 随机变量及其分布",
+      "tag": "第2章 · 第8页",
+      "sequence": 11
+    },
+    {
+      "num": 6,
+      "stem": "设 \\(X\\) 为随机变量，且 \\(E(X)=-1\\)，则\n\\(E(X-2)=\\) {{blank}}。",
+      "answer": [
+        "-3"
+      ],
+      "explanation": "由数学期望的线性性质：\n\\[\nE(X-2)=E(X)-2=-1-2=\\boxed{-3}.\n\\]",
+      "source": "第四章 随机变量的数字特征｜第27页｜第一节 数学期望",
+      "origin": "练习题第5题",
+      "chapter": "第四章 随机变量的数字特征",
+      "tag": "第4章 · 第27页",
+      "sequence": 23
+    },
+    {
+      "num": 7,
+      "stem": "概率加法公式（原第2页）\n\\(P(A\\cup B)=\\) {{blank}}",
+      "answer": [
+        [
+          "P(A)+P(B)-P(AB)",
+          "P(A)+P(B)-P(A∩B)"
+        ]
+      ],
+      "explanation": "公式：\\[P(A\\cup B)=P(A)+P(B)-P(AB).\\]",
+      "source": "第一章 随机事件及其概率｜指定公式与知识点汇总",
+      "origin": "指定公式｜第一章｜概率加法公式",
+      "chapter": "第一章 随机事件及其概率",
+      "tag": "公式附录 · 第1章",
+      "appendix": true,
+      "sequence": 26
+    },
+    {
+      "num": 8,
+      "stem": "概率减法公式（原第2页）\n\\(P(A-B)=\\) {{blank}}",
+      "answer": [
+        [
+          "P(A)-P(AB)",
+          "P(A)-P(A∩B)"
+        ]
+      ],
+      "explanation": "公式：\\[P(A-B)=P(A)-P(AB).\\]",
+      "source": "第一章 随机事件及其概率｜指定公式与知识点汇总",
+      "origin": "指定公式｜第一章｜概率减法公式",
+      "chapter": "第一章 随机事件及其概率",
+      "tag": "公式附录 · 第1章",
+      "appendix": true,
+      "sequence": 27
+    },
+    {
+      "num": 9,
+      "stem": "事件独立性公式（原第5页）\n\\(P(AB)=\\) {{blank}}",
+      "answer": [
+        [
+          "P(A)P(B)",
+          "P(A)*P(B)",
+          "P(A)×P(B)"
+        ]
+      ],
+      "explanation": "公式：\\[P(AB)=P(A)P(B).\\]两个事件独立当且仅当满足上述等式。",
+      "source": "第一章 随机事件及其概率｜指定公式与知识点汇总",
+      "origin": "指定公式｜第一章｜事件独立性",
+      "chapter": "第一章 随机事件及其概率",
+      "tag": "公式附录 · 第1章",
+      "appendix": true,
+      "sequence": 28
+    },
+    {
+      "num": 10,
+      "stem": "分布律中所有概率相加等于1：\n\\(\\sum_i P(X=x_i)=\\) {{blank}}",
+      "answer": [
+        "1"
+      ],
+      "explanation": "公式：\\[\\sum_i P(X=x_i)=1.\\]",
+      "source": "第二章 随机变量及其分布｜指定公式与知识点汇总",
+      "origin": "指定公式｜第二章｜分布律概率总和",
+      "chapter": "第二章 随机变量及其分布",
+      "tag": "公式附录 · 第2章",
+      "appendix": true,
+      "sequence": 29
+    },
+    {
+      "num": 11,
+      "stem": "求随机变量函数的分布律：先确定 {{blank}}；不同原始取值对应相同的新值时，应 {{blank}}。",
+      "answer": [
+        [
+          "全部可能取值",
+          "所有可能取值"
+        ],
+        [
+          "合并概率",
+          "合并其概率"
+        ]
+      ],
+      "explanation": "先确定新随机变量的全部可能取值；不同原始取值若得到相同结果，须合并其概率。",
+      "source": "第二章 随机变量及其分布｜指定公式与知识点汇总",
+      "origin": "指定知识点｜第二章｜函数的分布律",
+      "chapter": "第二章 随机变量及其分布",
+      "tag": "公式附录 · 第2章",
+      "appendix": true,
+      "sequence": 30
+    },
+    {
+      "num": 12,
+      "stem": "二维分布函数的两个极限：\n\\(F(-\\infty,+\\infty)=\\) {{blank}}\n\\(F(-\\infty,-\\infty)=\\) {{blank}}",
+      "answer": [
+        "0",
+        "0"
+      ],
+      "explanation": "正确极限：\\[F(-\\infty,+\\infty)=0,\\qquad F(-\\infty,-\\infty)=0.\\]无穷表示相应自变量趋于无穷时的极限；原笔记的\\(F(-\\infty,+\\infty)=1\\)属于笔误。",
+      "source": "第三章 多维随机变量及其分布｜指定公式与知识点汇总",
+      "origin": "指定公式｜第三章｜二维分布函数的极限",
+      "chapter": "第三章 多维随机变量及其分布",
+      "tag": "公式附录 · 第3章",
+      "appendix": true,
+      "sequence": 31
+    },
+    {
+      "num": 13,
+      "stem": "求边缘分布律：先按 {{blank}} 求和，再按 {{blank}} 求和；要注意行与列分别对应哪个随机变量。",
+      "answer": [
+        "行",
+        "列"
+      ],
+      "explanation": "按行求和得到“行变量”的边缘分布（表格若以Y为行，即得到Y的边缘分布）；按列求和得到“列变量”的边缘分布（以X为列，即得到X的边缘分布）。",
+      "source": "第三章 多维随机变量及其分布｜指定公式与知识点汇总",
+      "origin": "指定知识点｜第三章｜边缘分布律",
+      "chapter": "第三章 多维随机变量及其分布",
+      "tag": "公式附录 · 第3章",
+      "appendix": true,
+      "sequence": 32
+    },
+    {
+      "num": 14,
+      "stem": "相关系数公式\n\\(\\rho_{XY}=\\) {{blank}}",
+      "answer": [
+        [
+          "Cov(X,Y)/(sqrt(D(X))*sqrt(D(Y)))",
+          "Cov(X,Y)/sqrt(D(X)D(Y))",
+          "Cov(X,Y)/(√D(X)√D(Y))",
+          "Cov(X,Y)/√(D(X)D(Y))"
+        ]
+      ],
+      "explanation": "公式：\\[\\rho_{XY}=\\frac{\\operatorname{Cov}(X,Y)}{\\sqrt{D(X)}\\sqrt{D(Y)}}.\\]\n适用条件：\\(D(X)\\)、\\(D(Y)\\)均为有限正数。",
+      "source": "第四章 随机变量的数字特征｜指定公式与知识点汇总",
+      "origin": "指定公式｜第四章｜相关系数",
+      "chapter": "第四章 随机变量的数字特征",
+      "tag": "公式附录 · 第4章",
+      "appendix": true,
+      "sequence": 33
+    },
+    {
+      "num": 15,
+      "stem": "第四章 · 常见分布均值（补充图片中的六行）\n0-1分布：\\(B(1,p)\\)，均值 {{blank}}\n二项分布：\\(B(n,p)\\)，均值 {{blank}}\n泊松分布：\\(P(\\lambda)\\)，均值 {{blank}}\n均匀分布：\\(U(a,b)\\)，均值 {{blank}}\n指数分布：\\(E(\\lambda)\\)，均值 {{blank}}\n正态分布：\\(N(\\mu,\\sigma^2)\\)，均值 {{blank}}",
+      "answer": [
+        [
+          "p"
+        ],
+        [
+          "np",
+          "n*p",
+          "n×p"
+        ],
+        [
+          "λ",
+          "lambda",
+          "\\lambda"
+        ],
+        [
+          "(a+b)/2",
+          "(a+b)÷2"
+        ],
+        [
+          "1/λ",
+          "1/lambda",
+          "1/\\lambda"
+        ],
+        [
+          "μ",
+          "mu",
+          "\\mu"
+        ]
+      ],
+      "explanation": "原表格（分布名称｜符号｜均值）：\n\\[\\begin{array}{|l|c|c|}\\hline \\text{分布名称} & \\text{符号} & \\text{均值} \\\\ \\hline \\text{0-1分布} & B(1,p) & p \\\\ \\hline \\text{二项分布} & B(n,p) & np \\\\ \\hline \\text{泊松分布} & P(\\lambda) & \\lambda \\\\ \\hline \\text{均匀分布} & U(a,b) & \\dfrac{a+b}{2} \\\\ \\hline \\text{指数分布} & E(\\lambda) & \\dfrac1{\\lambda} \\\\ \\hline \\text{正态分布} & N(\\mu,\\sigma^2) & \\mu \\\\ \\hline\\end{array}\\]",
+      "source": "第四章 随机变量的数字特征｜指定公式与知识点汇总",
+      "origin": "用户补充图片｜第四章｜常见分布均值表",
+      "chapter": "第四章 随机变量的数字特征",
+      "tag": "公式附录 · 第4章",
+      "appendix": true,
+      "sequence": 34
+    }
+  ],
+  "short": [
+    {
+      "num": 1,
+      "stem": "在房间里有10个人，分别佩戴从1号到10号的纪念章，任选3人记录其纪念章的号码。\n求：（1）最小号码为5的概率；（2）最大号码为5的概率。",
+      "answer": "（1）\\(\\frac{1}{12}\\)；（2）\\(\\frac{1}{20}\\)。",
+      "explanation": "从10人中任选3人，共有 \\(\\binom{10}{3}=120\\) 种等可能的选法。\n（1）必须选5号，另外两人从6～10号的5人中选取：\n\\[\nP(\\text{最小号码为5})=\\frac{\\binom{5}{2}}{\\binom{10}{3}}=\\frac{10}{120}=\\boxed{\\frac1{12}}.\n\\]（2）必须选5号，另外两人从1～4号的4人中选取：\n\\[\nP(\\text{最大号码为5})=\\frac{\\binom{4}{2}}{\\binom{10}{3}}=\\frac6{120}=\\boxed{\\frac1{20}}.\n\\]",
+      "source": "第一章 随机事件及其概率｜第3页｜第三节 等可能概型",
+      "origin": "练习题第3题",
+      "chapter": "第一章 随机事件及其概率",
+      "tag": "第1章 · 第3页",
+      "sequence": 3
+    },
+    {
+      "num": 2,
+      "stem": "已知\n\\[\nP(A)=\\frac14,\\quad P(B\\mid A)=\\frac13,\\quad P(A\\mid B)=\\frac12,\n\\]求 \\(P(A\\cup B)\\)。",
+      "answer": "\\(\\frac13\\)",
+      "explanation": "由条件概率公式：\n\\[\nP(AB)=P(A)P(B\\mid A)=\\frac14\\times\\frac13=\\frac1{12}.\n\\]又因为 \\(P(A\\mid B)=\\frac{P(AB)}{P(B)}\\)，所以\n\\[\nP(B)=\\frac{P(AB)}{P(A\\mid B)}=\\frac{1/12}{1/2}=\\frac16.\n\\]因此\n\\[\n\\begin{aligned}P(A\\cup B)&=P(A)+P(B)-P(AB)\\\\&=\\frac14+\\frac16-\\frac1{12}=\\boxed{\\frac13}.\\end{aligned}\n\\]",
+      "source": "第一章 随机事件及其概率｜第4页｜第四节 条件概率",
+      "origin": "练习题第2题",
+      "chapter": "第一章 随机事件及其概率",
+      "tag": "第1章 · 第4页",
+      "sequence": 4
+    },
+    {
+      "num": 3,
+      "stem": "已知一批产品来自于两个厂家，两厂家所占份额相同，已知厂家一的次品率为 \\(\\frac1{10}\\)，厂家二的次品率为 \\(\\frac1{12}\\)，求任意抽查一件产品，它为合格品的概率。",
+      "answer": "\\(\\frac{109}{120}\\)",
+      "explanation": "设 \\(A_1,A_2\\) 分别表示产品来自厂家一、厂家二，\\(B\\) 表示合格品。\n\\[\nP(A_1)=P(A_2)=\\frac12,\\quad P(B\\mid A_1)=\\frac9{10},\\quad P(B\\mid A_2)=\\frac{11}{12}.\n\\]由全概率公式：\n\\[\n\\begin{aligned}P(B)&=P(A_1)P(B\\mid A_1)+P(A_2)P(B\\mid A_2)\\\\&=\\frac12\\times\\frac9{10}+\\frac12\\times\\frac{11}{12}\\\\&=\\frac9{20}+\\frac{11}{24}=\\boxed{\\frac{109}{120}}.\\end{aligned}\n\\]",
+      "source": "第一章 随机事件及其概率｜第4页｜第四节 条件概率",
+      "origin": "练习题第4题",
+      "chapter": "第一章 随机事件及其概率",
+      "tag": "第1章 · 第4页",
+      "sequence": 5
+    },
+    {
+      "num": 4,
+      "stem": "某厂有甲、乙、丙三台机床进行生产，各自的次品率分别为5%、4%、2%，它们各自的产品分别占总产量的25%、35%、40%。将它们的产品混在一起。\n（1）求任取一个产品是次品的概率。\n（2）若取到一个产品是次品，问它是甲机床产品的概率为多大。",
+      "answer": "（1）\\(0.0345\\)；（2）\\(\\frac{25}{69}\\approx0.3623\\)。",
+      "explanation": "设 \\(A_1,A_2,A_3\\) 分别表示产品由甲、乙、丙机床生产，\\(B\\) 表示次品。\n（1）由全概率公式：\n\\[\n\\begin{aligned}P(B)&=P(A_1)P(B\\mid A_1)+P(A_2)P(B\\mid A_2)\\\\&\\quad+P(A_3)P(B\\mid A_3)\\\\&=0.25\\times0.05+0.35\\times0.04+0.40\\times0.02\\\\&=0.0125+0.014+0.008=\\boxed{0.0345}.\\end{aligned}\n\\]（2）由贝叶斯公式：\n\\[\nP(A_1\\mid B)=\\frac{P(A_1)P(B\\mid A_1)}{P(B)}=\\frac{0.25\\times0.05}{0.0345}=\\boxed{\\frac{25}{69}\\approx0.3623}.\n\\]",
+      "source": "第一章 随机事件及其概率｜第4页｜第四节 条件概率",
+      "origin": "练习题第5题",
+      "chapter": "第一章 随机事件及其概率",
+      "tag": "第1章 · 第4页",
+      "sequence": 6
+    },
+    {
+      "num": 5,
+      "stem": "发报台以概率0.6和0.4发出信号“·”和“—”，由于通信系统存在随机干扰，当发出信号为“·”和“—”时，收报台分别以概率0.2和0.1收到信号“—”和“·”。\n求收报台收到信号“·”时，发报台确实发出信号“·”的概率。",
+      "answer": "\\(\\frac{12}{13}\\)",
+      "explanation": "设 \\(A\\) 表示发出“·”，\\(B\\) 表示收到“·”，则\n\\[\nP(A)=0.6,\\quad P(\\overline A)=0.4,\\quad P(B\\mid A)=0.8,\\quad P(B\\mid\\overline A)=0.1.\n\\]先由全概率公式求收到“·”的概率：\n\\[\nP(B)=0.6\\times0.8+0.4\\times0.1=0.52.\n\\]再由贝叶斯公式：\n\\[\nP(A\\mid B)=\\frac{P(A)P(B\\mid A)}{P(B)}=\\frac{0.6\\times0.8}{0.52}=\\boxed{\\frac{12}{13}}.\n\\]",
+      "source": "第一章 随机事件及其概率｜第4页｜第四节 条件概率",
+      "origin": "练习题第6题",
+      "chapter": "第一章 随机事件及其概率",
+      "tag": "第1章 · 第4页",
+      "sequence": 7
+    },
+    {
+      "num": 6,
+      "stem": "设随机变量 \\(X\\) 具有概率密度函数\n\\[\nf(x)=\\begin{cases}kx,&0\\le x<1, \\\\ 0,&\\text{其他}.\\end{cases}\n\\]求：（1）常数 \\(k\\)。",
+      "answer": "\\(k=2\\)",
+      "explanation": "概率密度函数在整个实数轴上的积分等于1：\n\\[\n\\int_{-\\infty}^{+\\infty}f(x)\\,dx=\\int_0^1kx\\,dx=1.\n\\]因此\n\\[\nk\\left[\\frac{x^2}{2}\\right]_0^1=\\frac k2=1,\\quad\\boxed{k=2}.\n\\]",
+      "source": "第二章 随机变量及其分布｜第四节｜连续型随机变量",
+      "origin": "练习题第2题（仅第1小问）",
+      "chapter": "第二章 随机变量及其分布",
+      "tag": "第2章 · 第四节",
+      "sequence": 12
+    },
+    {
+      "num": 7,
+      "stem": "设随机变量 \\(X\\) 的分布律为：\n\\[\n\\begin{array}{c|ccccc}\\hline X & -1 & 0 & 1 & 2 & \\frac52 \\\\ \\hline p_k & \\frac25 & \\frac1{10} & \\frac1{10} & \\frac1{10} & \\frac3{10} \\\\ \\hline\\end{array}\n\\]试求：（1）\\(2X\\) 的分布律；（2）\\(X^2\\) 的分布律。",
+      "answer": "（1）令 \\(Y=2X\\)，其分布律为：\n\\[\n\\begin{array}{c|ccccc}\\hline Y & -2 & 0 & 2 & 4 & 5 \\\\ \\hline P & \\frac25 & \\frac1{10} & \\frac1{10} & \\frac1{10} & \\frac3{10} \\\\ \\hline\\end{array}\n\\]（2）令 \\(Z=X^2\\)，其分布律为：\n\\[\n\\begin{array}{c|cccc}\\hline Z & 0 & 1 & 4 & \\frac{25}{4} \\\\ \\hline P & \\frac1{10} & \\frac12 & \\frac1{10} & \\frac3{10} \\\\ \\hline\\end{array}\n\\]",
+      "explanation": "（1）当 \\(X\\) 分别取 \\(-1,0,1,2,\\frac52\\) 时，\\(Y=2X\\) 分别取 \\(-2,0,2,4,5\\)。各取值不同，因此对应概率不变。\n（2）\\(Z=X^2\\) 的全部可能取值为 \\(0,1,4,\\frac{25}{4}\\)。其中 \\(X=-1\\) 和 \\(X=1\\) 都对应 \\(Z=1\\)，需合并概率：\n\\[\n\\begin{aligned}P(Z=0)&=P(X=0)=\\frac1{10},\\\\P(Z=1)&=P(X=-1)+P(X=1)=\\frac25+\\frac1{10}=\\frac12,\\\\P(Z=4)&=P(X=2)=\\frac1{10},\\\\P(Z=\\frac{25}{4})&=P(X=\\frac52)=\\frac3{10}.\\end{aligned}\n\\]据此得到上述两个分布律表格。",
+      "source": "第二章 随机变量及其分布｜第13页｜第五节 随机变量的函数的分布",
+      "origin": "练习题第2题",
+      "chapter": "第二章 随机变量及其分布",
+      "tag": "第2章 · 第13页",
+      "sequence": 13
+    },
+    {
+      "num": 8,
+      "stem": "设随机变量 \\(X\\) 的密度函数\n\\[\nf(x)=\\begin{cases}2x,&0\\le x<1, \\\\ 0,&\\text{其他}.\\end{cases}\n\\]试求随机变量 \\(Y=2X+1\\) 的概率密度函数 \\(f_Y(y)\\)。",
+      "answer": "\\[\nf_Y(y)=\\begin{cases}\\frac{y-1}{2},&1<y<3, \\\\ 0,&\\text{其他}.\\end{cases}\n\\]",
+      "explanation": "由 \\(Y=2X+1\\)，得 \\(X=\\frac{Y-1}{2}\\)。因为 \\(0\\le X<1\\)，所以 \\(1\\le Y<3\\)。\n利用单调变换的密度公式：\n\\[\n\\begin{aligned}f_Y(y)&=f_X\\!\\left(\\frac{y-1}{2}\\right)\\left|\\frac{d}{dy}\\frac{y-1}{2}\\right|\\\\&=2\\times\\frac{y-1}{2}\\times\\frac12=\\frac{y-1}{2}\\quad(1<y<3).\\end{aligned}\n\\]区间外密度为0，因此得到上述分段概率密度函数。",
+      "source": "第二章 随机变量及其分布｜第13页｜第五节 随机变量的函数的分布",
+      "origin": "练习题第3题",
+      "chapter": "第二章 随机变量及其分布",
+      "tag": "第2章 · 第13页",
+      "sequence": 14
+    },
+    {
+      "num": 9,
+      "stem": "设随机变量 \\(X\\) 的概率密度为\n\\[\nf(x)=\\begin{cases}ax+1,&0\\le x\\le2, \\\\ 0,&\\text{其他}.\\end{cases}\n\\]求：（1）常数 \\(a\\)；（2）\\(X\\) 的分布函数 \\(F(x)\\)；（3）\\(P(1<X<3)\\)。",
+      "answer": "（1）\\(a=-\\frac12\\)。\n（2）\n\\[\nF(x)=\\begin{cases}0,&x<0, \\\\ x-\\frac{x^2}{4},&0\\le x<2, \\\\ 1,&x\\ge2.\\end{cases}\n\\]（3）\\(\\frac14\\)。",
+      "explanation": "（1）概率密度函数的积分等于1：\n\\[\n\\int_0^2(ax+1)\\,dx=\\left[\\frac{ax^2}{2}+x\\right]_0^2=2a+2=1,\\quad \\boxed{a=-\\frac12}.\n\\]（2）代入后 \\(f(x)=1-\\frac{x}{2}\\)（\\(0\\le x\\le2\\)）。按分布函数定义分段计算。\n当 \\(x<0\\) 时，\\(F(x)=0\\)。\n当 \\(0\\le x<2\\) 时，\n\\[\nF(x)=\\int_0^x\\left(1-\\frac t2\\right)dt=\\left[t-\\frac{t^2}{4}\\right]_0^x=x-\\frac{x^2}{4}.\n\\]当 \\(x\\ge2\\) 时，\\(F(x)=1\\)。\n（3）由于区间 \\((2,3)\\) 的概率密度为0，\n\\[\n\\begin{aligned}P(1<X<3)&=\\int_1^2\\left(1-\\frac x2\\right)dx\\\\&=\\left[x-\\frac{x^2}{4}\\right]_1^2\\\\&=1-\\frac34=\\boxed{\\frac14}.\\end{aligned}\n\\]",
+      "source": "第二章 随机变量及其分布｜第15页｜第二章检测题",
+      "origin": "三、计算题第3题（15分）",
+      "chapter": "第二章 随机变量及其分布",
+      "tag": "第2章 · 第15页",
+      "sequence": 17
+    },
+    {
+      "num": 10,
+      "stem": "设随机变量 \\(K\\) 在 \\((0,5)\\) 上服从均匀分布，求关于 \\(x\\) 的方程\n\\[\n4x^2+4Kx+K+2=0\n\\]有实数解的概率。",
+      "answer": "\\(\\frac35\\)",
+      "explanation": "方程有实根等价于判别式 \\(\\Delta\\ge0\\)，其中\n\\[\n\\begin{aligned}\\Delta&=(4K)^2-4\\times4(K+2)\\\\&=16(K^2-K-2)=16(K-2)(K+1).\\end{aligned}\n\\]解不等式 \\(16(K-2)(K+1)\\ge0\\)，得 \\(K\\le-1\\) 或 \\(K\\ge2\\)。考虑 \\(K\\in(0,5)\\)，只需 \\(2\\le K<5\\)。\n\\[\nP(\\Delta\\ge0)=P(K\\ge2)=\\frac{5-2}{5-0}=\\boxed{\\frac35}.\n\\]",
+      "source": "第二章 随机变量及其分布｜第15页｜第二章检测题",
+      "origin": "三、计算题第4题（12分）",
+      "chapter": "第二章 随机变量及其分布",
+      "tag": "第2章 · 第15页",
+      "sequence": 18
+    },
+    {
+      "num": 11,
+      "stem": "设二维随机向量 \\((X,Y)\\) 的联合分布列为：\n\\[\n\\begin{array}{c|ccc}\\hline Y\\backslash X & 0 & 1 & 2 \\\\ \\hline 1 & 0.1 & 0.2 & 0.1 \\\\ \\hline 2 & a & 0.1 & 0.2 \\\\ \\hline\\end{array}\n\\]求：（1）\\(a\\) 的值；（2）\\((X,Y)\\) 分别关于 \\(X\\) 和 \\(Y\\) 的边缘分布律。",
+      "answer": "（1）\\(a=0.3\\)。\n（2）关于 \\(X\\) 的边缘分布律：\n\\[\n\\begin{array}{c|ccc}\\hline X & 0 & 1 & 2 \\\\ \\hline P_X & 0.4 & 0.3 & 0.3 \\\\ \\hline\\end{array}\n\\]关于 \\(Y\\) 的边缘分布律：\n\\[\n\\begin{array}{c|cc}\\hline Y & 1 & 2 \\\\ \\hline P_Y & 0.4 & 0.6 \\\\ \\hline\\end{array}\n\\]",
+      "explanation": "（1）由联合分布律中所有概率之和等于1：\n\\[\n0.1+0.2+0.1+a+0.1+0.2=1,\\quad\\boxed{a=0.3}.\n\\]（2）先按行相加求 \\(Y\\) 的边缘分布：\n\\[\nP(Y=1)=0.1+0.2+0.1=0.4,\\quad P(Y=2)=0.3+0.1+0.2=0.6.\n\\]再按列相加求 \\(X\\) 的边缘分布：\n\\[\n\\begin{aligned}P(X=0)&=0.1+0.3=0.4,\\\\P(X=1)&=0.2+0.1=0.3,\\\\P(X=2)&=0.1+0.2=0.3.\\end{aligned}\n\\]由此得到答案中的两个边缘分布律表格。",
+      "source": "第三章 多维随机变量及其分布｜第18页｜第二节 边缘分布",
+      "origin": "练习题第1题",
+      "chapter": "第三章 多维随机变量及其分布",
+      "tag": "第3章 · 第18页",
+      "sequence": 19
+    },
+    {
+      "num": 12,
+      "stem": "已知二维离散型随机变量 \\((X,Y)\\) 的分布为：\n\\[\n\\begin{array}{c|cc}\\hline Y\\backslash X & 0 & 1 \\\\ \\hline 0 & \\frac{15}{22} & \\frac5{33} \\\\ \\hline 1 & \\frac5{33} & \\frac1{66} \\\\ \\hline\\end{array}\n\\]求：\\(X\\) 和 \\(Y\\) 的边缘分布律。",
+      "answer": "关于 \\(X\\) 的边缘分布律：\n\\[\n\\begin{array}{c|cc}\\hline X & 0 & 1 \\\\ \\hline P_X & \\frac56 & \\frac16 \\\\ \\hline\\end{array}\n\\]关于 \\(Y\\) 的边缘分布律：\n\\[\n\\begin{array}{c|cc}\\hline Y & 0 & 1 \\\\ \\hline P_Y & \\frac56 & \\frac16 \\\\ \\hline\\end{array}\n\\]",
+      "explanation": "先按行求和，得到 \\(Y\\) 的边缘分布：\n\\[\n\\begin{aligned}P(Y=0)&=\\frac{15}{22}+\\frac5{33}=\\frac{45}{66}+\\frac{10}{66}=\\boxed{\\frac56},\\\\P(Y=1)&=\\frac5{33}+\\frac1{66}=\\frac{10}{66}+\\frac1{66}=\\boxed{\\frac16}.\\end{aligned}\n\\]再按列求和，得到 \\(X\\) 的边缘分布：\n\\[\nP(X=0)=\\frac{15}{22}+\\frac5{33}=\\boxed{\\frac56},\\quad P(X=1)=\\frac5{33}+\\frac1{66}=\\boxed{\\frac16}.\n\\]本题联合分布律关于主对角线对称，两个边缘分布律相同。",
+      "source": "第三章 多维随机变量及其分布｜第18页｜第二节 边缘分布",
+      "origin": "练习题第2题",
+      "chapter": "第三章 多维随机变量及其分布",
+      "tag": "第3章 · 第18页",
+      "sequence": 20
+    },
+    {
+      "num": 13,
+      "stem": "设随机变量 \\(X\\) 的概率密度函数为\n\\[\nf(x)=\\begin{cases}3x^2,&0<x<1, \\\\ 0,&\\text{其他}.\\end{cases}\n\\]求 \\(E(X)\\)。",
+      "answer": "\\(\\frac34\\)",
+      "explanation": "由连续型随机变量的数学期望公式：\n\\[\nE(X)=\\int_{-\\infty}^{+\\infty}xf(x)\\,dx.\n\\]因此\n\\[\nE(X)=\\int_0^1x\\cdot3x^2\\,dx=3\\int_0^1x^3\\,dx=3\\left[\\frac{x^4}{4}\\right]_0^1=\\boxed{\\frac34}.\n\\]",
+      "source": "第四章 随机变量的数字特征｜第26页｜第一节 数学期望",
+      "origin": "练习题第1题",
+      "chapter": "第四章 随机变量的数字特征",
+      "tag": "第4章 · 第26页",
+      "sequence": 21
+    },
+    {
+      "num": 14,
+      "stem": "设随机变量 \\(X\\) 的概率密度函数为\n\\[\nf(x)=\\begin{cases}x,&0\\le x<1, \\\\ 2-x,&1\\le x\\le2, \\\\ 0,&\\text{其他}.\\end{cases}\n\\]求 \\(E(X)\\)。",
+      "answer": "\\(1\\)",
+      "explanation": "根据分段概率密度函数，分区间计算数学期望：\n\\[\n\\begin{aligned}E(X)&=\\int_0^1x\\cdot x\\,dx+\\int_1^2x(2-x)\\,dx\\\\&=\\left[\\frac{x^3}{3}\\right]_0^1+\\left[x^2-\\frac{x^3}{3}\\right]_1^2\\\\&=\\frac13+\\frac23=\\boxed1.\\end{aligned}\n\\]",
+      "source": "第四章 随机变量的数字特征｜第27页｜第一节 数学期望",
+      "origin": "练习题第2题",
+      "chapter": "第四章 随机变量的数字特征",
+      "tag": "第4章 · 第27页",
+      "sequence": 22
+    },
+    {
+      "num": 15,
+      "stem": "已知随机变量\n\\[\nX\\sim N(1,3^2),\\qquad Y\\sim N(0,4^2),\n\\]且 \\(X\\) 与 \\(Y\\) 的相关系数为 \\(\\rho_{XY}=-\\frac12\\)，设\n\\[\nZ=\\frac X3-\\frac Y2,\n\\]求：（1）\\(D(Z)\\)；（2）\\(\\rho_{XZ}\\)。",
+      "answer": "（1）\\(D(Z)=7\\)；（2）\\(\\rho_{XZ}=\\frac2{\\sqrt7}\\)。",
+      "explanation": "由题意：\\(D(X)=9,\\;D(Y)=16,\\;\\rho_{XY}=-\\frac12\\)。\n根据相关系数与协方差的关系：\n\\[\n\\operatorname{Cov}(X,Y)=\\rho_{XY}\\sqrt{D(X)D(Y)}=-\\frac12\\sqrt{9\\times16}=-6.\n\\]（1）由方差的性质：\n\\[\n\\begin{aligned}D(Z)&=D\\!\\left(\\frac X3-\\frac Y2\\right)\\\\&=\\frac19D(X)+\\frac14D(Y)-\\frac13\\operatorname{Cov}(X,Y)\\\\&=\\frac19\\times9+\\frac14\\times16-\\frac13\\times(-6)\\\\&=1+4+2=\\boxed7.\\end{aligned}\n\\]（2）先求协方差：\n\\[\n\\begin{aligned}\\operatorname{Cov}(X,Z)&=\\operatorname{Cov}\\!\\left(X,\\frac X3-\\frac Y2\\right)\\\\&=\\frac13D(X)-\\frac12\\operatorname{Cov}(X,Y)\\\\&=\\frac13\\times9-\\frac12\\times(-6)=6.\\end{aligned}\n\\]再求相关系数：\n\\[\n\\rho_{XZ}=\\frac{\\operatorname{Cov}(X,Z)}{\\sqrt{D(X)}\\sqrt{D(Z)}}=\\frac6{3\\sqrt7}=\\boxed{\\frac2{\\sqrt7}}.\n\\]",
+      "source": "第四章 随机变量的数字特征｜第30页｜第三节 协方差与相关系数",
+      "origin": "练习题第5题",
+      "chapter": "第四章 随机变量的数字特征",
+      "tag": "第4章 · 第30页",
+      "sequence": 24
+    },
+    {
+      "num": 16,
+      "stem": "设某食品投资项目的收益率 \\(X\\) 是一随机变量，其分布律为：\n\\[\n\\begin{array}{c|cccccc}\\hline X & 1\\% & 2\\% & 3\\% & 4\\% & 5\\% & 6\\% \\\\ \\hline P & 0.1 & 0.2 & 0.1 & 0.3 & 0.2 & 0.1 \\\\ \\hline\\end{array}\n\\]求：（1）该投资项目的平均收益率；（2）若有一位投资者在该项目上投资10万元，问他预期获得多少利润？",
+      "answer": "（1）平均收益率：\\(3.6\\%\\)；（2）预期利润：\\(3600\\text{元}\\)。",
+      "explanation": "（1）由离散型随机变量的数学期望公式：\n\\[\n\\begin{aligned}E(X)&=1\\%\\times0.1+2\\%\\times0.2+3\\%\\times0.1\\\\&\\quad+4\\%\\times0.3+5\\%\\times0.2+6\\%\\times0.1\\\\&=0.1\\%+0.4\\%+0.3\\%+1.2\\%+1.0\\%+0.6\\%\\\\&=\\boxed{3.6\\%}.\\end{aligned}\n\\]因此该项目的平均收益率为3.6%。\n（2）设投资利润为 \\(Y\\)，则 \\(Y=100000X\\)（元）。由数学期望的线性性质：\n\\[\nE(Y)=100000E(X)=100000\\times3.6\\%=\\boxed{3600\\text{元}}.\n\\]",
+      "source": "第四章 随机变量的数字特征｜第32页｜第四章检测题",
+      "origin": "二、计算题第6题（15分）",
+      "chapter": "第四章 随机变量的数字特征",
+      "tag": "第4章 · 第32页",
+      "sequence": 25
+    }
+  ]
+}
