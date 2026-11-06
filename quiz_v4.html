@@ -605,45 +605,76 @@ function refreshFeedback(card, q, animate = false){
 // same viewport position while neighboring panels expand/collapse together.
 let readingAnchorFrame=0;
 let readingAnchorToken=0;
+let readingAnchorSession=null;
 let bufferReleaseTimer=0;
 let activeBufferCards=new Set();
 function stopReadingAnchor(keepSuppression=false){
   readingAnchorToken++;
   if(readingAnchorFrame) cancelAnimationFrame(readingAnchorFrame);
   readingAnchorFrame=0;
+  readingAnchorSession=null;
   if(!keepSuppression)document.documentElement.classList.remove('reading-anchor-active');
 }
-function stabilizeReadingAnchor(card, initialTop){
+// iPadOS can use a narrow split view with a desktop-like user agent.
+const isIPad = /iPad/i.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+function layoutTop(element){
+  let y=0;
+  for(let node=element;node;node=node.offsetParent)y+=node.offsetTop;
+  return y;
+}
+function stabilizeReadingAnchor(card, initialTop, initialTarget){
+  const previous=readingAnchorFrame && readingAnchorSession?.card===card ? readingAnchorSession : null;
   stopReadingAnchor(true);
   if(!card || reducedMotion.matches){stopReadingAnchor();return;}
   const token=readingAnchorToken;
   const start=performance.now();
+  // Each layout movement contributes once to an absolute target. Do not feed
+  // a still-pending iOS scroll back into another relative correction.
+  const session=isIPad ? null : (previous || {card,baseLayout:layoutTop(card),baseScroll:initialTarget,lastTarget:initialTarget});
+  readingAnchorSession=session;
   document.documentElement.classList.add('reading-anchor-active');
   const tick=now=>{
     if(token!==readingAnchorToken) return;
     if(!card.isConnected){stopReadingAnchor();return;}
-    // Change scroll position only by the displacement of the reading card.
-    // This compensates for growth above it on every animation frame.
-    const displacement=card.getBoundingClientRect().top-initialTop;
-    if(Math.abs(displacement)>.35) window.scrollBy({top:displacement,behavior:'instant'});
-    if(now-start<360){
+    if(isIPad){
+      const displacement=card.getBoundingClientRect().top-initialTop;
+      if(Math.abs(displacement)>.35)window.scrollBy({top:displacement,behavior:'instant'});
+    }else{
+      const target=session.baseScroll+layoutTop(card)-session.baseLayout;
+      if(Math.abs(target-session.lastTarget)>.35){
+        session.lastTarget=target;
+        window.scrollTo({top:target,behavior:'instant'});
+      }
+    }
+    // Timers and CSS transition startup may be delayed independently on a
+    // busy phone. Keep tracking until buffered transitions actually finish.
+    // The buffer cleanup already checks transition state, so reuse its
+    // pending timer rather than inspecting every panel on every frame.
+    const stillMoving=!isIPad && now-start>=360 && now-start<1500 && !!bufferReleaseTimer;
+    if(now-start<360 || stillMoving){
       readingAnchorFrame=requestAnimationFrame(tick);
     }else{
       readingAnchorFrame=0;
+      readingAnchorSession=null;
       document.documentElement.classList.remove('reading-anchor-active');
     }
   };
   readingAnchorFrame=requestAnimationFrame(tick);
 }
-// A reader's own navigation takes priority over position correction.
-function cancelAnchorForNavigation(){
+// A reader's own navigation takes priority over position correction. Keep the
+// current anchor when the answer buttons are tapped again mid-transition.
+function cancelAnchorForNavigation(event){
+  if(!isIPad && readingAnchorSession && event.target instanceof Element &&
+     event.target.closest('#btnToggleAnswers,#btnGrade') &&
+     (event.type==='pointerdown' || (event.type==='keydown' && event.key===' ')))return;
   if(readingAnchorFrame)stopReadingAnchor(true);
 }
 for(const name of ['touchmove','wheel','pointerdown']){
   window.addEventListener(name,cancelAnchorForNavigation,{passive:true});
 }
 window.addEventListener('keydown',event=>{
-  if(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' '].includes(event.key))cancelAnchorForNavigation();
+  if(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' '].includes(event.key))cancelAnchorForNavigation(event);
 });
 function updateFeedback(){
   updateControls();
@@ -701,7 +732,12 @@ function updateFeedback(){
     // A small sliver from the previous card must not displace the main card.
     // Use the card with the largest visible area as the reading anchor.
     let largest=-1;
-    for(let index=0;index<cards.length;index++){
+    // Keep the same reading card through a quick reversal; the largest
+    // visible area can otherwise switch back and forth during expansion.
+    const retained=!isIPad && readingAnchorFrame && readingAnchorSession
+      ?cards.indexOf(readingAnchorSession.card):-1;
+    if(retained>=0 && !cards[retained].hidden)readingIndex=retained;
+    else for(let index=0;index<cards.length;index++){
       if(!visibleCards[index])continue;
       const rect=positions[index];
       const area=Math.max(0,Math.min(rect.bottom,viewportBottom)-Math.max(rect.top,top));
@@ -798,8 +834,8 @@ function updateFeedback(){
       if(activeBufferCards!==releaseCards)return;
       const running=[...releaseCards].some(card=>
         card.querySelector('.reveal').getAnimations().some(animation=>
-          animation.transitionProperty==='grid-template-rows' && animation.playState==='running'));
-      if(running && performance.now()-releaseStarted<750){
+          animation.transitionProperty==='grid-template-rows' && (animation.playState==='running'||(!isIPad&&animation.pending))));
+      if(running && performance.now()-releaseStarted<(isIPad?750:1500)){
         bufferReleaseTimer=setTimeout(releaseWhenSettled,50);
         return;
       }
@@ -816,8 +852,20 @@ function updateFeedback(){
     // transition itself. Cancelling a previous tracker avoids stacked RAFs.
     if(readingCard&&readingTop!==null){
       const delta=readingCard.getBoundingClientRect().top-readingTop;
-      if(Math.abs(delta)>1)window.scrollBy({top:delta,behavior:'instant'});
-      stabilizeReadingAnchor(readingCard,readingTop);
+      const continuing=!isIPad && readingAnchorFrame && readingAnchorSession?.card===readingCard;
+      const initialTarget=window.scrollY+(!continuing&&Math.abs(delta)>1?delta:0);
+      if(continuing){
+        // Reversing can synchronously resize unrendered cards above this one.
+        const target=readingAnchorSession.baseScroll+layoutTop(readingCard)-readingAnchorSession.baseLayout;
+        if(Math.abs(target-readingAnchorSession.lastTarget)>.35){
+          readingAnchorSession.lastTarget=target;
+          window.scrollTo({top:target,behavior:'instant'});
+        }
+      }else if(Math.abs(delta)>1){
+        if(isIPad)window.scrollBy({top:delta,behavior:'instant'});
+        else window.scrollTo({top:initialTarget,behavior:'instant'});
+      }
+      stabilizeReadingAnchor(readingCard,readingTop,initialTarget);
     }else stopReadingAnchor();
   }else if(anchorIndex>=0){
     const moved=cards[anchorIndex].getBoundingClientRect().top-anchorTop;
