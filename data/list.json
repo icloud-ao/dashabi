@@ -1,5 +1,33 @@
 [
   {
+    "id": "probability-key-points-2026",
+    "title": "概率论重点题目汇编（第一至第四章）",
+    "desc": "25道重点题＋9道公式与知识点附录（含六种常见分布均值表）｜答案与解析",
+    "subject": "概率论",
+    "semesterGroup": "current",
+    "tags": [
+      "本学期",
+      "概率论",
+      "重点题",
+      "第一至第四章",
+      "公式填空",
+      "答案解析",
+      "计算题"
+    ],
+    "file": "./data/questions/probability_key_points_2026.json",
+    "shuffleOptions": false,
+    "shuffleJudge": false,
+    "shuffleQuestions": false,
+    "durationMinutes": 0,
+    "enabled": true,
+    "single": 3,
+    "multi": 0,
+    "judge": 0,
+    "blank": 15,
+    "short": 16,
+    "total": 34
+  },
+  {
     "id": "network-attack-defense-2026",
     "title": "网络攻防技术与项目实战 三次单元测试",
     "desc": "本学期三次单元测试，共292题",
