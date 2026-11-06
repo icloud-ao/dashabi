@@ -228,21 +228,11 @@ word-break:break-word}
 .answer-explanation{padding-top:10px;border-top:1px solid var(--border)}
 .answer-label{display:block;color:#f8fafc;font-size:12px;font-weight:750}
 .math-prose{min-width:0;white-space:pre-line;overflow-wrap:anywhere;line-height:1.7}
-/* Display math: compact spacing, left alignment and overflow fallback. */
+/* Keep compact display-math spacing; MathJax 3 controls alignment and overflow. */
 .stem mjx-container[display="true"],
 .answer-line mjx-container[display="true"],
 .opt .text mjx-container[display="true"]{
-  display:block;
-  max-width:100%;
   margin:.38em 0!important;
-  text-align:left!important;
-  white-space:normal;
-  overflow-x:auto;
-}
-.stem mjx-container:not([display="true"]),
-.answer-line mjx-container:not([display="true"]),
-.opt .text mjx-container:not([display="true"]){
-  overflow:visible;
 }
 .bottom-bar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:linear-gradient(180deg,rgba(7,11,18,.54),rgba(7,11,18,.94));backdrop-filter:blur(18px);border-top:1px solid var(--border)}
 .bottom-inner{max-width:1120px;margin:0 auto;padding:12px 18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
