@@ -492,20 +492,26 @@ const esc = s => String(s ?? "").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",
 
 /* Formatting only: never mutate source JSON or scoring answers. */
 function alignLongDisplayMath(tex){
-  const expr = tex.trim();
-  if(expr.length < 60 || /\\begin\{|\\end\{|\\left\b|\\right\b|\\\\|&/.test(expr)) return tex;
-  const parts = [];
-  let token = "", depth = 0;
+  const expr=tex.trim();
+  // Already structured equations, independent statements, and multi-column math stay unchanged.
+  if(expr.length<60 || /\\begin\{|\\end\{|\\left\b|\\right\b|\\\\|&|\\(?:quad|qquad)\b/.test(expr))return tex;
+  const parts=[];
+  let token="",braceDepth=0,groupDepth=0;
   for(let i=0;i<expr.length;i++){
     const ch=expr[i];
     if(ch==="\\" && i+1<expr.length){token+=ch+expr[++i];continue;}
-    if(ch==="{") depth++;
-    if(ch==="}") depth--;
-    if(depth<0) return tex;
-    if(ch==="=" && depth===0){parts.push(token.trim());token="";}else token+=ch;
+    if(ch==="{")braceDepth++;
+    if(ch==="}")braceDepth--;
+    if((ch==="("||ch==="[") && braceDepth===0)groupDepth++;
+    if((ch===")"||ch==="]") && braceDepth===0)groupDepth--;
+    if(braceDepth<0||groupDepth<0)return tex;
+    // Top-level commas separate statements, not steps in a single calculation.
+    if(ch==="," && braceDepth===0 && groupDepth===0)return tex;
+    if(ch==="=" && braceDepth===0 && groupDepth===0){parts.push(token.trim());token="";}
+    else token+=ch;
   }
   parts.push(token.trim());
-  if(depth!==0 || parts.length<3 || parts.some(x=>!x)) return tex;
+  if(braceDepth!==0||groupDepth!==0||parts.length<3||parts.some(x=>!x))return tex;
   return "\\begin{aligned}"+parts[0]+"&="+parts[1]+
     parts.slice(2).map(x=>"\\\\\n&="+x).join("")+"\\end{aligned}";
 }
