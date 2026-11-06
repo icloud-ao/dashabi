@@ -15,7 +15,11 @@ window.MathJax = {
     processEscapes: true
   },
   options: {
-    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+    // Disable MathJax 4's click-to-explore overlay and contextual help/menu.
+    enableMenu: false,
+    enableExplorer: false,
+    enableExplorerHelp: false
   },
   output: {
     displayAlign: 'left',
