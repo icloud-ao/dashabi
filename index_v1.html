@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<title>奥利奥の练习场</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png?v=2">
+<style>
+:root {
+  color-scheme: light dark;
+  --font-ios: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "PingFang SC", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --bg: #f2f2f7;
+  --card: #ffffff;
+  --card-elevated: #ffffff;
+  --option: #f8f8fa;
+  --option-hover: #f0f0f4;
+  --ink: #1c1c1e;
+  --mut: #8e8e93;
+  --mut-light: #aeaeb2;
+  --line: rgba(60, 60, 67, 0.12);
+  --line-strong: rgba(60, 60, 67, 0.2);
+  --tc: #007aff;
+  --tc-hover: #0066d6;
+  --on-accent: #ffffff;
+  --selected: rgba(0, 122, 255, 0.08);
+  --selected-border: rgba(0, 122, 255, 0.35);
+  --ok: #34c759;
+  --okbg: rgba(52, 199, 89, 0.1);
+  --warn: #ff9500;
+  --warnbg: rgba(255, 149, 0, 0.1);
+  --bad: #ff3b30;
+  --badbg: rgba(255, 59, 48, 0.09);
+  --bad-border: rgba(255, 59, 48, 0.32);
+  --header: rgba(242, 242, 247, 0.78);
+  --header-border: rgba(60, 60, 67, 0.14);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03), 0 2px 6px rgba(0, 0, 0, 0.02);
+  --shadow-card: 0 2px 8px -1px rgba(0, 0, 0, 0.04), 0 12px 24px -4px rgba(0, 0, 0, 0.03);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --card: #1c1c1e;
+    --card-elevated: #2c2c2e;
+    --option: #242426;
+    --option-hover: #2c2c2e;
+    --ink: #f2f2f7;
+    --mut: #8e8e93;
+    --mut-light: #636366;
+    --line: rgba(255, 255, 255, 0.12);
+    --line-strong: rgba(255, 255, 255, 0.22);
+    --tc: #0a84ff;
+    --tc-hover: #409cff;
+    --on-accent: #ffffff;
+    --selected: rgba(10, 132, 255, 0.16);
+    --selected-border: rgba(10, 132, 255, 0.45);
+    --ok: #30d158;
+    --okbg: rgba(48, 209, 88, 0.14);
+    --warn: #ff9f0a;
+    --warnbg: rgba(255, 159, 10, 0.16);
+    --bad: #ff453a;
+    --badbg: rgba(255, 69, 58, 0.14);
+    --bad-border: rgba(255, 69, 58, 0.4);
+    --header: rgba(0, 0, 0, 0.75);
+    --header-border: rgba(255, 255, 255, 0.12);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.25);
+  }
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ios);
+  line-height: 1.5;
+  letter-spacing: -0.012em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a { color: inherit; text-decoration: none; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; border: 0; background: transparent; }
+button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 2px solid var(--tc);
+  outline-offset: 2px;
+}
+[hidden] { display: none !important; }
+
+/* ==================== 顶部工作台 (与 quiz_v5 .top 架构同源) ==================== */
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--header);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid var(--header-border);
+}
+.top-inner {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
+}
+.title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.title-group {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+.telemetry {
+  font-size: 13px;
+  color: var(--mut);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.telemetry b {
+  color: var(--ink);
+  font-weight: 600;
+}
+.icon-btn {
+  flex: none;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 99px;
+  background: rgba(120, 120, 128, 0.1);
+  color: var(--tc);
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: transform 0.18s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.18s;
+}
+.icon-btn:hover { background: rgba(120, 120, 128, 0.16); }
+.icon-btn:active { transform: scale(0.95); }
+
+/* 搜索与筛选一行流 */
+.controls-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.search-box {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+.search-box::before {
+  content: "⌕";
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--mut);
+  font-size: 14px;
+  pointer-events: none;
+}
+.search-input {
+  width: 100%;
+  height: 34px;
+  border: 0.5px solid transparent;
+  border-radius: 10px;
+  background: rgba(120, 120, 128, 0.12);
+  padding: 0 28px 0 30px;
+  font-size: 14px;
+  transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.search-input::placeholder { color: var(--mut); }
+.search-input:focus {
+  outline: none;
+  background: var(--card);
+  border-color: var(--tc);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+}
+.clear-btn {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--mut-light);
+  color: var(--card);
+  font-size: 12px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+
+.segmented {
+  display: inline-flex;
+  background: rgba(120, 120, 128, 0.12);
+  padding: 2.5px;
+  border-radius: 10px;
+  flex: none;
+}
+.seg-btn {
+  height: 29px;
+  padding: 0 11px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mut);
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.seg-btn.active {
+  background: var(--card-elevated);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 0.5px 1px rgba(0, 0, 0, 0.05);
+}
+
+/* 科目胶囊横滑栏 */
+.subject-bar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-top: 8px;
+  padding: 2px 0;
+}
+.subject-bar::-webkit-scrollbar { display: none; }
+.sub-pill {
+  flex: none;
+  height: 28px;
+  padding: 0 11px;
+  border-radius: 99px;
+  font-size: 12.5px;
+  font-weight: 550;
+  color: var(--mut);
+  border: 0.5px solid transparent;
+  transition: all 0.18s;
+}
+.sub-pill:hover { color: var(--ink); background: rgba(120, 120, 128, 0.08); }
+.sub-pill.active {
+  color: var(--tc);
+  background: var(--selected);
+  border-color: var(--selected-border);
+  font-weight: 600;
+}
+
+/* ==================== 主内容容器 ==================== */
+main {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 16px 16px calc(48px + env(safe-area-inset-bottom));
+}
+
+/* 继续上次练习 (Spotlight Dock) */
+.spotlight {
+  margin-bottom: 22px;
+}
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 6px 8px;
+  color: var(--mut);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.dock-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+.dock-card {
+  background: var(--card);
+  border: 0.5px solid var(--selected-border);
+  border-radius: 16px;
+  padding: 12px 14px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: transform 0.18s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.dock-card:active { transform: scale(0.98); }
+.dock-info { min-width: 0; flex: 1; }
+.dock-title {
+  font-size: 14.5px;
+  font-weight: 650;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dock-meta {
+  font-size: 12px;
+  color: var(--mut);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.dock-meta b { color: var(--tc); }
+
+/* ==================== 题库列表 (iOS 紧凑横向工作行) ==================== */
+.set-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.set-row {
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  border-radius: 18px;
+  padding: 15px 16px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.2s;
+}
+.set-row:hover {
+  border-color: var(--line-strong);
+}
+
+.row-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+.app-icon {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 11px;
+  background: var(--tone-bg, var(--selected));
+  color: var(--tone-fg, var(--tc));
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  font-weight: 700;
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
+}
+.set-row[data-tone="0"] { --tone-fg: #007aff; --tone-bg: rgba(0, 122, 255, 0.11); }
+.set-row[data-tone="1"] { --tone-fg: #5856d6; --tone-bg: rgba(88, 86, 214, 0.11); }
+.set-row[data-tone="2"] { --tone-fg: #34c759; --tone-bg: rgba(52, 199, 89, 0.11); }
+.set-row[data-tone="3"] { --tone-fg: #ff9500; --tone-bg: rgba(255, 149, 0, 0.11); }
+.set-row[data-tone="4"] { --tone-fg: #30b0c7; --tone-bg: rgba(48, 176, 199, 0.11); }
+.set-row[data-tone="5"] { --tone-fg: #af52de; --tone-bg: rgba(175, 82, 222, 0.11); }
+
+.row-body {
+  flex: 1;
+  min-width: 0;
+}
+.row-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.row-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.row-desc {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--mut);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 紧凑标签链 */
+.badge-chain {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 8px;
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11.5px;
+  font-weight: 600;
+  border-radius: 5px;
+  padding: 1.5px 6px;
+  background: rgba(120, 120, 128, 0.08);
+  color: var(--mut);
+  letter-spacing: -0.01em;
+}
+.tag.total { background: var(--selected); color: var(--tc); }
+.tag.sub { background: var(--okbg); color: var(--ok); }
+.tag.subj { background: var(--warnbg); color: var(--warn); }
+
+/* 底部进度与双动作栏合一 */
+.row-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 10px;
+  border-top: 0.5px solid var(--line);
+}
+.prog-wrap {
+  flex: 1;
+  min-width: 0;
+}
+.prog-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: var(--mut);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 4px;
+}
+.prog-text b { color: var(--ink); font-weight: 600; }
+.prog-track {
+  height: 3.5px;
+  border-radius: 99px;
+  background: rgba(120, 120, 128, 0.16);
+  overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--tc), #5856d6);
+  transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.prog-fill.done { background: var(--ok); }
+
+.action-pair {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+.act-btn {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 99px;
+  font-size: 12.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.16s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.16s;
+}
+.act-btn:active { transform: scale(0.94); }
+.act-btn.primary {
+  background: var(--tc);
+  color: var(--on-accent);
+  box-shadow: 0 1px 4px rgba(0, 122, 255, 0.25);
+}
+.act-btn.primary:hover { background: var(--tc-hover); }
+.act-btn.ghost {
+  background: var(--selected);
+  color: var(--tc);
+}
+.act-btn.ghost:hover { background: rgba(0, 122, 255, 0.14); }
+
+/* 反馈状态与页脚 */
+.state-box {
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  border-radius: 18px;
+  padding: 44px 20px;
+  text-align: center;
+  color: var(--mut);
+  font-size: 14px;
+}
+.state-box.error {
+  text-align: left;
+  padding: 16px 18px;
+  background: var(--badbg);
+  border-color: var(--bad-border);
+  color: var(--bad);
+}
+code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px;
+  background: rgba(120, 120, 128, 0.12);
+  padding: 2px 5px;
+  border-radius: 5px;
+}
+.footer {
+  margin-top: 28px;
+  padding-top: 14px;
+  border-top: 0.5px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--mut);
+}
+
+@media (max-width: 720px) {
+  .set-list { grid-template-columns: 1fr; gap: 10px; }
+  .controls-row { flex-wrap: wrap; }
+  .search-box { flex-basis: 100%; }
+  .search-input { font-size: 16px; height: 36px; }
+  .segmented { flex: 1; }
+  .seg-btn { flex: 1; text-align: center; }
+  h1 { font-size: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="title-row">
+      <div class="title-group">
+        <h1 id="pageTitle">奥利奥の练习场</h1>
+        <span class="telemetry" id="telemetryBar">
+          <b id="statSets">-</b> 套题库 · 共 <b id="statQuestions">-</b> 题 · 已答 <b id="statAnswered">-</b> 题 (<span id="statSubjects">-</span> 科)
+        </span>
+      </div>
+      <button class="icon-btn" id="btnReloadTop" type="button" title="重新加载题库">↻ 刷新</button>
+    </div>
+
+    <div class="controls-row">
+      <div class="search-box">
+        <input class="search-input" id="searchInput" placeholder="搜索题库、科目、标签或 ID (按 / 键聚焦)" autocomplete="off" />
+        <button class="clear-btn" id="btnClearSearch" type="button" hidden aria-label="清除搜索">×</button>
+      </div>
+      <div class="segmented" id="semesterTabs" role="group" aria-label="学期分组">
+        <button class="seg-btn active" type="button" data-semester-group="" aria-pressed="true">全部</button>
+        <button class="seg-btn" type="button" data-semester-group="current" aria-pressed="false">本学期</button>
+        <button class="seg-btn" type="button" data-semester-group="history" aria-pressed="false">历史</button>
+      </div>
+    </div>
+
+    <div class="subject-bar" id="subjectBar" aria-label="科目快速筛选" hidden></div>
+  </div>
+</header>
+
+<main>
+  <!-- 动态展示：有作答进度但尚未答完的题库会出现在这里 -->
+  <section class="spotlight" id="inProgressSection" hidden>
+    <div class="section-head">
+      <span>继续练习</span>
+      <span id="inProgressCount"></span>
+    </div>
+    <div class="dock-grid" id="inProgressBox"></div>
+  </section>
+
+  <!-- 题库主列表 -->
+  <section id="sets">
+    <div class="section-head">
+      <span>题库列表 (<strong id="resultCount">0</strong>)</span>
+      <span id="sortNote">在做优先 · 本学期置顶</span>
+    </div>
+    <div class="set-list" id="listBox"></div>
+    <div id="messageBox"></div>
+  </section>
+
+  <footer class="footer">
+    <span>© 奥利奥利奥</span>
+    <span>作答进度自动保存在本地浏览器</span>
+  </footer>
+</main>
+
+<script>
+const LIST_URL = "./data/list.json";
+let allSets = [];
+let activeSemesterGroup = "";
+let activeSubject = "";
+
+const $ = (id) => document.getElementById(id);
+function esc(s){return String(s ?? "").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[m]));}
+function readJSON(key, fallback){try{return JSON.parse(localStorage.getItem(key) || "")}catch{return fallback}}
+function itemInitial(item){const s = item.subject || item.title || item.id || "题"; return String(s).trim().slice(0,1).toUpperCase();}
+function toneFor(id){
+  let h = 0;
+  const s = String(id || "");
+  for(let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return h % 6;
+}
+function progressFor(item, total){
+  const answers = readJSON(`quiz_answers_${item.id}`, {});
+  const state = readJSON(`quiz_state_${item.id}`, {});
+  const answered = Object.values(answers).filter(v => Array.isArray(v) ? v.some(x=>String(x||"").trim()) : String(v||"").trim()).length;
+  const t = Number(total || item.total || 0);
+  const pct = t ? Math.min(100, Math.round(answered * 100 / t)) : 0;
+  return {answered, total: t, pct, graded: !!state.graded};
+}
+function countFromData(data){
+  const single = data.single?.length || 0;
+  const multi = data.multi?.length || 0;
+  const judge = data.judge?.length || 0;
+  const blank = data.blank?.length || data.fill?.length || 0;
+  const matching = data.matching?.length || 0;
+  const short = data.short?.length || 0;
+  const caseQ = data.case?.length || data.cases?.length || 0;
+  const calculation = data.calculation?.length || 0;
+  const mixed = data.questions?.length || 0;
+  if (mixed) return {single:0,multi:0,judge:0,blank:0,matching:0,short:0,caseQ:0,calculation:0,total:mixed,mixed:true};
+  return {single,multi,judge,blank,matching,short,caseQ,calculation,total:single+multi+judge+blank+matching+short+caseQ+calculation,mixed:false};
+}
+async function hydrate(item){
+  try{
+    const res = await fetch(item.file, {cache:"no-store"});
+    if(!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    return {...item, counts: countFromData(data)};
+  }catch{
+    return {...item, counts: {single:item.single||0,multi:item.multi||0,judge:item.judge||0,blank:item.blank||0,total:item.total||0}};
+  }
+}
+function semesterGroupFor(item){
+  return item.semesterGroup === "current" ? "current" : "history";
+}
+function updateStatsAndSubjects(){
+  const totalSets = allSets.length;
+  const totalQuestions = allSets.reduce((sum,item)=>sum + Number(item.counts?.total || item.total || 0),0);
+  const totalAnswered = allSets.reduce((sum,item)=>sum + progressFor(item, item.counts?.total).answered,0);
+  const subjectSet = [...new Set(allSets.map(x=>x.subject).filter(Boolean))];
+  $("statSets").textContent = totalSets;
+  $("statQuestions").textContent = totalQuestions;
+  $("statAnswered").textContent = totalAnswered;
+  $("statSubjects").textContent = subjectSet.length;
+
+  const subBar = $("subjectBar");
+  if (subjectSet.length > 1) {
+    subBar.hidden = false;
+    subBar.innerHTML = [
+      `<button class="sub-pill ${activeSubject === "" ? "active" : ""}" type="button" data-subject="">全部科目</button>`,
+      ...subjectSet.map(sub => `<button class="sub-pill ${activeSubject === sub ? "active" : ""}" type="button" data-subject="${esc(sub)}">${esc(sub)}</button>`)
+    ].join("");
+  } else {
+    subBar.hidden = true;
+  }
+}
+function filteredItems(){
+  const q = $("searchInput").value.trim().toLowerCase();
+  return allSets.filter(item => {
+    const groupOk = !activeSemesterGroup || semesterGroupFor(item) === activeSemesterGroup;
+    const subOk = !activeSubject || item.subject === activeSubject;
+    const hay = [item.title,item.desc,item.subject,(item.tags||[]).join(" "),item.id].join(" ").toLowerCase();
+    return groupOk && subOk && (!q || hay.includes(q));
+  });
+}
+function renderSpotlight(){
+  const q = $("searchInput").value.trim();
+  const inProg = allSets.filter(item => {
+    const p = progressFor(item, item.counts?.total);
+    return p.answered > 0 && p.pct < 100;
+  });
+  const sec = $("inProgressSection");
+  if (q || activeSemesterGroup || activeSubject || !inProg.length) {
+    sec.hidden = true;
+    return;
+  }
+  sec.hidden = false;
+  $("inProgressCount").textContent = `${inProg.length} 套进行中`;
+  $("inProgressBox").innerHTML = inProg.slice(0, 3).map(item => {
+    const p = progressFor(item, item.counts?.total);
+    return `<div class="dock-card">
+      <div class="dock-info">
+        <div class="dock-title">${esc(item.title)}</div>
+        <div class="dock-meta">已推进 <b>${p.pct}%</b> (${p.answered}/${p.total})</div>
+      </div>
+      <div class="action-pair">
+        <a class="act-btn primary" href="/q/${encodeURIComponent(item.id)}">继续刷题</a>
+        <a class="act-btn ghost" href="/p/${encodeURIComponent(item.id)}">逐题</a>
+      </div>
+    </div>`;
+  }).join("");
+}
+function render(){
+  const q = $("searchInput").value.trim();
+  $("btnClearSearch").hidden = !q;
+  renderSpotlight();
+
+  const items = filteredItems();
+  $("resultCount").textContent = items.length;
+
+  if (!items.length) {
+    $("listBox").innerHTML = "";
+    $("messageBox").innerHTML = `<div class="state-box">${
+      !q && activeSemesterGroup
+        ? (activeSemesterGroup === "current" ? "本学期暂无题库。" : "暂无历史题库。")
+        : `没有匹配的题库。换个关键词，或检查 <code>data/list.json</code>。`
+    }</div>`;
+    return;
+  }
+
+  $("messageBox").innerHTML = "";
+  $("listBox").innerHTML = items.map(item => {
+    const c = item.counts || {};
+    const p = progressFor(item, c.total);
+    const tags = [item.subject, ...(item.tags||[])].filter(Boolean).slice(0, 3);
+    const typeTags = [
+      c.single ? `<span class="tag">单选 ${c.single}</span>` : "",
+      c.multi ? `<span class="tag">多选 ${c.multi}</span>` : "",
+      c.judge ? `<span class="tag">判断 ${c.judge}</span>` : "",
+      c.blank ? `<span class="tag">填空 ${c.blank}</span>` : "",
+      (c.short || c.caseQ || c.calculation || c.matching)
+        ? `<span class="tag subj">主观 ${(c.short||0)+(c.caseQ||0)+(c.calculation||0)+(c.matching||0)}</span>`
+        : ""
+    ].join("");
+    const mainBtnText = p.answered > 0 && p.pct < 100 ? "继续刷题" : "整套刷题";
+
+    return `<article class="set-row" data-tone="${toneFor(item.id)}">
+      <div class="row-main">
+        <div class="app-icon">${esc(itemInitial(item))}</div>
+        <div class="row-body">
+          <div class="row-head">
+            <h2 class="row-title" title="${esc(item.title)}">${esc(item.title)}</h2>
+          </div>
+          <p class="row-desc" title="${esc(item.desc || "")}">${esc(item.desc || `ID: ${item.id}`)}</p>
+          <div class="badge-chain">
+            <span class="tag total">${c.total || item.total || "?"} 题</span>
+            ${tags.map(t=>`<span class="tag sub">${esc(t)}</span>`).join("")}
+            ${typeTags}
+          </div>
+        </div>
+      </div>
+
+      <div class="row-foot">
+        <div class="prog-wrap">
+          <div class="prog-text">
+            <span>${p.answered ? `已答 <b>${p.answered}</b>/${p.total}` : "未开始"}${p.graded ? " · 已判分" : ""}</span>
+            <span><b>${p.pct}%</b></span>
+          </div>
+          <div class="prog-track"><div class="prog-fill ${p.pct === 100 ? "done" : ""}" style="width:${p.pct}%"></div></div>
+        </div>
+        <div class="action-pair">
+          <a class="act-btn ghost" href="/p/${encodeURIComponent(item.id)}">逐题练习</a>
+          <a class="act-btn primary" href="/q/${encodeURIComponent(item.id)}">${mainBtnText}</a>
+        </div>
+      </div>
+    </article>`;
+  }).join("");
+}
+async function load(){
+  $("messageBox").innerHTML = `<div class="state-box">正在读取题库列表...</div>`;
+  try{
+    const res = await fetch(LIST_URL, {cache:"no-store"});
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const list = await res.json();
+    if(!Array.isArray(list)) throw new Error("list.json 必须是数组");
+    allSets = await Promise.all(list.filter(x=>x && x.enabled !== false).map(hydrate));
+    allSets.sort((a,b) => {
+      const semDiff = Number(semesterGroupFor(b) === "current") - Number(semesterGroupFor(a) === "current");
+      if (semDiff !== 0) return semDiff;
+      const progA = progressFor(a, a.counts?.total).answered > 0 ? 1 : 0;
+      const progB = progressFor(b, b.counts?.total).answered > 0 ? 1 : 0;
+      return progB - progA;
+    });
+    $("messageBox").innerHTML = "";
+    updateStatsAndSubjects();
+    render();
+  }catch(err){
+    $("listBox").innerHTML = "";
+    $("resultCount").textContent = "0";
+    $("statSets").textContent = "0";
+    $("statQuestions").textContent = "0";
+    $("statAnswered").textContent = "0";
+    $("statSubjects").textContent = "0";
+    $("messageBox").innerHTML = `<div class="state-box error"><b>题库列表加载失败。</b><br/>请确认 <code>data/list.json</code> 存在。若刚放入新题库，请先运行 <code>python scripts/reflash.py</code>，并通过服务器访问。<br/>错误信息：${esc(err.message)}</div>`;
+  }
+}
+
+$("semesterTabs").addEventListener("click", e => {
+  const btn = e.target.closest("[data-semester-group]");
+  if (!btn) return;
+  activeSemesterGroup = btn.dataset.semesterGroup;
+  $("semesterTabs").querySelectorAll(".seg-btn").forEach(tab => {
+    const active = tab === btn;
+    tab.classList.toggle("active", active);
+    tab.setAttribute("aria-pressed", active);
+  });
+  render();
+});
+
+$("subjectBar").addEventListener("click", e => {
+  const btn = e.target.closest("[data-subject]");
+  if (!btn) return;
+  activeSubject = btn.dataset.subject;
+  $("subjectBar").querySelectorAll(".sub-pill").forEach(pill => {
+    pill.classList.toggle("active", pill === btn);
+  });
+  render();
+});
+
+$("searchInput").addEventListener("input", render);
+$("btnClearSearch").addEventListener("click", () => {
+  $("searchInput").value = "";
+  $("searchInput").focus();
+  render();
+});
+window.addEventListener("keydown", e => {
+  if (e.key === "/" && document.activeElement !== $("searchInput")) {
+    e.preventDefault();
+    $("searchInput").focus();
+  } else if (e.key === "Escape" && document.activeElement === $("searchInput")) {
+    $("searchInput").value = "";
+    $("searchInput").blur();
+    render();
+  }
+});
+$("btnReloadTop").addEventListener("click", load);
+load();
+</script>
+</body>
+</html>
