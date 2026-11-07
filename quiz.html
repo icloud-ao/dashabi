@@ -123,20 +123,18 @@ html.ios-inner-scroll #quizScroll{
 }
 @media(max-width:640px){html.ios-inner-scroll #quizScroll{scroll-padding-top:195px}}
 
-/* Search stays separate from quiz state and uses the existing dialog palette. */
-#btnSearch{width:44px;height:44px}
-#btnSearch:disabled{opacity:.4;cursor:default}
-#searchDialog{width:min(580px,calc(100% - 32px))}
-.search-body{display:flex;flex-direction:column;max-height:calc(min(85dvh,760px) - 58px)}
-.search-controls{padding:14px 18px 8px}
-.search-input{width:100%;min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--option);font-size:16px}
-.search-input:focus{background:var(--card);border-color:var(--tc)}
+/* The original jump field also opens keyword search results. */
+.top-inner{position:relative}
+.search-box{flex:none;min-width:0}
+.search-box .jump{width:150px}
+.search-panel{position:absolute;z-index:25;top:calc(100% + 4px);right:16px;width:min(580px,calc(100vw - 32px));max-height:min(65dvh,600px);display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--line-strong);border-radius:16px;background:var(--card);box-shadow:var(--shadow-dialog)}
+.search-controls{flex:none;padding:12px 16px 6px}
 .search-options{display:flex;align-items:center;min-height:44px;gap:9px;font-size:14px;cursor:pointer}
 .search-options input{width:18px;height:18px;margin:0;accent-color:var(--tc)}
 .search-help{margin:0;color:var(--mut);font-size:12px;line-height:1.5}
 .search-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:35px;color:var(--mut);font-size:13px}
 .search-clear{min-height:36px;padding:0 8px;background:transparent;color:var(--tc);border-radius:8px;font-size:13px}
-.search-list{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 18px 18px}
+.search-list{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 16px 16px}
 .search-result{display:block;width:100%;min-height:48px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--option);text-align:left;line-height:1.5;overflow-wrap:anywhere}
 .search-result+.search-result{margin-top:8px}
 .search-result>span{display:block}
@@ -152,6 +150,11 @@ mark.search-mark{padding:0;border-radius:3px;background:#ffe09a;color:#382700}
 .search-match-preview{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--option);font-size:14px;line-height:1.6;overflow-wrap:anywhere}
 .search-match-label{color:var(--mut);font-size:12px;font-weight:600}
 .search-match-line{margin-top:5px;white-space:pre-wrap}
+@media(max-width:640px){
+  .search-box{flex:1 1 0}
+  .search-box .jump{width:100%}
+  .search-panel{right:12px;width:calc(100vw - 24px)}
+}
 </style>
 </head>
 <body>
@@ -162,7 +165,6 @@ mark.search-mark{padding:0;border-radius:3px;background:#ffe09a;color:#382700}
       <a class="icon" href="/" aria-label="返回主页">‹</a>
       <div class="title" id="title">答题页</div>
       <div class="progress-label" id="statsTop"><b id="answeredCount">0</b> / <span id="totalCount">0</span> 已答</div>
-      <button class="icon" id="btnSearch" type="button" aria-label="搜索题目" title="搜索题目" disabled><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 4.3 4.3"/></svg></button>
       <button class="icon" id="settings" type="button" aria-label="设置">⋯</button>
     </div>
     <div class="bar" role="progressbar" aria-label="答题进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress"><span></span></div>
@@ -177,7 +179,17 @@ mark.search-mark{padding:0;border-radius:3px;background:#ffe09a;color:#382700}
         <button class="pill" type="button" id="btnFilterUnanswered">未答</button>
         <button class="pill" type="button" id="btnFilterWrong">错题</button>
       </div>
-      <input class="jump" id="jumpInput" aria-label="跳题" title="数字=单选，M=多选，J=判断，F=填空，Q=简答。输入后按回车" placeholder="跳题 如 M10">
+      <div class="search-box" id="searchBox">
+        <input class="jump" id="jumpInput" type="search" aria-label="搜索题目或输入题号跳转" aria-controls="searchPanel" aria-expanded="false" title="数字或 S=单选，M=多选，J=判断，F=填空，Q=简答；输入题号按回车，关键词用空格分隔" placeholder="搜题 / 跳题" autocomplete="off">
+        <div id="searchPanel" class="search-panel mathjax_ignore" role="region" aria-label="题目搜索结果" hidden>
+          <div class="search-controls">
+            <label class="search-options"><input id="searchIncludeAnswers" type="checkbox">包含答案和解析</label>
+            <p class="search-help">关键词用空格分隔。跳题：数字为单选，M 多选、J 判断、F 填空、Q 简答，加题号按回车。定位隐藏题目时显示全部。</p>
+            <div class="search-meta"><span id="searchStatus" role="status" aria-live="polite">输入关键词开始搜索</span><button class="search-clear" id="clearSearchHighlight" type="button" hidden>清除高亮</button></div>
+          </div>
+          <div class="search-list" id="searchResults" aria-label="搜索结果"></div>
+        </div>
+      </div>
       <button class="tool" id="btnToggleAnswers" type="button">显示答案</button>
       <button class="tool primary" id="btnGrade" type="button">交卷判分</button>
     </div>
@@ -188,18 +200,6 @@ mark.search-mark{padding:0;border-radius:3px;background:#ffe09a;color:#382700}
   <div id="app"><div class="empty">正在加载题库...</div></div>
 </main>
 </div>
-<dialog id="searchDialog" class="mathjax_ignore" aria-labelledby="searchTitle">
-  <div class="dialog-head"><span id="searchTitle">搜索题目</span><button class="icon" id="closeSearch" type="button" aria-label="关闭搜索">×</button></div>
-  <div class="search-body">
-    <div class="search-controls">
-      <input class="search-input" id="searchInput" type="search" aria-label="搜索关键词" placeholder="输入关键词，如 TCP 拥塞" autocomplete="off">
-      <label class="search-options"><input id="searchIncludeAnswers" type="checkbox">包含答案和解析</label>
-      <p class="search-help">空格分隔关键词，需全部匹配。定位被筛选隐藏的题目时将显示全部题目。</p>
-      <div class="search-meta"><span id="searchStatus" role="status" aria-live="polite">输入关键词开始搜索</span><button class="search-clear" id="clearSearchHighlight" type="button" hidden>清除高亮</button></div>
-    </div>
-    <div class="search-list" id="searchResults" aria-label="搜索结果"></div>
-  </div>
-</dialog>
 <dialog id="dialog" aria-labelledby="dialogTitle">
   <div class="dialog-head"><span id="dialogTitle">设置</span><button class="icon" id="closeDialog" type="button" aria-label="关闭">×</button></div>
   <div class="dialog-body">
@@ -494,13 +494,13 @@ function render(){
   const orderedQuestions = order.flatMap(type => groups[type]);
   cardRecords = [...$("app").querySelectorAll(".question")].map((card,index) => ({card, question:orderedQuestions[index]}));
   sectionRecords = [...$("app").querySelectorAll(".section")].map(section => ({section, cards:[...section.querySelectorAll(".question")]}));
-  $("btnSearch").disabled = cardRecords.length === 0;
   if(usePhoneReveal()){
     document.documentElement.classList.add('phone-reveal-enabled');
     initializePhoneRevealCards(cardRecords.map(record=>record.card));
   }
   applyFilters(false);
   observeCards();
+  if(!$('searchPanel').hidden){buildSearchIndex();renderSearchResults();fitSearchPanel();}
   return typesetMath();
 }
 function applyFilters(preservePosition = true){
@@ -1325,8 +1325,11 @@ let searchMarks = [];
 let searchPreview = null;
 
 function searchWords(){
-  const value = $("searchInput").value.trim().toLowerCase();
+  const value = $("jumpInput").value.trim().toLowerCase();
   return value ? [...new Set(value.split(/\s+/))] : [];
+}
+function parseJumpInput(value){
+  return value.trim().toUpperCase().match(/^([SMJFQ])?\s*(\d+)$/);
 }
 function searchField(label, value){
   const text = String(value ?? "");
@@ -1387,11 +1390,13 @@ function renderSearchResults(){
     const text = includeAnswers ? entry.allText : entry.basicText;
     return words.every(word => text.includes(word));
   });
-  $("searchStatus").textContent = `找到 ${searchMatches.length} 道题`;
+  const jumpHint = parseJumpInput($("jumpInput").value) ? " · 按回车跳题" : "";
+  $("searchStatus").textContent = `找到 ${searchMatches.length} 道题${jumpHint}`;
   if(!searchMatches.length){
     const empty = document.createElement("p");
     empty.className = "search-empty";
-    empty.textContent = "没有找到匹配的题目。";
+    empty.textContent = parseJumpInput($("jumpInput").value)
+      ? "输入的是题号，按回车跳转。" : "没有找到匹配的题目。";
     results.append(empty);
     return;
   }
@@ -1507,29 +1512,56 @@ function locateSearchResult(index){
     applyFilters(false);
   }
   highlightSearchCard(entry, words, $("searchIncludeAnswers").checked);
-  $("searchDialog").close();
+  closeSearchPanel();
+  $("jumpInput").blur();
   requestAnimationFrame(() => entry.record.card.scrollIntoView({behavior:reducedMotion.matches ? "auto" : "smooth", block:"start"}));
 }
-$('btnSearch').addEventListener('click', () => {
-  buildSearchIndex();
+function fitSearchPanel(){
+  const panel = $('searchPanel');
+  if(panel.hidden) return;
+  const viewport = window.visualViewport;
+  const bottom = viewport ? viewport.offsetTop + viewport.height : window.innerHeight;
+  const available = Math.max(130, bottom - panel.getBoundingClientRect().top - 10);
+  panel.style.maxHeight = `${Math.min(600, available)}px`;
+}
+function openSearchPanel(){
+  if(!searchIndex.length && cardRecords.length) buildSearchIndex();
+  const wasHidden = $('searchPanel').hidden;
+  $('searchPanel').hidden = false;
+  $('jumpInput').setAttribute('aria-expanded', 'true');
   renderSearchResults();
-  $('searchDialog').showModal();
-  $('searchInput').focus();
-});
-$('closeSearch').addEventListener('click', () => $('searchDialog').close());
-$('searchDialog').addEventListener('click', event => {if(event.target === $('searchDialog')) $('searchDialog').close();});
-$('searchInput').addEventListener('input', () => {clearSearchHighlight(); renderSearchResults();});
+  if(wasHidden) fitSearchPanel();
+}
+function closeSearchPanel(){
+  $('searchPanel').hidden = true;
+  $('jumpInput').setAttribute('aria-expanded', 'false');
+}
+$('jumpInput').addEventListener('focus', openSearchPanel);
+$('jumpInput').addEventListener('click', () => {if($('searchPanel').hidden) openSearchPanel();});
+$('jumpInput').addEventListener('input', () => {clearSearchHighlight(); openSearchPanel();});
 $('searchIncludeAnswers').addEventListener('change', () => {clearSearchHighlight(); renderSearchResults();});
 $('clearSearchHighlight').addEventListener('click', clearSearchHighlight);
 $('searchResults').addEventListener('click', event => {
   const button = event.target.closest('[data-search-index]');
   if(button) locateSearchResult(Number(button.dataset.searchIndex));
 });
-$('searchInput').addEventListener('keydown', event => {
-  if(event.isComposing || event.keyCode === 229) return;
-  if(event.key === 'Escape'){event.preventDefault();$('searchDialog').close();return;}
-  if(event.key === 'Enter' && searchMatches.length){event.preventDefault();locateSearchResult(0);}
+document.addEventListener('pointerdown', event => {
+  if(!$('searchBox').contains(event.target)){
+    closeSearchPanel();
+    if(document.activeElement === $('jumpInput')) $('jumpInput').blur();
+  }
 });
+$('searchBox').addEventListener('focusout', event => {
+  if(event.relatedTarget && !$('searchBox').contains(event.relatedTarget)) closeSearchPanel();
+});
+$('searchBox').addEventListener('keydown', event => {
+  if(event.target !== $('jumpInput') && event.key === 'Escape' && !event.isComposing){
+    event.preventDefault();
+    closeSearchPanel();
+  }
+});
+window.addEventListener('resize', fitSearchPanel, {passive:true});
+window.visualViewport?.addEventListener('resize', fitSearchPanel, {passive:true});
 
 document.addEventListener('transitionend', event => {
   if(event.propertyName !== 'grid-template-rows' ||
@@ -1549,9 +1581,16 @@ $("btnClear").addEventListener("click",()=>{answers={};graded=false;showAnswers=
 $("btnReset").addEventListener("click",()=>{if(confirm("确定清空本题库的作答、判分状态和乱序种子？")){localStorage.removeItem(answerKey());localStorage.removeItem(stateKey());localStorage.removeItem(seedKey());answers={};graded=false;showAnswers=false;filterMode="all";typeFilter="all";seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed);render();}});
 $("btnReshuffle").addEventListener("click",()=>{if(confirm("重新生成选项/题序乱序？已选答案会保留，但显示位置可能变化。")){seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed);render();}});
 $("jumpInput").addEventListener("keydown", e=>{
+  if(e.isComposing || e.keyCode === 229) return;
+  if(e.key === "Escape"){e.preventDefault();closeSearchPanel();return;}
   if(e.key !== "Enter") return;
-  const v = e.target.value.trim().toUpperCase(); if(!v) return;
-  const m = v.match(/^([SMJFQ])?\s*(\d+)$/); if(!m) return;
+  const m = parseJumpInput(e.target.value);
+  if(!m){
+    if(searchMatches.length){e.preventDefault();locateSearchResult(0);}
+    return;
+  }
+  e.preventDefault();
+  closeSearchPanel();
   const map = {S:"single",M:"multi",J:"judge",F:"blank",Q:"short"};
   const type = map[m[1] || "S"]; const num = m[2];
   filterMode="all"; typeFilter=type; saveState(); applyFilters(false);
