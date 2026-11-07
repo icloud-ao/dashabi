@@ -630,7 +630,7 @@ const isIPad = /iPad/i.test(navigator.userAgent) ||
 // iPad's visual and reveal behavior is also used on desktop in V5.
 const isPhoneDevice = /iPhone|iPod|Android.+Mobile/i.test(navigator.userAgent);
 function useIPadPresentation(){
-  return isIPad || (!isPhoneDevice && window.matchMedia('(min-width:641px)').matches);
+  return isIPad || !isPhoneDevice;
 }
 // Safari's native scroll anchoring arrived after the affected iOS releases.
 const iosInnerScroll=!isIPad && /iPhone|iPod/i.test(navigator.userAgent) &&
