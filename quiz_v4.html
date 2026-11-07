@@ -82,6 +82,9 @@ dialog{width:min(500px,calc(100% - 32px));max-height:min(85dvh,760px);border:.5p
 html.ipad-device .top{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;border-bottom:0}
 html.ipad-device .top::before{display:block}
 html.ipad-device .top::after{content:none;display:none}
+/* Match the page at rest; the longer in-header fade appears over scrolled cards. */
+html.ipad-device{--touch-header-rgb:242,242,247;--header-solid:calc(44px + env(safe-area-inset-top))}
+@media(prefers-color-scheme:dark){html.ipad-device{--touch-header-rgb:0,0,0}}
 
 /* Native-size text inside two opposing clipping windows. Only a handful of
    cards intersecting the old/new viewport receive compositor animations. */
@@ -103,9 +106,9 @@ html.ipad-device .top::after{content:none;display:none}
 .phone-reveal-ready .reveal-inner{height:auto;overflow:hidden}
 @media(prefers-reduced-motion:reduce){.reveal{transition:none!important}}
 
-/* The scroll position is controlled by the mobile reading anchor during reveal. */
+/* Shared touch reveals own their reading anchor, including full-width iPad views. */
+html.reading-anchor-active,html.reading-anchor-active body{overflow-anchor:none}
 @media(max-width:640px){
- html.reading-anchor-active,html.reading-anchor-active body{overflow-anchor:none}
  .question.buffer-animating{content-visibility:visible}
  html.phone-anim-contain .question.buffer-animating{contain:content}
 }
@@ -604,7 +607,7 @@ function refreshFeedback(card, q, animate = false){
   }
 }
 
-// Phone-only animation coordinator. It keeps the main reading card at the
+// Touch animation coordinator. It keeps the main reading card at the
 // same viewport position while neighboring panels expand/collapse together.
 let readingAnchorFrame=0;
 let readingAnchorToken=0;
@@ -737,7 +740,7 @@ function stabilizeReadingAnchor(card, initialTop, initialTarget){
 // A reader's own navigation takes priority over position correction. Keep the
 // current anchor when the answer buttons are tapped again mid-transition.
 function cancelAnchorForNavigation(event){
-  if(!isIPad && readingAnchorSession && event.target instanceof Element &&
+  if(usePhoneReveal() && readingAnchorSession && event.target instanceof Element &&
      event.target.closest('#btnToggleAnswers,#btnGrade') &&
      (event.type==='pointerdown' || (event.type==='keydown' && event.key===' ')))return;
   if(readingAnchorFrame || readingAnchorSession)stopReadingAnchor(true);
@@ -753,7 +756,7 @@ window.addEventListener('keydown',event=>{
 let phoneRevealMotion=null;
 let phoneRevealBorder=.5;
 function usePhoneReveal(){
-  return !isIPad && touchInput.matches && (/iPhone|iPod|Android.+Mobile/i.test(navigator.userAgent) ||
+  return isIPad || touchInput.matches && (/iPhone|iPod|Android.+Mobile/i.test(navigator.userAgent) ||
     window.matchMedia('(max-width:640px)').matches ||
     document.documentElement.classList.contains('phone-reveal-enabled'));
 }
@@ -943,7 +946,7 @@ function updatePhoneFeedback(remainingTime=null){
   // and body text reveal at full size without scaling or height animation.
   const ratio=entries.reduce((n,e)=>Math.max(n,
     Math.abs((showAnswers?e.fullHeight:0)-e.oldShown)/Math.max(1,e.fullHeight)),0);
-  const timing={duration:remainingTime===null?260*Math.max(.55,Math.min(1,ratio)):Math.max(60,remainingTime),
+  const timing={duration:remainingTime===null?(isIPad?300:260)*Math.max(.55,Math.min(1,ratio)):Math.max(60,remainingTime),
     easing:'cubic-bezier(.25,.1,.25,1)',fill:'both'};
   motion.deadline=performance.now()+timing.duration;
   const animate=(element,keyframes)=>{
@@ -1016,7 +1019,7 @@ function updateFeedback(){
   const touch=touchInput.matches;
   const revealed=showAnswers;
   const viewportBottom=quizScroll ? quizScroll.getBoundingClientRect().bottom : window.innerHeight;
-  // Preserve the previously tested desktop/iPad strategy unchanged.
+  // Preserve the desktop strategy; iPad and phones use the shared reveal above.
   const inspectAll=!phone || nearbyCardIndexes.size===0;
   const positions=cards.map((card,index)=>
     inspectAll||nearbyCardIndexes.has(index)?card.getBoundingClientRect():null);
