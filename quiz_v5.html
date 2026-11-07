@@ -79,12 +79,12 @@ dialog{width:min(500px,calc(100% - 32px));max-height:min(85dvh,760px);border:.5p
   .top::before{display:block}
   .top::after{content:none;display:none}
 }
-html.ipad-device .top{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;border-bottom:0}
-html.ipad-device .top::before{display:block}
-html.ipad-device .top::after{content:none;display:none}
+html.ipad-parity .top{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;border-bottom:0}
+html.ipad-parity .top::before{display:block}
+html.ipad-parity .top::after{content:none;display:none}
 /* Match the page at rest; the longer in-header fade appears over scrolled cards. */
-html.ipad-device{--touch-header-rgb:242,242,247;--header-solid:calc(44px + env(safe-area-inset-top))}
-@media(prefers-color-scheme:dark){html.ipad-device{--touch-header-rgb:0,0,0}}
+html.ipad-parity{--touch-header-rgb:242,242,247;--header-solid:calc(44px + env(safe-area-inset-top))}
+@media(prefers-color-scheme:dark){html.ipad-parity{--touch-header-rgb:0,0,0}}
 
 /* Native-size text inside two opposing clipping windows. Only a handful of
    cards intersecting the old/new viewport receive compositor animations. */
@@ -627,6 +627,11 @@ function stopReadingAnchor(keepSuppression=false){
 // iPadOS can use a narrow split view with a desktop-like user agent.
 const isIPad = /iPad/i.test(navigator.userAgent) ||
   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+// iPad's visual and reveal behavior is also used on desktop in V5.
+const isPhoneDevice = /iPhone|iPod|Android.+Mobile/i.test(navigator.userAgent);
+function useIPadPresentation(){
+  return isIPad || (!isPhoneDevice && window.matchMedia('(min-width:641px)').matches);
+}
 // Safari's native scroll anchoring arrived after the affected iOS releases.
 const iosInnerScroll=!isIPad && /iPhone|iPod/i.test(navigator.userAgent) &&
   !(window.CSS && CSS.supports && CSS.supports('overflow-anchor','auto'));
@@ -672,7 +677,7 @@ function restoreInnerScroll(mathReady){
     },{once:true});
   }
 }
-document.documentElement.classList.toggle('ipad-device',isIPad);
+document.documentElement.classList.toggle('ipad-parity',useIPadPresentation());
 if(!isIPad)document.documentElement.classList.add('phone-anim-contain');
 function layoutTop(element){
   let y=0;
@@ -756,7 +761,7 @@ window.addEventListener('keydown',event=>{
 let phoneRevealMotion=null;
 let phoneRevealBorder=.5;
 function usePhoneReveal(){
-  return isIPad || touchInput.matches && (/iPhone|iPod|Android.+Mobile/i.test(navigator.userAgent) ||
+  return useIPadPresentation() || touchInput.matches && (isPhoneDevice ||
     window.matchMedia('(max-width:640px)').matches ||
     document.documentElement.classList.contains('phone-reveal-enabled'));
 }
@@ -946,7 +951,7 @@ function updatePhoneFeedback(remainingTime=null){
   // and body text reveal at full size without scaling or height animation.
   const ratio=entries.reduce((n,e)=>Math.max(n,
     Math.abs((showAnswers?e.fullHeight:0)-e.oldShown)/Math.max(1,e.fullHeight)),0);
-  const timing={duration:remainingTime===null?(isIPad?300:260)*Math.max(.55,Math.min(1,ratio)):Math.max(60,remainingTime),
+  const timing={duration:remainingTime===null?(useIPadPresentation()?300:260)*Math.max(.55,Math.min(1,ratio)):Math.max(60,remainingTime),
     easing:'cubic-bezier(.25,.1,.25,1)',fill:'both'};
   motion.deadline=performance.now()+timing.duration;
   const animate=(element,keyframes)=>{
@@ -1287,7 +1292,11 @@ $("jumpInput").addEventListener("keydown", e=>{
 let phoneRevealWidth=window.innerWidth;
 window.addEventListener('resize',()=>{
   const width=window.innerWidth;
-  if(width!==phoneRevealWidth){phoneRevealWidth=width;finishPhoneReveal();}
+  if(width!==phoneRevealWidth){
+    phoneRevealWidth=width;
+    finishPhoneReveal();
+    document.documentElement.classList.toggle('ipad-parity',useIPadPresentation());
+  }
 },{passive:true});
 function closeSettings(){
   const dialog = $("dialog");
