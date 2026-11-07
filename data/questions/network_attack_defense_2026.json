@@ -1701,8 +1701,8 @@
     {
       "num": 121,
       "stem": "（ ）扫描往往需要其他类型扫描的结果作为前提条件。",
-      "answer": "D",
-      "explanation": "",
+      "answer": "A",
+      "explanation": "教材答案：A（漏洞扫描）；知到答案：D（主机发现）。本题按教材答案判分。",
       "source": "单元测试二",
       "origin": "单元测试二 34",
       "options": {
