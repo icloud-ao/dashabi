@@ -777,6 +777,7 @@ function finishPhoneReveal(keepPrepared=false){
   if(!motion)return;
   phoneRevealMotion=null;
   if(motion.timer)clearTimeout(motion.timer);
+  if(motion.sizeFrame)cancelAnimationFrame(motion.sizeFrame);
   motion.sizeObserver?.disconnect();
   for(const animation of motion.animations)animation.cancel();
   for(const entry of motion.entries){
@@ -794,7 +795,7 @@ function finishPhoneReveal(keepPrepared=false){
     stopReadingAnchor();
   }else if(!readingAnchorSession)document.documentElement.classList.remove('reading-anchor-active');
 }
-function updatePhoneFeedback(){
+function updatePhoneFeedback(remainingTime=null){
   const top=document.querySelector('.top').getBoundingClientRect().bottom;
   const bottom=quizScroll ? quizScroll.getBoundingClientRect().bottom : window.innerHeight;
   const cards=cardRecords.map(record=>record.card);
@@ -804,6 +805,8 @@ function updatePhoneFeedback(){
   const before=cards.map(card=>card.hidden?null:card.getBoundingClientRect());
   const visible=before.map(rect=>!!rect && rect.top<bottom && rect.bottom>top);
   const previous=phoneRevealMotion;
+  const keepReadingPosition=remainingTime===null ||
+    !!previous?.session && readingAnchorSession===previous.session;
   const oldPanels=new Map();
   if(previous)for(const entry of previous.entries){
     const transform=getComputedStyle(entry.inner).transform;
@@ -835,7 +838,7 @@ function updatePhoneFeedback(){
       });
     }
   }
-  const readingCard=readingIndex>=0?cards[readingIndex]:null;
+  const readingCard=keepReadingPosition && readingIndex>=0?cards[readingIndex]:null;
   const desiredTop=before[readingIndex]?.top;
   const snapshots=cards.map((card,i)=>{
     if(!before[i])return null;
@@ -855,7 +858,7 @@ function updatePhoneFeedback(){
   activeBufferCards.clear();
   document.documentElement.classList.add('reading-anchor-active');
   cards.forEach((card,i)=>{
-    const animate=visible[i] && i>=readingIndex && !reducedMotion.matches;
+    const animate=visible[i] && !reducedMotion.matches;
     card.classList.toggle('no-motion',!animate);
     // Judge from the full data as usual; defer only offscreen DOM decoration.
     if(visible[i] || !cardObserver){
@@ -896,26 +899,29 @@ function updatePhoneFeedback(){
   }
   const entries=[];
   if(!reducedMotion.matches)cards.forEach((card,i)=>{
-    if(i<readingIndex || !before[i] || !after[i])return;
+    if(!before[i] || !after[i])return;
     const inFinalView=after[i].top<bottom && after[i].bottom>top;
     if(!visible[i] && !inFinalView)return;
     const panel=card.querySelector('.reveal'),inner=panel.firstElementChild;
     const result=inner.firstElementChild,style=getComputedStyle(card);
     const panelRect=panel.getBoundingClientRect(),resultRect=result.getBoundingClientRect();
-    const fullHeight=resultRect.height+parseFloat(getComputedStyle(result).marginTop);
+    const resultStyle=getComputedStyle(result);
+    const fullHeight=resultRect.height+parseFloat(resultStyle.marginTop);
+    const resultExtras=['paddingTop','paddingBottom','borderTopWidth','borderBottomWidth']
+      .reduce((sum,name)=>sum+parseFloat(resultStyle[name]),0);
     const baseHeight=after[i].height-panelRect.height;
     const start=snapshots[i];
     const oldShown=start.shown??fullHeight;
     if(Math.abs((showAnswers?fullHeight:0)-oldShown)<.1 &&
        Math.abs(before[i].top-after[i].top)<.1 && Math.abs(start.height-after[i].height)<.1)return;
-    entries.push({card,panel,inner,result,fullHeight,baseHeight,resultHeight:resultRect.height,
+    entries.push({card,panel,inner,result,fullHeight,baseHeight,resultHeight:resultRect.height,resultExtras,
       fullCardHeight:baseHeight+fullHeight,finalHeight:after[i].height,
       oldShown:Math.min(fullHeight,start.shown??fullHeight),
       oldHeight:visible[i]?start.height:baseHeight+(start.shown??fullHeight),oldOpacity:start.opacity,
       shift:before[i].top-after[i].top,panelTop:panelRect.top-after[i].top-parseFloat(style.borderTopWidth),
-      inset:parseFloat(style.paddingLeft),border:parseFloat(style.borderTopWidth)});
+      panelLeft:panelRect.left-after[i].left-parseFloat(style.borderLeftWidth),panelWidth:panelRect.width});
   });
-  const motion={entries,prepared,animations:[],session,correctPosition,timer:0,sizeObserver:null};
+  const motion={entries,prepared,animations:[],session,correctPosition,timer:0,sizeObserver:null,sizeFrame:0,deadline:0};
   phoneRevealMotion=motion;
   for(const entry of entries){
     const surface=ensurePhoneRevealCard(entry.card);
@@ -927,7 +933,8 @@ function updatePhoneFeedback(){
     set(entry.card,'height',entry.finalHeight);
     set(entry.panel,'position','absolute');set(entry.inner,'height','100%');
     set(entry.panel,'height',entry.fullHeight);set(entry.panel,'top',entry.panelTop);
-    set(entry.panel,'left',entry.inset);set(entry.panel,'right',entry.inset);
+    set(entry.panel,'left',entry.panelLeft);set(entry.panel,'right','auto');
+    set(entry.panel,'width',entry.panelWidth);
     set(surface,'height',entry.fullCardHeight);
     entry.card.classList.add('phone-reveal-motion');
     entry.card.classList.remove('no-motion');
@@ -936,8 +943,9 @@ function updatePhoneFeedback(){
   // and body text reveal at full size without scaling or height animation.
   const ratio=entries.reduce((n,e)=>Math.max(n,
     Math.abs((showAnswers?e.fullHeight:0)-e.oldShown)/Math.max(1,e.fullHeight)),0);
-  const timing={duration:260*Math.max(.55,Math.min(1,ratio)),
+  const timing={duration:remainingTime===null?260*Math.max(.55,Math.min(1,ratio)):Math.max(60,remainingTime),
     easing:'cubic-bezier(.25,.1,.25,1)',fill:'both'};
+  motion.deadline=performance.now()+timing.duration;
   const animate=(element,keyframes)=>{
     const animation=element.animate(keyframes,timing);
     motion.animations.push(animation);
@@ -962,12 +970,27 @@ function updatePhoneFeedback(){
     try{
       motion.sizeObserver=new ResizeObserver(changes=>{
         if(phoneRevealMotion!==motion)return;
-        if(changes.some(change=>{
+        const resized=changes.some(change=>{
           const entry=entries.find(e=>e.result===change.target);
-          return entry && Math.abs(entry.result.getBoundingClientRect().height-entry.resultHeight)>1;
-        }))finishPhoneReveal();
+          if(!entry)return false;
+          const box=change.borderBoxSize;
+          const size=box && (box[0] || box);
+          const height=size?.blockSize ?? change.contentRect.height+entry.resultExtras;
+          return Math.abs(height-entry.resultHeight)>1;
+        });
+        // A late font/image resize must retarget from the current pose, not
+        // cancel every visible answer into its final state in the first frame.
+        if(resized && !motion.sizeFrame){
+          motion.sizeFrame=requestAnimationFrame(()=>{
+            motion.sizeFrame=0;
+            if(phoneRevealMotion===motion)updatePhoneFeedback(motion.deadline-performance.now());
+          });
+        }
       });
-      for(const entry of entries)motion.sizeObserver.observe(entry.result);
+      for(const entry of entries){
+        try{motion.sizeObserver.observe(entry.result,{box:'border-box'});}
+        catch{motion.sizeObserver.observe(entry.result);}
+      }
     }catch{motion.sizeObserver?.disconnect();}
   }
   const finish=()=>{if(phoneRevealMotion===motion)finishPhoneReveal();};
