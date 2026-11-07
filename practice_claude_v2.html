@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark">
+<base href="/">
+<title>答题页</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png">
+<script>
+window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']],processEscapes:true},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+/* 一题一屏：中性底色，题型只用一个强调色体现 */
+:root{--tc:#3b5bdb;--bg:#f2f3f6;--card:#fff;--ink:#151a24;--mut:#667085;--rule:#e7eaf0;--ok:#12a150;--bad:#e5383b;--warn:#d97706;--okbg:#e6f7ee;--badbg:#fdecec}
+body[data-t=multi]{--tc:#0b8f7a}body[data-t=judge]{--tc:#d9822b}body[data-t=blank]{--tc:#c2255c}body[data-t=short]{--tc:#5f6b7a}
+@media(prefers-color-scheme:dark){:root{--bg:#0b0e13;--card:#151a21;--ink:#eef1f6;--mut:#98a2b3;--rule:#262d38;--ok:#4ade80;--bad:#ff7b7b;--warn:#fbbf24;--okbg:#10291d;--badbg:#351519}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;overflow:hidden;background:var(--bg);transition:background .3s;font-family:system-ui,-apple-system,"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif;line-height:1.6;color:var(--ink)}
+button,input,textarea{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+.app{height:100dvh;max-width:640px;margin:0 auto;display:flex;flex-direction:column}
+.hd{display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 12px 0;color:var(--ink)}
+.ib{flex:none;width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:50%;background:var(--card);color:var(--ink);box-shadow:0 0 0 1px var(--rule);font-size:20px;cursor:pointer}
+.ttl{flex:1;min-width:0;text-align:center;font-size:14px;font-weight:600;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta{display:flex;align-items:flex-end;justify-content:space-between;padding:14px 20px 10px}
+.tchip{border:0;background:color-mix(in srgb,var(--tc) 13%,var(--card));color:var(--tc);font-size:13px;font-weight:700;padding:5px 13px;border-radius:99px;cursor:pointer}
+.cnt{font-size:36px;line-height:1;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.cnt small{font-size:15px;font-weight:500;color:var(--mut);margin-left:4px;letter-spacing:0}
+.seg{height:4px;margin:0 20px 14px;border-radius:9px;background:var(--rule);overflow:hidden}
+.seg i{display:block;height:100%;width:0;background:var(--tc);transition:width .25s}
+.card{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:var(--card);border-radius:26px 26px 0 0;padding:24px 20px 32px;box-shadow:0 -1px 0 var(--rule),0 -10px 30px rgba(20,30,50,.05)}
+#qbox.inr{animation:inr .22s ease}#qbox.inl{animation:inl .22s ease}
+@keyframes inr{from{opacity:0;transform:translateX(28px)}}@keyframes inl{from{opacity:0;transform:translateX(-28px)}}
+@media(prefers-reduced-motion:reduce){#qbox{animation:none!important}}
+.nav{display:flex;gap:10px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:var(--card)}
+.nb{min-height:50px;border-radius:15px;border:1.5px solid var(--rule);background:transparent;font-size:15px;font-weight:700;cursor:pointer}
+.nb:disabled{opacity:.35}
+#btnPrev{flex:1}#btnCard{flex:1.2;font-variant-numeric:tabular-nums}
+#btnNext{flex:1.5;background:var(--tc);border-color:var(--tc);color:#fff}
+.stem{font-size:18px;line-height:1.85;font-weight:500;white-space:pre-wrap;word-break:break-word}
+.stem.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.65;background:var(--rule);border-radius:12px;padding:12px}
+.hint{margin-top:8px;font-size:13px;color:var(--tc);font-weight:600}
+.qi,.ai{margin-top:12px;display:grid;gap:10px}
+.qi figure,.ai figure{margin:0}
+.qi img,.ai img{display:block;max-width:100%;height:auto;border-radius:12px;border:1px solid var(--rule)}
+figcaption{margin-top:4px;color:var(--mut);font-size:12px}
+.opts{display:grid;gap:10px;margin-top:20px}
+.opt{display:flex;gap:12px;align-items:flex-start;min-height:58px;padding:14px;border:1.5px solid var(--rule);border-radius:16px;cursor:pointer;user-select:none;transition:border-color .12s,background .12s}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt .lt{flex:none;width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--rule);color:var(--mut);font-weight:800;font-size:14px}
+.opt .tx{flex:1;padding-top:2px;font-size:16px;white-space:pre-wrap;word-break:break-word}
+.opt:active{transform:scale(.99)}
+.opt:has(input:checked){border-color:var(--tc);background:color-mix(in srgb,var(--tc) 10%,var(--card))}
+.opt:has(input:checked) .lt{background:var(--tc);color:#fff}
+.opts .opt.ok{border-color:var(--ok);background:var(--okbg)}.opts .opt.ok .lt{background:var(--ok);color:#fff}
+.opts .opt.no{border-color:var(--bad);background:var(--badbg)}.opts .opt.no .lt{background:var(--bad);color:#fff}
+.opt.lock{pointer-events:none}
+.bi{display:inline-block;min-width:130px;max-width:100%;margin:2px 4px;padding:5px 10px;border:0;border-bottom:2.5px solid var(--tc);border-radius:8px 8px 0 0;background:color-mix(in srgb,var(--tc) 9%,var(--card));outline:none;font-size:16px;text-align:center}
+.bi.ok{border-color:var(--ok);color:var(--ok)}.bi.no{border-color:var(--bad);color:var(--bad)}
+.ta{width:100%;min-height:150px;margin-top:18px;padding:14px;border:1.5px solid var(--rule);border-radius:16px;background:transparent;outline:none;resize:vertical;font-size:16px;line-height:1.7}
+.ta:focus{border-color:var(--tc)}
+.act{display:block;width:100%;min-height:50px;margin-top:18px;border:0;border-radius:15px;background:var(--tc);color:#fff;font-weight:700;font-size:16px;cursor:pointer}
+.act:disabled{opacity:.35}
+.act.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--rule)}
+.act.bad{background:transparent;color:var(--bad);border:1.5px solid var(--bad)}
+.redo{display:block;margin:14px auto 0;border:0;background:none;color:var(--mut);font-size:13px;text-decoration:underline;cursor:pointer}
+.res{margin-top:18px;padding:14px 16px;border-radius:16px;background:var(--rule);font-size:15px;line-height:1.75;white-space:pre-wrap;word-break:break-word}
+.res.ok{background:var(--okbg)}.res.no{background:var(--badbg)}
+.rt{font-weight:800}.res.ok .rt{color:var(--ok)}.res.no .rt{color:var(--bad)}
+.rx{margin-top:8px;padding-top:8px;border-top:1px dashed var(--rule)}.rx b{display:block;font-size:12px;color:var(--mut)}
+.empty{text-align:center;padding:60px 0;color:var(--mut)}
+.error{padding:16px;border-radius:16px;background:var(--badbg);color:var(--bad)}
+code{background:var(--rule);padding:1px 5px;border-radius:5px}
+.mask{position:fixed;inset:0;z-index:40;background:rgba(5,10,20,.5);opacity:0;pointer-events:none;transition:opacity .2s}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:50;max-width:640px;margin:0 auto;max-height:82dvh;overflow:auto;background:var(--card);border-radius:26px 26px 0 0;padding:8px 18px calc(20px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .24s ease;box-shadow:0 -12px 40px rgba(0,0,0,.28)}
+body.sh .mask{opacity:1;pointer-events:auto}body.sh .sheet{transform:none}
+.grab{width:38px;height:4px;border-radius:9px;background:var(--rule);margin:2px auto 14px}
+.sheet h3{margin:18px 0 8px;font-size:13px;color:var(--mut);font-weight:700}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1.5px solid var(--rule);background:transparent;border-radius:99px;padding:7px 14px;font-size:14px;font-weight:700;cursor:pointer}
+.chip i{font-style:normal;font-weight:400;color:var(--mut);margin-left:4px;font-size:12px}
+.chip.on{background:var(--ink);border-color:var(--ink);color:var(--card)}.chip.on i{color:inherit;opacity:.7}
+.sum{font-size:15px;margin:14px 0 2px}.sum b{font-size:28px;font-variant-numeric:tabular-nums}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.n{min-height:44px;border-radius:12px;border:1.5px solid var(--rule);background:transparent;color:var(--mut);font-weight:700;font-size:14px;cursor:pointer;font-variant-numeric:tabular-nums}
+.n.done{background:color-mix(in srgb,var(--tc) 16%,var(--card));border-color:transparent;color:var(--ink)}
+.n.ok{background:var(--okbg);border-color:var(--ok);color:var(--ok)}.n.bad{background:var(--badbg);border-color:var(--bad);color:var(--bad)}
+.n.warn{border-style:dashed;border-color:var(--warn);color:var(--warn)}
+.n.cur{outline:2.5px solid var(--ink);outline-offset:1px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sb{min-height:46px;border-radius:13px;border:1.5px solid var(--rule);background:transparent;font-size:14px;font-weight:700;cursor:pointer}
+.sb.on{border-color:var(--tc);background:color-mix(in srgb,var(--tc) 12%,var(--card));color:var(--tc)}
+.sb.dg{border-color:var(--bad);color:var(--bad)}
+.tip{font-size:12px;color:var(--mut);margin:6px 0 0}
+.toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--card);border-radius:99px;padding:9px 18px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;white-space:nowrap}
+.toast.show{opacity:1}
+@media(min-width:700px){.grid{grid-template-columns:repeat(10,1fr)}}
+</style>
+</head>
+<body data-t="single">
+<div class="app">
+  <header class="hd">
+    <a class="ib" href="/" aria-label="返回主页">‹</a>
+    <div class="ttl" id="title">答题页</div>
+    <button class="ib" id="btnMenu" aria-label="设置">⋯</button>
+  </header>
+  <div class="meta"><button class="tchip" id="tchip">单选</button><div class="cnt" id="cnt">0<small>/ 0</small></div></div>
+  <div class="seg"><i id="fill"></i></div>
+  <main class="card" id="card"><div class="empty">正在加载题库...</div></main>
+  <footer class="nav">
+    <button class="nb" id="btnPrev">上一题</button>
+    <button class="nb" id="btnCard">答题卡 <span id="cardCnt"></span></button>
+    <button class="nb" id="btnNext">下一题</button>
+  </footer>
+</div>
+<div class="mask" id="mask"></div>
+<section class="sheet" id="sheet"><div class="grab"></div><div id="sb"></div></section>
+<div class="toast" id="toast"></div>
+<script>
+const LETTERS="ABCDEFGHIJKLMNOPQRSTUVWXYZ",LIST_URL="./data/list.json",ORDER=["single","multi","judge","blank","short"];
+const NAMES={single:"单选题",multi:"多选题",judge:"判断题",blank:"填空题",short:"简答题"},SHORT={single:"单选",multi:"多选",judge:"判断",blank:"填空",short:"简答"};
+let setId="",setInfo=null,questions=[],answers={},checked={},graded=false,showAnswers=false,mode="practice",auto=true,filterMode="all",typeFilter="all",seed="",groups={},noMap={},list=[],cur="";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[m]));
+const answerKey=()=>`quiz_answers_${setId}`,seedKey=()=>`quiz_seed_${setId}`,stateKey=()=>`quiz_state_${setId}`,posKey=()=>`quiz_pos_${setId}`;
+const readJSON=(k,f)=>{try{return JSON.parse(localStorage.getItem(k)||"")}catch{return f}};
+const saveAnswers=()=>{localStorage.setItem(answerKey(),JSON.stringify(answers));updateChrome()};
+const saveState=()=>localStorage.setItem(stateKey(),JSON.stringify({graded,showAnswers,filterMode,typeFilter,mode,auto,checked}));
+const normalizeText=s=>String(s??"").trim().replace(/\s+/g," ").toLowerCase();
+const normChoice=a=>String(a??"").toUpperCase().replace(/[^A-Z]/g,"").split("");
+const sameSet=(a,b)=>[...new Set(a)].sort().join("")===[...new Set(b)].sort().join("");
+function hashString(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function mulberry32(a){return()=>{let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+function shuffleDet(arr,key){const o=[...arr],r=mulberry32(hashString(`${seed}|${key}`));for(let i=o.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[o[i],o[j]]=[o[j],o[i]]}return o}
+let toastT;function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),2000)}
+
+/* ---------- 数据（格式与旧版一致）---------- */
+function normalizeQuestion(q,type,idx){const num=q.num??q.id??idx+1;let options=q.options;if(type==="judge"&&!options)options={A:"对",B:"错"};return{...q,type,num,key:`${type}:${num}`,options}}
+function normalizeData(d){
+  if(Array.isArray(d.questions))return d.questions.map((q,i)=>normalizeQuestion(q,q.type||"single",i));
+  const l=[];ORDER.forEach(t=>(t==="blank"?(d.blank||d.fill||[]):(d[t]||[])).forEach((q,i)=>l.push(normalizeQuestion(q,t,i))));return l;
+}
+function getOptions(q){
+  const e=Object.entries(q.options||{}),sh=setInfo?.shuffleOptions!==false&&!(q.type==="judge"&&setInfo?.shuffleJudge!==true);
+  return(sh?shuffleDet(e,q.key):e).map(([k,t],i)=>({origKey:String(k).toUpperCase(),text:t,display:LETTERS[i]}));
+}
+function blankExpected(q){const s=q.answers??q.answer??[];return Array.isArray(s)?s.map(x=>Array.isArray(x)?x.map(String):[String(x)]):[[String(s)]]}
+const formatBlank=q=>blankExpected(q).map(x=>x.join(" / ")).join("；");
+function correctDisplay(q,o){if(q.type==="short")return String(q.answer??q.reference??"");if(q.type==="blank")return formatBlank(q);const a=normChoice(q.answer);return o.filter(x=>a.includes(x.origKey)).map(x=>x.display).join("")}
+function isAnswered(q){const v=answers[q.key];if(q.type==="multi")return Array.isArray(v)&&v.length>0;if(q.type==="blank")return Array.isArray(v)&&v.some(x=>String(x||"").trim());return String(v||"").trim()!==""}
+function isCorrect(q){
+  if(q.type==="short"||!isAnswered(q))return false;
+  if(q.type==="multi")return sameSet(answers[q.key]||[],normChoice(q.answer));
+  if(q.type==="blank"){const g=Array.isArray(answers[q.key])?answers[q.key]:[answers[q.key]],e=blankExpected(q);return g.length>=e.length&&e.every((a,i)=>a.map(normalizeText).includes(normalizeText(g[i])))}
+  return sameSet([answers[q.key]],normChoice(q.answer));
+}
+const locked=q=>graded||(mode==="practice"&&!!checked[q.key]);
+const revealed=q=>graded||(mode==="practice"&&(!!checked[q.key]||showAnswers));
+const judged=q=>q.type!=="short"&&isAnswered(q)&&locked(q);
+function switchMode(nextMode){
+  if(nextMode===mode)return;
+  // Keep the user's existing answers, but do not carry confirmed answers or
+  // submitted/revealed state into a different mode.
+  mode=nextMode;checked={};graded=false;showAnswers=false;
+  filterMode="all";saveState();buildList();renderCard(true);refreshSheet();
+}
+const byKey=k=>questions.find(q=>q.key===k);
+function imgBlock(l,c,alt){return l.length?`<div class="${c}">${l.map(i=>`<figure><img src="${esc(i.src)}" alt="${esc(i.caption||alt)}" loading="lazy"/>${i.caption?`<figcaption>${esc(i.caption)}</figcaption>`:""}</figure>`).join("")}</div>`:""}
+function mediaList(q,sk,mk){const l=[];sk.forEach(k=>{if(q[k])l.push({src:q[k],caption:q[`${k}Caption`]||q.imageCaption&&k==="image"&&q.imageCaption||""})});mk.forEach(k=>{if(Array.isArray(q[k]))q[k].forEach(i=>{if(typeof i==="string")l.push({src:i,caption:""});else if(i&&i.src)l.push({src:i.src,caption:i.caption||i.title||""})})});return l}
+const qImgs=q=>imgBlock(mediaList(q,["image"],["images"]),"qi","题目图片");
+const aImgs=q=>imgBlock(mediaList(q,["answerImage","solutionImage","explanationImage"],["answerImages","solutionImages","explanationImages"]),"ai","答案图片");
+
+/* ---------- 列表与筛选 ---------- */
+const typeVisible=q=>typeFilter==="all"||q.type===typeFilter;
+function passFilter(q){return filterMode==="unanswered"?!isAnswered(q):filterMode==="wrong"?(judged(q)&&!isCorrect(q)):true}
+function groupQuestions(){let l=[...questions];if(setInfo?.shuffleQuestions)l=shuffleDet(l,"question-order");const g={};ORDER.forEach(t=>g[t]=l.filter(q=>q.type===t));return g}
+function buildList(){
+  groups=groupQuestions();list=[];
+  ORDER.forEach(t=>groups[t].forEach((q,i)=>{noMap[q.key]=i+1;if(typeVisible(q)&&passFilter(q))list.push(q)}));
+  if(!list.some(q=>q.key===cur))cur=list[0]?.key||"";
+}
+const idx=()=>Math.max(0,list.findIndex(q=>q.key===cur));
+function stat(){
+  const s=questions.filter(typeVisible),o=s.filter(q=>q.type!=="short");
+  return{total:s.length,answered:s.filter(isAnswered).length,correct:o.filter(q=>judged(q)&&isCorrect(q)).length,wrong:o.filter(q=>judged(q)&&!isCorrect(q)).length,obj:o.length};
+}
+
+/* ---------- 渲染一道题 ---------- */
+function blankInput(q,i,lk){
+  const v=Array.isArray(answers[q.key])?answers[q.key]:[];let c="bi";
+  if(judged(q))c+=(blankExpected(q)[i]||[]).map(normalizeText).includes(normalizeText(v[i]))?" ok":" no";
+  return`<input class="${c}" data-k="${esc(q.key)}" data-bi="${i}" value="${esc(v[i]||"")}" placeholder="填空 ${i+1}" ${lk?"readonly":""}/>`;
+}
+function stemBlanks(q,lk){
+  let used=0;const s=esc(q.stem||"").replace(/\{\{blank\}\}|_{3,}/g,()=>blankInput(q,used++,lk));
+  return used?s:s+`<div style="margin-top:12px">${blankExpected(q).map((_,i)=>blankInput(q,i,lk)).join(" ")}</div>`;
+}
+function optsHTML(q,opts,rev,lk){
+  const v=answers[q.key],sel=Array.isArray(v)?v:normChoice(v),cor=normChoice(q.answer),j=judged(q);
+  return`<div class="opts">${opts.map(o=>{
+    let c="opt";if(lk)c+=" lock";
+    if(rev&&cor.includes(o.origKey))c+=" ok";else if(j&&sel.includes(o.origKey))c+=" no";
+    return`<label class="${c}"><input type="${q.type==="multi"?"checkbox":"radio"}" name="o" data-k="${esc(q.key)}" value="${esc(o.origKey)}" ${sel.includes(o.origKey)?"checked":""} ${lk?"disabled":""}/><span class="lt">${o.display}</span><span class="tx">${esc(o.text)}</span></label>`}).join("")}</div>`;
+}
+function resHTML(q,opts){
+  const j=judged(q);let cls="res",t;
+  if(q.type==="short")t="参考答案";
+  else if(j){cls+=isCorrect(q)?" ok":" no";t=isCorrect(q)?"✓ 回答正确":"✗ 回答错误"}
+  else t=isAnswered(q)?"正确答案":"未作答";
+  const body=(j&&isCorrect(q))?"":(q.type==="short"?"":"正确答案：")+esc(correctDisplay(q,opts)||"暂无");
+  return`<div class="${cls}"><div class="rt">${t}</div>${body?`<div>${body}</div>`:""}${q.explanation?`<div class="rx"><b>解析</b>${esc(q.explanation)}</div>`:""}${aImgs(q)}</div>`;
+}
+function renderQ(q){
+  const lk=locked(q),rev=revealed(q),opts=q.options?getOptions(q):[];
+  let h=`<div class="stem${q.code?" code":""}">${q.type==="blank"?stemBlanks(q,lk):esc(q.stem||"")}</div>${qImgs(q)}`;
+  if(q.type==="multi")h+=`<div class="hint">可选多项，选好后点「确认答案」</div>`;
+  if(q.type==="short")h+=`<textarea class="ta" data-k="${esc(q.key)}" placeholder="写下你的答案，会自动保存" ${lk?"readonly":""}>${esc(answers[q.key]||"")}</textarea>`;
+  else if(q.type!=="blank")h+=optsHTML(q,opts,rev,lk);
+  if(mode==="practice"&&!lk){
+    if(q.type==="multi"||q.type==="blank")h+=`<button class="act" data-act="check" ${isAnswered(q)?"":"disabled"}>确认答案</button>`;
+    if(q.type==="short")h+=`<button class="act ghost" data-act="check">查看参考答案</button>`;
+  }
+  if(rev)h+=resHTML(q,opts);
+  if(mode==="practice"&&checked[q.key]&&!graded)h+=`<button class="redo" data-act="redo">重做本题</button>`;
+  return h;
+}
+function typesetMath(el){if(window.MathJax&&MathJax.typesetPromise){MathJax.typesetClear&&MathJax.typesetClear();MathJax.typesetPromise([el]).catch(()=>{})}}
+function renderCard(keep){
+  const c=$("card"),top=c.scrollTop;
+  if(!list.length){c.innerHTML=`<div class="empty">当前筛选条件下没有题目<button class="act ghost" data-act="allf">显示全部题目</button></div>`;updateChrome();return}
+  const q=byKey(cur)||list[0];
+  document.body.dataset.t=q.type;
+  c.innerHTML=`<div id="qbox">${renderQ(q)}</div>`;
+  c.scrollTop=keep?top:0;
+  localStorage.setItem(posKey(),cur);
+  updateChrome();typesetMath(c);
+}
+function updateChrome(){
+  const s=stat(),i=idx(),q=list[i],last=list.length&&i===list.length-1;
+  $("cnt").innerHTML=`${list.length?i+1:0}<small>/ ${list.length}</small>`;
+  $("tchip").textContent=q?SHORT[q.type]+(filterMode==="wrong"?" · 错题":filterMode==="unanswered"?" · 未答":""):"—";
+  $("fill").style.width=(s.total?s.answered/s.total*100:0)+"%";
+  $("cardCnt").textContent=`${s.answered}/${s.total}`;
+  $("btnPrev").disabled=i<=0;
+  const canSubmit=last&&!graded&&mode==="exam"&&filterMode==="all"&&typeFilter==="all";
+  $("btnNext").textContent=last?(canSubmit?"交卷":"答题卡"):"下一题";
+  $("btnNext").disabled=!list.length;
+}
+function go(i,dir){
+  if(i<0||i>=list.length)return;
+  cur=list[i].key;renderCard(false);
+  const b=$("qbox");if(b&&dir)b.classList.add(dir>0?"inr":"inl");
+}
+const next=()=>{const i=idx();if(i<list.length-1)go(i+1,1);else if(!graded&&mode==="exam"&&filterMode==="all"&&typeFilter==="all")submit();else openSheet("card")};
+const prev=()=>go(idx()-1,-1);
+
+/* ---------- 底部面板 ---------- */
+function nCls(q){
+  let c=judged(q)?(isCorrect(q)?"ok":"bad"):(graded&&q.type!=="short"&&!isAnswered(q))?"warn":isAnswered(q)?"done":"";
+  return c+(q.key===cur?" cur":"");
+}
+function cardHTML(){
+  const s=stat(),cnt={};questions.forEach(q=>cnt[q.type]=(cnt[q.type]||0)+1);
+  let h=`<div class="chips">${["all",...ORDER.filter(t=>cnt[t])].map(t=>`<button class="chip${typeFilter===t?" on":""}" data-tf="${t}">${t==="all"?"全部":SHORT[t]}<i>${t==="all"?questions.length:cnt[t]}</i></button>`).join("")}</div>`;
+  h+=graded?`<div class="sum">已交卷 · 客观题正确率 <b>${s.obj?Math.round(s.correct/s.obj*100):0}%</b>（对 ${s.correct} · 错 ${s.wrong} · 未答 ${s.obj-s.correct-s.wrong}）</div>`:`<div class="sum">已答 <b>${s.answered}</b> / ${s.total}</div>`;
+  h+=`<h3>筛选</h3><div class="chips">${[["all","全部"],["unanswered","只看未答"],["wrong","只看错题"]].map(([k,n])=>`<button class="chip${filterMode===k?" on":""}" data-ff="${k}">${n}</button>`).join("")}</div>`;
+  ORDER.forEach(t=>{
+    if(typeFilter!=="all"&&typeFilter!==t)return;
+    if(!groups[t]?.length)return;
+    h+=`<h3>${NAMES[t]}</h3><div class="grid">${groups[t].map((q,i)=>`<button class="n ${nCls(q)}" data-g="${esc(q.key)}">${i+1}</button>`).join("")}</div>`;
+  });
+  h+=graded?`<button class="act ghost" data-act="clear">重新作答</button>`:`<button class="act" data-act="submit">交卷判分</button>`;
+  return h;
+}
+function menuHTML(){
+  const on=b=>b?" on":"";
+  return`<h3>练习方式</h3><div class="g2"><button class="sb${on(mode==="practice")}" data-mode="practice">即时对错</button><button class="sb${on(mode==="exam")}" data-mode="exam">考试模式</button></div>
+  <p class="tip">切换模式保留作答，但会清除判分、已确认和显示答案状态。即时对错：选完马上看对错和解析；考试模式：交卷后统一判分。</p>
+  <h3>选项</h3><div class="g2"><button class="sb${on(auto)}" data-act="auto" ${mode==="exam"?"disabled":""}>答对自动下一题：${auto?"开":"关"}</button><button class="sb${on(showAnswers)}" data-act="ans" ${mode==="exam"&&!graded?"disabled":""}>显示答案：${showAnswers?"开":"关"}</button></div>
+  ${mode==="exam"&&!graded?`<p class="tip">考试模式在交卷前不能查看答案。</p>`:""}
+  <h3>题序</h3><div class="g2"><button class="sb" data-act="shuffle">重新乱序</button></div>
+  <h3>清除数据</h3><div class="g2"><button class="sb" data-act="clear">清空作答</button><button class="sb dg" data-act="reset">清空本题库保存</button></div>`;
+}
+function openSheet(k){$("sb").innerHTML=k==="card"?cardHTML():menuHTML();$("sheet").dataset.k=k;document.body.classList.add("sh")}
+const closeSheet=()=>document.body.classList.remove("sh");
+function refreshSheet(){if(document.body.classList.contains("sh"))openSheet($("sheet").dataset.k)}
+function jumpTo(key){
+  const q=byKey(key);if(!q)return;closeSheet();
+  if(!list.some(x=>x.key===key)){filterMode="all";if(typeFilter!=="all")typeFilter=q.type;saveState();buildList()}
+  cur=key;renderCard(false);
+}
+function applyFilter(){saveState();buildList();renderCard(false)}
+function submit(){
+  const left=questions.filter(q=>!isAnswered(q)).length;
+  if(left>0&&!confirm(`还有 ${left} 题没做，确定交卷吗？`))return;
+  graded=true;saveState();buildList();renderCard(true);openSheet("card");
+}
+const acts={
+  check(){const q=byKey(cur);if(!q||mode!=="practice"||locked(q))return;checked[q.key]=true;saveState();renderCard(true)},
+  redo(){const q=byKey(cur);if(!q||mode!=="practice"||graded)return;delete answers[q.key];delete checked[q.key];showAnswers=false;saveAnswers();saveState();renderCard(true)},
+  allf(){filterMode="all";typeFilter="all";applyFilter()},
+  submit,
+  auto(){auto=!auto;saveState();refreshSheet()},
+  ans(){if(mode==="exam"&&!graded){toast("考试模式交卷前不能查看答案");return}showAnswers=!showAnswers;saveState();renderCard(true);refreshSheet()},
+  shuffle(){if(confirm("重新生成选项和题序的乱序？已选答案会保留。")){seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed);closeSheet();buildList();renderCard(false)}},
+  clear(){if(confirm("清空本题库的所有作答？此操作不可撤销。")){answers={};checked={};graded=false;showAnswers=false;saveAnswers();saveState();closeSheet();buildList();renderCard(false);toast("已清空作答")}},
+  reset(){if(confirm("确定清空本题库的作答、判分状态和乱序种子？此操作不可撤销。")){
+    [answerKey(),stateKey(),seedKey(),posKey()].forEach(k=>localStorage.removeItem(k));
+    answers={};checked={};graded=false;showAnswers=false;mode="practice";auto=true;filterMode="all";typeFilter="all";cur="";
+    seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed);closeSheet();buildList();renderCard(false);toast("已清空本题库保存")}}
+};
+
+/* ---------- 事件 ---------- */
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-act],[data-tf],[data-ff],[data-g],[data-mode]");if(!t)return;
+  const d=t.dataset;
+  if(d.act)acts[d.act]();
+  else if(d.g)jumpTo(d.g);
+  else if(d.mode) switchMode(d.mode)
+  else if(d.tf){typeFilter=d.tf;cur="";saveState();buildList();renderCard(false);refreshSheet()}
+  else if(d.ff){
+    if(d.ff==="wrong"&&!questions.some(q=>judged(q)&&!isCorrect(q))){toast("还没有答错的题");return}
+    filterMode=d.ff;cur="";closeSheet();applyFilter();
+  }
+});
+document.addEventListener("change",e=>{
+  const i=e.target;if(!i.matches("#card input[type=radio],#card input[type=checkbox]"))return;
+  const q=byKey(i.dataset.k);if(!q)return;
+  if(q.type==="multi")answers[q.key]=[...document.querySelectorAll(`#card input[type=checkbox]:checked`)].map(x=>x.value);
+  else answers[q.key]=i.value;
+  saveAnswers();
+  const instant=mode==="practice"&&q.type!=="multi";
+  if(instant){checked[q.key]=true;saveState()}
+  renderCard(true);
+  if(instant&&auto&&isCorrect(q))setTimeout(()=>{if(cur===q.key&&!graded)next()},700);
+});
+document.addEventListener("input",e=>{
+  const i=e.target,q=byKey(i.dataset.k);if(!q)return;
+  if(i.matches(".bi")){const v=Array.isArray(answers[q.key])?[...answers[q.key]]:Array(blankExpected(q).length).fill("");v[+i.dataset.bi]=i.value;answers[q.key]=v}
+  else if(i.matches(".ta"))answers[q.key]=i.value;
+  else return;
+  saveAnswers();
+  const b=document.querySelector('[data-act="check"]');if(b&&q.type==="blank")b.disabled=!isAnswered(q);
+});
+let sx=0,sy=0;
+$("card").addEventListener("touchstart",e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+$("card").addEventListener("touchend",e=>{
+  if(e.target.closest("input,textarea"))return;
+  const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+  if(Math.abs(dx)>70&&Math.abs(dy)<45){dx<0?next():prev()}
+},{passive:true});
+document.addEventListener("keydown",e=>{
+  if(e.target.matches("input,textarea"))return;
+  if(e.key==="ArrowRight")next();else if(e.key==="ArrowLeft")prev();
+});
+$("btnPrev").onclick=prev;$("btnNext").onclick=next;
+$("btnCard").onclick=()=>openSheet("card");$("tchip").onclick=()=>openSheet("card");
+$("btnMenu").onclick=()=>openSheet("menu");$("mask").onclick=closeSheet;
+
+/* ---------- 加载 ---------- */
+function getSetIdFromUrl(){
+  const p=new URLSearchParams(location.search).get("set");if(p)return p;
+  const m=location.pathname.match(/^\/q\/([^/]+)\/?$/);return m?decodeURIComponent(m[1]):"";
+}
+async function loadQuiz(){
+  setId=getSetIdFromUrl();
+  if(!setId){$("card").innerHTML=`<div class="error"><b>缺少题库参数。</b><br/>请从 <a href="/"><u>主页</u></a> 选择题库，或使用 <code>/q/题库ID</code> 打开。旧链接 <code>quiz.html?set=题库ID</code> 仍兼容。</div>`;return}
+  try{
+    const lr=await fetch(LIST_URL,{cache:"no-store"});if(!lr.ok)throw new Error(`list.json HTTP ${lr.status}`);
+    setInfo=(await lr.json()).find(x=>x.id===setId);if(!setInfo)throw new Error(`list.json 中没有找到题库 ID：${setId}`);
+    const dr=await fetch(setInfo.file,{cache:"no-store"});if(!dr.ok)throw new Error(`${setInfo.file} HTTP ${dr.status}`);
+    const raw=await dr.json();questions=normalizeData(raw);
+    answers=readJSON(answerKey(),{});
+    const st=readJSON(stateKey(),{});
+    graded=!!st.graded;showAnswers=!!st.showAnswers;filterMode=st.filterMode||"all";typeFilter=st.typeFilter||"all";
+    mode=st.mode==="exam"?"exam":"practice";auto=st.auto!==false;checked=st.checked&&typeof st.checked==="object"?st.checked:{};
+    seed=localStorage.getItem(seedKey());if(!seed){seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed)}
+    const title=raw.meta?.title||setInfo.title||"答题页";
+    $("title").textContent=title;document.title=title;
+    cur=localStorage.getItem(posKey())||"";
+    buildList();renderCard(false);
+  }catch(err){
+    $("card").innerHTML=`<div class="error"><b>题库加载失败。</b><br/>${esc(err.message)}<br/><br/>检查：1）是否通过服务器访问；2）data/list.json 的 id 和 file 是否正确；3）题库 JSON 是否合法。</div>`;
+  }
+}
+loadQuiz();
+</script>
+</body>
+</html>
