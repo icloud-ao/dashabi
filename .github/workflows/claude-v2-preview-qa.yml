@@ -1,0 +1,36 @@
+name: Claude V2 Preview QA
+on:
+  push:
+    branches:
+      - preview/claude-practice-sidebar-v2
+    paths:
+      - practice_claude_v2.html
+      - tests/claude_preview.mjs
+      - .github/workflows/claude-v2-preview-qa.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  visual-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser testing
+        run: |
+          npm install --no-save playwright
+          npx playwright install chromium --with-deps
+      - name: Run responsive and functional browser QA
+        run: node tests/claude_preview.mjs
+      - name: Upload preview screenshots and results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-v2-preview-screens
+          path: preview-screens/
+          if-no-files-found: warn
