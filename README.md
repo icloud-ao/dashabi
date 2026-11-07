@@ -10,6 +10,20 @@ data/demo-final-1.json  # 示例题库 1
 data/demo-final-2.json  # 示例题库 2
 ```
 
+## 答题页版本
+
+主页的「整套刷题」通过 `/q/题库ID` 打开主答题页 `quiz.html`（V5），也可以使用 `/quiz.html?set=题库ID`。
+在右上角设置中选择「返回旧版」，会打开同一题库的 `/quiz_old.html?set=题库ID`。
+各版本都可以用对应文件名加 `?set=题库ID` 直接打开。
+
+| 版本 | 文件 | 说明 |
+| --- | --- | --- |
+| V5 | `quiz.html`、`quiz_v5.html` | 当前主答题页，保留 V5 独立入口 |
+| V2 | `quiz_v2.html` | claude微改版，界面依旧老旧但加入动画 |
+| V3 | `quiz_v3.html` | 半透明菜单+动画，第一版gemini生成的ios风格 |
+| V4 | `quiz_v4.html` | 手机+ipad使用淡化菜单，电脑端使用v3版半透明菜单，动画完美 |
+| old | `quiz_old.html` | 第一版，旧版答题页 |
+
 ## 本地预览
 
 不要直接双击 HTML。进入本文件夹后运行：
