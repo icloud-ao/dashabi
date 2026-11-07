@@ -1,1054 +1,2312 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light" data-layout="a">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
-<meta name="color-scheme" content="light dark" />
-<title>奥利奥の练习场</title>
-<link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png?v=2">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>题库 · 奥利奥の练习场</title>
 <style>
-/* ==================== iOS 26/27 Liquid Glass 视觉引擎 ==================== */
-:root {
-  color-scheme: light dark;
-  --font-ios: -apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", "SF Pro Text", "PingFang SC", sans-serif;
-
-  /* 动态流体背景色与液态玻璃材质 (Light) */
-  --bg-base: #eef1f8;
-  --orb-1: rgba(0, 122, 255, 0.28);
-  --orb-2: rgba(175, 82, 222, 0.24);
-  --orb-3: rgba(50, 215, 75, 0.18);
-  --orb-4: rgba(255, 149, 0, 0.18);
-
-  --glass-bg: rgba(255, 255, 255, 0.62);
-  --glass-bg-heavy: rgba(255, 255, 255, 0.78);
-  --glass-pill: rgba(255, 255, 255, 0.52);
-  --glass-border: rgba(255, 255, 255, 0.85);
-  --glass-edge: rgba(15, 23, 42, 0.07);
-  --specular: inset 0 1.5px 1px rgba(255, 255, 255, 0.9), inset 0 -1px 1px rgba(255, 255, 255, 0.35);
-  --shadow-spatial: 0 16px 40px -8px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
-  --shadow-float: 0 24px 60px -10px rgba(0, 60, 140, 0.18), 0 8px 20px rgba(0, 0, 0, 0.08);
-
-  --ink: #0f172a;
-  --mut: #64748b;
-  --mut-soft: #94a3b8;
-
-  --tc: #007aff;
-  --tc-2: #5856d6;
-  --ok: #34c759;
-  --warn: #ff9500;
-  --bad: #ff3b30;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-base: #05070f;
-    --orb-1: rgba(10, 132, 255, 0.32);
-    --orb-2: rgba(191, 90, 242, 0.26);
-    --orb-3: rgba(48, 209, 88, 0.18);
-    --orb-4: rgba(94, 92, 230, 0.28);
-
-    --glass-bg: rgba(24, 28, 42, 0.56);
-    --glass-bg-heavy: rgba(30, 35, 52, 0.75);
-    --glass-pill: rgba(255, 255, 255, 0.07);
-    --glass-border: rgba(255, 255, 255, 0.16);
-    --glass-edge: rgba(255, 255, 255, 0.09);
-    --specular: inset 0 1px 0.5px rgba(255, 255, 255, 0.25), inset 0 -1px 0.5px rgba(255, 255, 255, 0.05);
-    --shadow-spatial: 0 20px 50px -10px rgba(0, 0, 0, 0.55), 0 4px 14px rgba(0, 0, 0, 0.35);
-    --shadow-float: 0 24px 64px rgba(0, 0, 0, 0.75), 0 0 0 0.5px rgba(255, 255, 255, 0.14);
-
-    --ink: #f8fafc;
-    --mut: #94a3b8;
-    --mut-soft: #64748b;
-
-    --tc: #0a84ff;
-    --tc-2: #7d7aff;
-    --ok: #30d158;
-    --warn: #ff9f0a;
-    --bad: #ff453a;
-  }
-}
-
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html { scroll-behavior: smooth; }
-body {
-  margin: 0;
-  min-height: 100dvh;
-  background-color: var(--bg-base);
-  color: var(--ink);
-  font-family: var(--font-ios);
-  line-height: 1.5;
-  letter-spacing: -0.015em;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-}
-a { color: inherit; text-decoration: none; }
-button, input { font: inherit; color: inherit; border: 0; background: none; }
-button { cursor: pointer; }
-[hidden] { display: none !important; }
-
-/* ==================== 动态流体极光背景 (Aurora Mesh) ==================== */
-.ambient-canvas {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-  background: var(--bg-base);
-}
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(72px);
-  opacity: 0.85;
-  will-change: transform;
-  animation: float-orb 18s ease-in-out infinite alternate;
-}
-.orb-1 { width: 420px; height: 420px; background: var(--orb-1); top: -120px; left: -80px; }
-.orb-2 { width: 380px; height: 380px; background: var(--orb-2); top: 8%; right: -100px; animation-delay: -5s; animation-duration: 22s; }
-.orb-3 { width: 340px; height: 340px; background: var(--orb-3); bottom: 12%; left: 10%; animation-delay: -9s; animation-duration: 25s; }
-.orb-4 { width: 300px; height: 300px; background: var(--orb-4); bottom: -80px; right: 15%; animation-delay: -13s; }
-
-@keyframes float-orb {
-  0% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(30px, 40px, 0) scale(1.08); }
-  100% { transform: translate3d(-25px, -30px, 0) scale(0.95); }
-}
-
-/* ==================== 液态玻璃公共混合类 ==================== */
-.liquid-glass {
-  background: var(--glass-bg);
-  -webkit-backdrop-filter: saturate(200%) blur(32px);
-  backdrop-filter: saturate(200%) blur(32px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--specular), var(--shadow-spatial);
-}
-
-/* ==================== 主体容器 ==================== */
-.shell {
-  max-width: 1080px;
-  margin: 0 auto;
-  padding: calc(16px + env(safe-area-inset-top)) 16px calc(150px + env(safe-area-inset-bottom));
-}
-
-/* ==================== 顶部灵动岛胶囊 + 标题栏 ==================== */
-.top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 18px;
-}
-.island-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px 6px 8px;
-  border-radius: 999px;
-  font-size: 12.5px;
-  font-weight: 650;
-}
-.island-pulse {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--tc), var(--tc-2));
-  color: #fff;
-  display: grid;
-  place-items: center;
-  font-size: 11px;
-  font-weight: 800;
-  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.45);
-}
-.refresh-orb {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: 18px;
-  color: var(--tc);
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.refresh-orb:active { transform: scale(0.86) rotate(180deg); }
-
-/* ==================== Spatial Bento 空间小组件区 ==================== */
-.bento-hero {
-  display: grid;
-  grid-template-columns: 1.35fr 1fr;
-  gap: 14px;
-  margin-bottom: 18px;
-}
-.hero-glass {
-  border-radius: 32px;
-  padding: 26px 24px;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.hero-glass::after {
-  content: "";
-  position: absolute;
-  width: 220px;
-  height: 220px;
-  right: -60px;
-  top: -60px;
-  background: radial-gradient(circle, rgba(0, 122, 255, 0.22), transparent 70%);
-  pointer-events: none;
-}
-.hero-title {
-  margin: 0;
-  font-size: clamp(26px, 5vw, 38px);
-  font-weight: 800;
-  letter-spacing: -0.035em;
-  line-height: 1.1;
-  background: linear-gradient(135deg, var(--ink) 30%, var(--tc) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.hero-sub {
-  margin: 8px 0 0;
-  font-size: 14px;
-  color: var(--mut);
-  font-weight: 500;
-}
-
-/* 总体进度液态能量条 */
-.master-progress {
-  margin-top: 20px;
-  padding: 12px 14px;
-  border-radius: 20px;
-  background: var(--glass-pill);
-  border: 0.5px solid var(--glass-edge);
-}
-.mp-head {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12.5px;
-  font-weight: 650;
-  margin-bottom: 6px;
-}
-.mp-head span:last-child { color: var(--tc); font-variant-numeric: tabular-nums; }
-.mp-track {
-  height: 8px;
-  border-radius: 99px;
-  background: rgba(120, 120, 128, 0.16);
-  overflow: hidden;
-}
-.mp-fill {
-  height: 100%;
-  width: 0;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--tc), #a855f7, var(--ok));
-  box-shadow: 0 0 12px rgba(0, 122, 255, 0.5);
-  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* 2x2 Spatial Widgets 胶囊矩阵 */
-.widget-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.widget {
-  border-radius: 26px;
-  padding: 16px 18px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.widget:active { transform: scale(0.96); }
-.w-icon {
-  width: 30px;
-  height: 30px;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  font-size: 14px;
-  font-weight: 700;
-  color: #fff;
-}
-.w-num {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.1;
-  margin-top: 10px;
-}
-.w-label {
-  font-size: 12px;
-  color: var(--mut);
-  font-weight: 600;
-  margin-top: 2px;
-}
-
-/* ==================== 科目折射胶囊流 ==================== */
-.subject-scroller {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding: 4px 2px 14px;
-  margin: 0 -2px;
-}
-.subject-scroller::-webkit-scrollbar { display: none; }
-.sub-chip {
-  flex: none;
-  height: 36px;
-  padding: 0 16px;
-  border-radius: 999px;
-  font-size: 13.5px;
-  font-weight: 650;
-  color: var(--mut);
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.sub-chip:active { transform: scale(0.93); }
-.sub-chip.active {
-  background: linear-gradient(135deg, var(--tc), var(--tc-2));
-  color: #fff;
-  border-color: transparent;
-  box-shadow: 0 6px 18px -3px rgba(0, 122, 255, 0.45);
-}
-
-.section-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 4px 6px 12px;
-  font-size: 13px;
-  color: var(--mut);
-  font-weight: 600;
-}
-.section-bar strong { color: var(--ink); font-weight: 750; }
-
-/* ==================== 题库空间玻璃卡片网格 ==================== */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-.card {
-  border-radius: 30px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.28s;
-}
-@media (hover: hover) {
-  .card:hover {
-    transform: translateY(-4px) scale(1.01);
-  }
-}
-
-/* 卡片右上角环境色散光晕 */
-.card::before {
-  content: "";
-  position: absolute;
-  width: 150px;
-  height: 150px;
-  top: -55px;
-  right: -55px;
-  border-radius: 50%;
-  background: var(--accent, var(--tc));
-  opacity: 0.16;
-  filter: blur(28px);
-  pointer-events: none;
-}
-.card[data-tone="0"] { --accent: #007aff; --accent-2: #5ac8fa; }
-.card[data-tone="1"] { --accent: #5856d6; --accent-2: #af52de; }
-.card[data-tone="2"] { --accent: #34c759; --accent-2: #30b0c7; }
-.card[data-tone="3"] { --accent: #ff9500; --accent-2: #ff2d55; }
-.card[data-tone="4"] { --accent: #af52de; --accent-2: #ff2d55; }
-.card[data-tone="5"] { --accent: #00c7be; --accent-2: #007aff; }
-
-.card-top {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  margin-bottom: 12px;
-}
-
-/* 3D 晶莹Squircle图标 */
-.squircle-badge {
-  width: 48px;
-  height: 48px;
-  flex: none;
-  border-radius: 15px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  color: #fff;
-  display: grid;
-  place-items: center;
-  font-size: 20px;
-  font-weight: 800;
-  box-shadow: inset 0 1.5px 1px rgba(255, 255, 255, 0.55), 0 6px 16px -3px color-mix(in srgb, var(--accent) 45%, transparent);
-}
-.title-wrap {
-  flex: 1;
-  min-width: 0;
-}
-.card h2 {
-  margin: 0;
-  font-size: 17.5px;
-  font-weight: 750;
-  letter-spacing: -0.02em;
-  line-height: 1.25;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.card-id {
-  display: block;
-  font-size: 11.5px;
-  color: var(--mut);
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  margin-top: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Apple Fitness 风格圆环进度 */
-.ring-box {
-  position: relative;
-  width: 44px;
-  height: 44px;
-  flex: none;
-  display: grid;
-  place-items: center;
-}
-.ring-svg {
-  width: 44px;
-  height: 44px;
-  transform: rotate(-90deg);
-}
-.ring-bg {
-  fill: none;
-  stroke: rgba(120, 120, 128, 0.16);
-  stroke-width: 4;
-}
-.ring-meter {
-  fill: none;
-  stroke: var(--accent, var(--tc));
-  stroke-width: 4;
-  stroke-linecap: round;
-  transition: stroke-dashoffset 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.ring-pct {
-  position: absolute;
-  font-size: 10.5px;
-  font-weight: 750;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.03em;
-}
-
-.desc {
-  margin: 0 0 12px;
-  font-size: 13.5px;
-  color: var(--mut);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: 40px;
-}
-
-/* 玻璃微胶囊标签群 */
-.meta-flow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 14px;
-}
-.pill {
-  font-size: 11.5px;
-  font-weight: 650;
-  padding: 3.5px 9px;
-  border-radius: 99px;
-  background: var(--glass-pill);
-  border: 0.5px solid var(--glass-edge);
-  color: var(--mut);
-}
-.pill.highlight {
-  background: color-mix(in srgb, var(--accent) 13%, transparent);
-  color: var(--accent);
-  border-color: color-mix(in srgb, var(--accent) 25%, transparent);
-}
-.pill.good {
-  background: rgba(52, 199, 89, 0.12);
-  color: var(--ok);
-}
-.pill.warn {
-  background: rgba(255, 149, 0, 0.13);
-  color: var(--warn);
-}
-
-/* 底部果冻感双按钮 */
-.card-foot {
-  margin-top: auto;
-  padding-top: 12px;
-  border-top: 0.5px solid var(--glass-edge);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.foot-status {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: var(--mut);
-  font-weight: 550;
-  font-variant-numeric: tabular-nums;
-}
-.foot-status b { color: var(--ink); }
-
-.action-stack {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-.open-btn {
-  height: 42px;
-  border-radius: 16px;
-  font-size: 13.5px;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s;
-}
-.open-btn:active { transform: scale(0.94); }
-.open-btn.primary {
-  background: linear-gradient(135deg, var(--accent, var(--tc)), var(--accent-2, var(--tc-2)));
-  color: #fff;
-  box-shadow: inset 0 1px 0.5px rgba(255, 255, 255, 0.45), 0 6px 16px -4px color-mix(in srgb, var(--accent, var(--tc)) 50%, transparent);
-}
-.open-btn.secondary {
-  background: var(--glass-pill);
-  border: 1px solid var(--glass-border);
-  color: var(--ink);
-  box-shadow: var(--specular);
-}
-
-/* ==================== iOS 26/27 底部悬浮液态玻璃控制坞 (Floating Spatial Dock) ==================== */
-.spatial-dock-wrap {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: calc(12px + env(safe-area-inset-bottom));
-  z-index: 50;
-  display: flex;
-  justify-content: center;
-  padding: 0 12px;
-  pointer-events: none;
-}
-.spatial-dock {
-  pointer-events: auto;
-  width: min(680px, 100%);
-  background: var(--glass-bg-heavy);
-  -webkit-backdrop-filter: saturate(220%) blur(36px);
-  backdrop-filter: saturate(220%) blur(36px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--specular), var(--shadow-float);
-  border-radius: 999px;
-  padding: 7px 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.dock-search {
-  position: relative;
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-}
-.dock-search-icon {
-  position: absolute;
-  left: 12px;
-  color: var(--mut);
-  font-size: 15px;
-  pointer-events: none;
-}
-.dock-input {
-  width: 100%;
-  height: 38px;
-  border-radius: 999px;
-  background: rgba(120, 120, 128, 0.12);
-  padding: 0 30px 0 34px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--ink);
-  transition: background-color 0.2s, box-shadow 0.2s;
-}
-.dock-input::placeholder { color: var(--mut); }
-.dock-input:focus {
-  outline: none;
-  background: var(--glass-bg);
-  box-shadow: 0 0 0 2.5px var(--tc);
-}
-.dock-clear {
-  position: absolute;
-  right: 8px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--mut-soft);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
-  display: grid;
-  place-items: center;
-}
-
-.dock-tabs {
-  display: inline-flex;
-  background: rgba(120, 120, 128, 0.12);
-  padding: 3px;
-  border-radius: 999px;
-  flex: none;
-}
-.dock-tab {
-  height: 32px;
-  padding: 0 12px;
-  border-radius: 999px;
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--mut);
-  white-space: nowrap;
-  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.dock-tab:active { transform: scale(0.92); }
-.dock-tab.active {
-  background: var(--tc);
-  color: #fff;
-  box-shadow: 0 2px 10px rgba(0, 122, 255, 0.4);
-}
-
-/* 状态框与页脚 */
-.empty, .error, .loading {
-  border-radius: 28px;
-  padding: 44px 20px;
-  text-align: center;
-  color: var(--mut);
-  margin-top: 12px;
-  font-size: 14.5px;
-}
-.error {
-  text-align: left;
-  padding: 20px;
-  color: var(--bad);
-  border-color: rgba(255, 59, 48, 0.35);
-}
-code {
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 12.5px;
-  background: rgba(120, 120, 128, 0.15);
-  padding: 2px 6px;
-  border-radius: 6px;
-}
-.footer {
-  text-align: center;
-  color: var(--mut);
-  font-size: 12px;
-  margin-top: 32px;
-  opacity: 0.8;
-}
-
-/* ==================== 手机端专项适配 (Mobile-First Spatial Adaptations) ==================== */
-@media (max-width: 920px) {
-  .bento-hero { grid-template-columns: 1fr; }
-  .widget-grid { grid-template-columns: repeat(4, 1fr); }
-  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-
-@media (max-width: 640px) {
-  .shell {
-    padding: calc(10px + env(safe-area-inset-top)) 12px calc(155px + env(safe-area-inset-bottom));
-  }
-  .hero-glass {
-    padding: 20px 18px;
-    border-radius: 26px;
-  }
-  .widget-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-  .widget {
-    padding: 14px 16px;
-    border-radius: 22px;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 12px;
-  }
-  .w-num { font-size: 21px; margin-top: 0; }
-  .w-label { margin-top: 0; font-size: 11.5px; }
-
-  .grid {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-  .card {
-    padding: 18px 16px;
-    border-radius: 26px;
-  }
-  .open-btn {
-    height: 44px;
-    font-size: 14px;
-    border-radius: 15px;
-  }
-
-  /* 手机端底部悬浮胶囊变为双层拇指坞，杜绝横向拥挤与 iOS 输入框自动放大 */
-  .spatial-dock-wrap {
-    bottom: calc(8px + env(safe-area-inset-bottom));
-    padding: 0 10px;
-  }
-  .spatial-dock {
-    border-radius: 26px;
-    flex-direction: column;
-    align-items: stretch;
-    padding: 8px;
-    gap: 6px;
-  }
-  .dock-input {
-    height: 40px;
-    font-size: 16px; /* 严格 16px，防止 iOS Safari 点击搜索框时画面强制放大 */
-  }
-  .dock-tabs {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .dock-tab {
-    text-align: center;
-    height: 34px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .orb { animation: none !important; }
-  *, *::before, *::after { transition-duration: 0.01ms !important; }
-}
+:root{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif;--bg:#f1eee9;--paper:#fffdfa;--paper2:#f8f5f0;--ink:#282723;--quiet:#75716a;--faint:#a5a097;--edge:rgba(70,62,51,.12);--strong:#a66533;--strongbg:#f6e8da;--line:#dfd9d1;--glass:rgba(255,252,248,.57);--shadow:0 10px 34px rgba(69,54,34,.07),0 1px 2px rgba(69,54,34,.04);--field:#e7e1d8;--track:#e8e3dc;--lg-track:#ded7cc;--lg-surface:#eee8de;--lg-text:#716b63;--lg-text-muted:#716b63;--lg-accent:#3b2d20;--lg-focus:#aa6c37;--lg-radius:22px;--lg-radius-sm:17px;--lg-shadow-1:0 4px 13px rgba(67,49,29,.18);color:var(--ink);background:var(--bg);font-synthesis:none}
+:root[data-theme="dark"]{--bg:#1c1c1b;--paper:#292927;--paper2:#242423;--ink:#f2eee8;--quiet:#b4aea4;--faint:#888278;--edge:rgba(249,237,221,.12);--strong:#e5ad78;--strongbg:#44352b;--line:#41403b;--glass:rgba(55,52,48,.62);--shadow:0 10px 32px rgba(0,0,0,.24),0 1px 2px rgba(0,0,0,.15);--field:#343330;--track:#33312d;--lg-track:#38342e;--lg-surface:#4b443a;--lg-text:#e8ded0;--lg-text-muted:#b9b0a3;--lg-accent:#fff3de;--lg-focus:#f4bd83;--lg-shadow-1:0 4px 14px rgba(0,0,0,.4)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-width:300px;color:var(--ink);background:var(--bg);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}body:before{content:"";position:absolute;z-index:-1;inset:0 0 auto;height:520px;pointer-events:none;background:radial-gradient(ellipse at 72% -20%,rgba(221,198,163,.27),transparent 60%)}a{color:inherit;text-decoration:none}button,input,select{font:inherit;color:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--strong);outline-offset:3px}[hidden]{display:none!important}.wrap{max-width:1192px;padding:0 28px;margin:0 auto}.top{padding-top:max(18px,env(safe-area-inset-top));position:relative;z-index:10}.top-inner{min-height:66px;display:flex;align-items:center;gap:28px;padding:8px 12px 8px 18px;border:1px solid rgba(255,255,255,.65);border-bottom-color:rgba(112,97,78,.16);border-radius:25px;background:var(--glass);box-shadow:inset 0 1px 1px rgba(255,255,255,.55),0 8px 22px rgba(59,50,39,.08);backdrop-filter:blur(18px) saturate(1.15);-webkit-backdrop-filter:blur(18px) saturate(1.15)}[data-theme="dark"] .top-inner{border-color:rgba(255,255,255,.13);border-top-color:rgba(255,255,255,.24);box-shadow:inset 0 1px 1px rgba(255,255,255,.14),0 8px 22px rgba(0,0,0,.2)}.brand{display:inline-flex;align-items:center;gap:11px;white-space:nowrap;font-weight:720;letter-spacing:.01em}.brand-mark{width:33px;height:33px;border-radius:11px;background:#423b32;display:grid;place-items:center;color:#f5e9dc;box-shadow:inset 0 1px 2px #ffffff3d}.brand-mark svg{width:21px;height:21px}.brand small{display:block;font-size:9px;line-height:1;color:var(--faint);font-weight:650;letter-spacing:.16em;margin-top:4px}.nav-links{display:flex;gap:6px;align-items:center;color:var(--quiet);margin-right:auto}.nav-links a{padding:9px 13px;border-radius:14px}.nav-links a:first-child{background:rgba(132,118,97,.11);color:var(--ink)}.top-actions{display:flex;align-items:center;gap:6px}.preview-select{appearance:none;border:0;background:transparent;color:var(--quiet);padding:9px 23px 9px 10px;border-radius:12px;max-width:145px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='m6 8 4 4 4-4' fill='none' stroke='%23877b6d' stroke-width='1.6'/%3E%3C/svg%3E");background-size:16px;background-repeat:no-repeat;background-position:right 6px center;font-size:12px}.icon-btn{display:grid;place-items:center;background:transparent;border:0;width:42px;height:42px;border-radius:14px}.icon-btn:hover,.nav-links a:hover{background:rgba(140,120,95,.1)}.icon-btn svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.6}.hero{padding:67px 0 50px;display:grid;grid-template-columns:1fr 430px;gap:60px;align-items:center}.eyebrow{color:var(--strong);font-size:11px;font-weight:700;letter-spacing:.19em;text-transform:uppercase;display:flex;align-items:center;gap:9px}.eyebrow:before{content:"";width:20px;height:1px;background:currentColor}.hero h1{font-size:clamp(37px,4.4vw,58px);line-height:1.2;letter-spacing:-.055em;font-weight:650;margin:18px 0 15px}.hero h1 span{color:var(--quiet);font-weight:450}.hero-copy{font-size:15px;color:var(--quiet);margin:0;line-height:1.9}.totals{display:flex;align-items:center;gap:0;margin-top:30px}.total{min-width:92px;padding-right:22px;margin-right:22px;border-right:1px solid var(--line)}.total:last-child{border:0}.total b{display:block;font-variant-numeric:tabular-nums;font-size:21px;line-height:1.15;font-weight:640;letter-spacing:-.04em}.total span{color:var(--quiet);font-size:11px;display:block;margin-top:7px}.feature-wrap{position:relative;padding:17px 19px 17px 0}.feature-wrap:before,.feature-wrap:after{content:"";position:absolute;inset:4px 0 30px 36px;border:1px solid var(--edge);border-radius:27px;transform:rotate(4deg);background:var(--paper2);box-shadow:0 4px 20px #73665208}.feature-wrap:after{inset:11px 10px 20px 21px;transform:rotate(1.8deg)}.feature{position:relative;z-index:1;min-height:216px;border:1px solid var(--edge);border-radius:23px;background:var(--paper);box-shadow:var(--shadow);padding:23px 25px;overflow:hidden}.feature:after{content:"";position:absolute;right:-28px;top:-48px;width:160px;height:160px;border:1px solid rgba(168,128,89,.2);border-radius:50%;box-shadow:0 0 0 20px rgba(170,130,92,.035),0 0 0 40px rgba(170,130,92,.035);pointer-events:none}.feature-top{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1}.tiny-label{font-weight:650;color:var(--strong);font-size:11px;letter-spacing:.1em}.feature-num{font-size:11px;color:var(--faint);letter-spacing:.08em}.feature h2{font-size:19px;font-weight:650;letter-spacing:-.025em;line-height:1.4;margin:23px 0 7px;max-width:90%}.feature p{margin:0;color:var(--quiet);font-size:12px}.feature-bottom{margin-top:20px;display:flex;align-items:center;gap:14px}.feature-bottom .mini-line{height:3px;flex:1;background:var(--line);border-radius:9px}.mini-line span{height:100%;display:block;background:var(--strong);border-radius:9px}.feature-bottom .ratio{font-size:11px;color:var(--quiet);font-variant-numeric:tabular-nums}.arrow-link{position:relative;z-index:2;display:inline-flex;align-items:center;justify-content:center;gap:9px;border:0;border-radius:13px;background:#3d352c;color:#fff8ef;font-size:12px;font-weight:650;padding:10px 14px;min-height:40px;white-space:nowrap;transition:transform .18s,background .18s}.arrow-link:hover{background:#594736}.arrow-link:active{transform:scale(.97)}[data-theme="dark"] .arrow-link{background:#e8c4a2;color:#2b2017}.library{padding-bottom:80px}.section-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding-top:29px}.section-heading h2{margin:0;font-weight:660;font-size:24px;letter-spacing:-.04em}.section-heading p{color:var(--quiet);margin:4px 0 0;font-size:12px}.section-index{font-size:11px;color:var(--faint);letter-spacing:.15em}.control-wrap{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:22px 0 17px}.filter-actions{display:flex;align-items:center;gap:10px;min-width:0}html lg-segmented{padding:4px;gap:2px;border-radius:20px;box-shadow:inset 0 1px 3px #00000010,0 1px 0 #ffffff55;font-size:13px}html lg-segmented .lg-seg__option{height:37px;line-height:37px;padding:0 14px;font-size:12px;font-weight:650;border-radius:16px}html lg-segmented .lg-refract{padding:4px;gap:2px;border-radius:20px}html lg-segmented .lg-lens-shadow{border:1px solid #ffffffa0;box-shadow:0 2px 9px #00000020,inset 0 1px 2px #ffffffa0}html[data-theme="dark"] lg-segmented .lg-lens-shadow{border-color:#ffffff35;box-shadow:0 2px 10px #0006,inset 0 1px 2px #ffffff33}.subject-select{border:1px solid var(--edge);background:transparent;color:var(--quiet);height:44px;max-width:180px;padding:0 12px;border-radius:14px;outline-offset:2px}.search{display:flex;align-items:center;gap:9px;min-width:200px;max-width:275px;flex:1;padding:0 14px;height:44px;border:1px solid var(--edge);border-radius:15px;background:rgba(255,255,255,.23);transition:border-color .2s,background .2s,box-shadow .2s}.search:focus-within{background:var(--paper);border-color:#b78a64;box-shadow:0 0 0 3px #b78a641c}.search svg{width:16px;height:16px;fill:none;stroke:var(--quiet);stroke-width:1.7;flex:none}.search input{width:100%;border:0;outline:none;background:none;font-size:13px}.search input::placeholder{color:var(--faint)}.results-bar{display:flex;justify-content:space-between;align-items:center;color:var(--quiet);font-size:12px;margin:5px 0 13px}.results-bar b{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}.text-btn{border:0;background:none;color:var(--quiet);padding:7px;border-radius:8px}.text-btn:hover{color:var(--ink);background:var(--field)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{min-height:240px;display:flex;flex-direction:column;border:1px solid var(--edge);border-radius:21px;background:var(--paper);padding:22px 23px 18px;box-shadow:0 2px 5px rgba(61,50,34,.025);transition:border-color .2s,transform .2s,box-shadow .2s}.card:hover{border-color:rgba(149,118,82,.3);box-shadow:0 12px 26px rgba(69,54,34,.06);transform:translateY(-2px)}.card-kicker{display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:11px;color:var(--quiet)}.category{display:inline-flex;align-items:center;gap:6px}.category:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--strong)}.serial{color:var(--faint);font-variant-numeric:tabular-nums;letter-spacing:.05em}.card h3{font-size:17px;letter-spacing:-.035em;line-height:1.4;margin:16px 0 5px;font-weight:670}.card p{font-size:12px;color:var(--quiet);margin:0;line-height:1.65;min-height:20px}.meta{display:flex;flex-wrap:wrap;gap:6px;margin:13px 0 20px}.tag{font-size:10px;color:var(--quiet);background:var(--paper2);border:1px solid var(--edge);border-radius:7px;padding:3px 7px}.card-progress{margin-top:auto}.progress-caption{display:flex;justify-content:space-between;align-items:center;color:var(--quiet);font-size:11px;font-variant-numeric:tabular-nums}.progress-caption strong{color:var(--ink);font-weight:600}.progress{height:3px;border-radius:4px;background:var(--line);margin:9px 0 16px;overflow:hidden}.progress span{height:100%;display:block;background:var(--strong);border-radius:4px;transition:width .3s}.card-footer{display:flex;align-items:center;justify-content:space-between;gap:9px;border-top:1px solid var(--edge);padding-top:13px}.card-footer .subject-name{font-size:11px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.card-links{display:flex;align-items:center;gap:6px;flex:none}.card-links a{display:inline-flex;align-items:center;justify-content:center;min-height:39px;padding:0 13px;border-radius:12px;font-size:12px;font-weight:650;transition:background .16s,transform .16s}.card-links a:active{transform:scale(.97)}.practice{color:var(--quiet)}.practice:hover{background:var(--paper2)}.start{background:var(--field);color:var(--ink)}.start:hover{background:var(--strongbg)}.empty{border:1px dashed var(--line);padding:45px 20px;text-align:center;border-radius:20px;color:var(--quiet);background:var(--paper2)}.footer{display:flex;justify-content:space-between;align-items:center;color:var(--faint);font-size:11px;margin-top:42px;padding-top:18px;border-top:1px solid var(--line)}.footer a:hover{color:var(--ink)}
+/* Independent comparison layouts, sharing the same data and controls. */
+[data-layout="b"] .hero{grid-template-columns:1fr 1fr;padding:50px 0 38px;gap:60px}[data-layout="b"] .hero h1{font-size:43px}[data-layout="b"] .feature-wrap:before,[data-layout="b"] .feature-wrap:after{display:none}[data-layout="b"] .feature-wrap{padding:0}[data-layout="b"] .feature{background:var(--paper2);box-shadow:none}[data-layout="b"] .control-wrap{background:var(--paper);border:1px solid var(--edge);border-radius:22px;padding:12px;box-shadow:var(--shadow)}[data-layout="b"] .card{border-radius:15px}[data-layout="b"] .top-inner{box-shadow:inset 0 1px 1px #ffffff70}
+[data-layout="c"] .hero{grid-template-columns:1fr 1.22fr;gap:40px;padding:45px 0 33px}[data-layout="c"] .hero h1{font-size:42px}[data-layout="c"] .feature{min-height:234px;background:var(--paper2)}[data-layout="c"] .feature h2{font-size:23px}[data-layout="c"] .library .grid{grid-template-columns:1fr}[data-layout="c"] .card{min-height:unset;display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:8px 28px;padding:19px 22px}[data-layout="c"] .card .card-top{grid-column:1}[data-layout="c"] .card .card-progress{grid-column:2;grid-row:1;align-self:center}[data-layout="c"] .card-footer{grid-column:1/-1}[data-layout="c"] .meta{margin-bottom:0}
+.lab{padding:50px 0 80px}.lab-title{font-size:34px;letter-spacing:-.04em;margin:12px 0}.lab-lead{color:var(--quiet);max-width:750px;line-height:1.8}.lab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-top:25px}.lab-card{background:var(--paper);border:1px solid var(--edge);border-radius:22px;overflow:hidden}.lab-body{padding:18px 20px 20px}.lab-body h2{font-size:16px;margin:0 0 5px}.lab-body p{color:var(--quiet);font-size:12px;line-height:1.65;margin:0}.lab-canvas{height:180px;display:flex;align-items:center;justify-content:center;gap:16px;position:relative;overflow:hidden;background-color:#dbcbb6;background-image:repeating-linear-gradient(130deg,#a99073 0 2px,transparent 2px 25px),radial-gradient(circle at 65% 30%,#f8f0e5 0 18%,transparent 19%);background-size:auto}.lab-canvas.plain{background:#d5d0c9}.css-glass{padding:13px 26px;border-radius:30px;border:1px solid rgba(255,255,255,.8);background:rgba(255,255,255,.38);box-shadow:inset 0 1px 3px #fff9,0 7px 16px #362b1d25;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#3b3026}.lab-row{margin:20px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.lab-note{background:var(--paper2);border:1px solid var(--edge);border-radius:16px;padding:16px;color:var(--quiet);font-size:12px;line-height:1.8}.back{color:var(--strong);font-weight:600}.lab-canvas lg-button{--lg-on-glass:#fff;--lg-accent:#806445}.lab-canvas lg-segmented{--lg-track:#c4b39e;--lg-surface:#e8d9c4;--lg-accent:#2e241b;--lg-text-muted:#5b4b3d}
+@media(max-width:800px){.wrap{padding:0 20px}.nav-links{display:none}.top-inner{gap:10px}.brand{margin-right:auto}.hero{grid-template-columns:1fr 1fr;gap:25px;padding:54px 0 38px}.feature{padding:20px;min-height:200px}.hero h1{font-size:39px}.subject-select{max-width:128px}.control-wrap{flex-wrap:wrap}.search{max-width:none;flex:1}.filter-actions{flex:1}.card{padding:19px}.lab-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.wrap{padding:0 16px}.top{padding-top:max(10px,env(safe-area-inset-top))}.top-inner{min-height:58px;padding:6px 7px 6px 11px;border-radius:20px}.brand{gap:8px}.brand-mark{width:31px;height:31px}.brand-name{font-size:12px}.brand small{font-size:8px}.preview-select{max-width:108px;font-size:11px;padding-left:4px}.icon-btn{width:40px;height:40px}.hero,[data-layout="b"] .hero,[data-layout="c"] .hero{display:flex;flex-direction:column;align-items:stretch;gap:18px;padding:40px 0 30px}.hero h1,[data-layout="b"] .hero h1,[data-layout="c"] .hero h1{font-size:36px;margin:12px 0 10px}.hero-copy{font-size:13px}.totals{margin-top:20px}.total{min-width:78px;padding-right:14px;margin-right:14px}.total b{font-size:18px}.feature-wrap{padding:12px 14px 8px 0}.feature{min-height:178px}.feature h2{font-size:17px;margin-top:15px}.feature-bottom{margin-top:15px}.section-heading{padding-top:23px}.section-heading h2{font-size:21px}.section-index{display:none}.control-wrap,[data-layout="b"] .control-wrap{gap:10px;margin-top:17px}.filter-actions{width:100%;flex:auto;display:flex}html .filter-actions lg-segmented{flex:1;justify-content:space-around}html lg-segmented .lg-refract{justify-content:space-around}html lg-segmented .lg-seg__option{flex:1;padding:0 9px}.subject-select{width:116px;flex:none}.search{max-width:none;flex:1;min-width:0}.grid{grid-template-columns:1fr;gap:10px}.card{min-height:210px}.card h3{font-size:16px;margin-top:13px}.meta{margin-bottom:16px}[data-layout="c"] .card{display:flex;min-height:210px}[data-layout="c"] .feature h2{font-size:18px}.lab{padding-top:32px}.lab-title{font-size:28px}.footer{margin-top:30px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}@media(prefers-reduced-transparency:reduce),(prefers-contrast:more){.top-inner,.search{background:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none}.card{border-color:var(--quiet)}}
+:root[data-theme="light"]{color-scheme:light}
+:root[data-theme="dark"]{color-scheme:dark}
+[data-theme="dark"] .search{background:rgba(255,255,255,.045)}
+[data-theme="dark"] .search:focus-within{background:var(--paper)}
+.top{position:sticky;top:0}
+.lab-canvas lg-button{--lg-text:#30271e;--lg-tint-strong:rgb(255 255 255 / .26)}
+.filter-actions > lg-segmented{width:245px}
+html lg-segmented .lg-seg__option{flex:1 1 0;min-width:0;padding-inline:4px}
+.lab-canvas lg-segmented{width:204px}
+@media(max-width:560px){.filter-actions > lg-segmented{width:auto}.lab-canvas{flex-direction:column;gap:10px}}
+.data-source{color:var(--faint);font-size:11px}
+@media(prefers-reduced-transparency:reduce),(prefers-contrast:more){lg-segmented .lg-refract{filter:none!important}lg-segmented{--lg-surface:var(--paper);--lg-track:var(--line)}}
+@media(max-width:360px){.top-inner{gap:4px;padding-inline:8px}.brand{gap:6px}.brand-name{font-size:0}.brand-name:before{content:"练习场";font-size:12px}.brand small{display:none}.top-actions{gap:0}.preview-select{width:89px;padding-left:2px;font-size:10px}.icon-btn{width:38px;height:44px}.filter-actions{gap:7px}html lg-segmented{min-width:0}html lg-segmented .lg-seg__option{padding:0 3px;font-size:11px}.subject-select{width:94px;padding-inline:7px;font-size:11px}}
 </style>
 </head>
 <body>
-
-<!-- iOS 26/27 动态流体极光背景 -->
-<div class="ambient-canvas" aria-hidden="true">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-  <div class="orb orb-4"></div>
-</div>
-
-<div class="shell">
-  <!-- 顶部灵动岛状态与刷新球 -->
-  <header class="top-bar">
-    <div class="island-badge liquid-glass">
-      <span class="island-pulse">奥</span>
-      <span>奥利奥の练习场 · iOS Spatial</span>
-    </div>
-    <button class="refresh-orb liquid-glass" id="btnReloadTop" type="button" aria-label="刷新题库" title="刷新题库">↻</button>
-  </header>
-
-  <!-- Spatial Bento 概览矩阵 -->
-  <section class="bento-hero">
-    <div class="hero-glass liquid-glass">
-      <div>
-        <h1 class="hero-title" id="pageTitle">选择你的练习场地</h1>
-        <p class="hero-sub">支持整套模考与逐题即时反馈，作答进度实时驻留本机。</p>
-      </div>
-      <div class="master-progress">
-        <div class="mp-head">
-          <span>全站总进度</span>
-          <span id="masterPctText">0%</span>
-        </div>
-        <div class="mp-track"><div class="mp-fill" id="masterBar"></div></div>
-      </div>
-    </div>
-
-    <aside class="widget-grid" aria-label="题库统计">
-      <div class="widget liquid-glass">
-        <div class="w-icon" style="background:linear-gradient(135deg,#007aff,#5ac8fa)">📚</div>
-        <div>
-          <div class="w-num" id="statSets">-</div>
-          <div class="w-label">可用题库</div>
-        </div>
-      </div>
-      <div class="widget liquid-glass">
-        <div class="w-icon" style="background:linear-gradient(135deg,#5856d6,#af52de)">✦</div>
-        <div>
-          <div class="w-num" id="statQuestions">-</div>
-          <div class="w-label">题目总数</div>
-        </div>
-      </div>
-      <div class="widget liquid-glass">
-        <div class="w-icon" style="background:linear-gradient(135deg,#34c759,#30b0c7)">✓</div>
-        <div>
-          <div class="w-num" id="statAnswered">-</div>
-          <div class="w-label">本机已答</div>
-        </div>
-      </div>
-      <div class="widget liquid-glass">
-        <div class="w-icon" style="background:linear-gradient(135deg,#ff9500,#ff2d55)">⌘</div>
-        <div>
-          <div class="w-num" id="statSubjects">-</div>
-          <div class="w-label">科目分类</div>
-        </div>
-      </div>
-    </aside>
-  </section>
-
-  <!-- 科目折射胶囊横向滑动栏 -->
-  <nav class="subject-scroller" id="subjectBar" aria-label="科目筛选" hidden></nav>
-
-  <!-- 列表头信息 -->
-  <div class="section-bar" id="sets">
-    <div>共 <strong id="resultCount">0</strong> 套题库</div>
-    <div id="sortNote">本学期优先 · 支持双模式刷题</div>
-  </div>
-
-  <!-- 题库空间卡片网格 -->
-  <div id="listBox" class="grid"></div>
-  <div id="messageBox"></div>
-
-  <footer class="footer">
-    版权归属 © 奥利奥利奥 · Spatial Liquid Glass UI
-  </footer>
-</div>
-
-<!-- iOS 26/27 底部悬浮液态玻璃控制坞 (拇指热区) -->
-<div class="spatial-dock-wrap">
-  <div class="spatial-dock" role="search">
-    <div class="dock-search">
-      <span class="dock-search-icon">⌕</span>
-      <input class="dock-input" id="searchInput" placeholder="搜索科目、题库名称、标签..." autocomplete="off" />
-      <button class="dock-clear" id="btnClearSearch" type="button" hidden aria-label="清空搜索">×</button>
-    </div>
-    <div class="dock-tabs" id="semesterTabs" role="group" aria-label="题库分类">
-      <button class="dock-tab active" type="button" data-semester-group="" aria-pressed="true">全部</button>
-      <button class="dock-tab" type="button" data-semester-group="current" aria-pressed="false">本学期</button>
-      <button class="dock-tab" type="button" data-semester-group="history" aria-pressed="false">历史</button>
-    </div>
-  </div>
-</div>
-
+<header class="top wrap"><div class="top-inner"><a class="brand" href="#home" id="brand"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5.5 5.5h9.3a3.7 3.7 0 0 1 3.7 3.7v9.3H9.2a3.7 3.7 0 0 1-3.7-3.7z" stroke="currentColor" stroke-width="1.4"/><path d="M9 15V9h6M9 15l6-6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span><span class="brand-name">奥利奥の练习场<small>YOUR STUDY SPACE</small></span></a><nav class="nav-links" aria-label="导航"><a href="#library">题库</a><a href="#spotlight">学习进度</a></nav><div class="top-actions"><label class="sr-only" for="layoutChoice" style="position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden">预览方案</label><select class="preview-select" id="layoutChoice"><option value="a">方案 A · 悬浮</option><option value="b">方案 B · 分离</option><option value="c">方案 C · 焦点</option></select><button class="icon-btn" id="themeBtn" aria-label="切换明暗主题" title="切换明暗主题"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15a8 8 0 0 1-11-11 8 8 0 1 0 11 11Z"/></svg></button><a class="icon-btn" href="#lab" id="labLink" aria-label="打开材质对照" title="材质对照"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3v5l-2 9a3 3 0 0 0 3 4h10a3 3 0 0 0 3-4l-2-9V3M8 3h8M7 14h10"/></svg></a></div></div></header>
+<main id="home" class="wrap"><section class="hero" aria-labelledby="heroTitle"><div><div class="eyebrow">A LITTLE BETTER, EVERY DAY</div><h1 id="heroTitle">每一次练习，<br><span>都算数。</span></h1><p class="hero-copy">把零散的知识，留给一次次清晰的练习。<br>选一套题库，接着你的节奏出发。</p><div class="totals"><div class="total"><b id="statSets">—</b><span>套题库</span></div><div class="total"><b id="statQuestions">—</b><span>道题目</span></div><div class="total"><b id="statAnswered">—</b><span>已作答</span></div></div><p class="data-source" id="previewProgressNote" hidden style="margin:12px 0 0">独立预览与正式网站的浏览器进度相互隔离</p></div><div class="feature-wrap" id="spotlight"><div class="feature"><div class="feature-top"><span class="tiny-label" id="featureLabel">从这里开始</span><span class="feature-num">PRACTICE / 01</span></div><h2 id="featureTitle">正在读取题库</h2><p id="featureSub">准备你的练习空间</p><div class="feature-bottom"><div class="mini-line"><span id="featureProgress"></span></div><span class="ratio" id="featureRatio">—</span><a class="arrow-link" id="featureLink" href="#library">查看题库 <span aria-hidden="true">↗</span></a></div></div></div></section><section class="library" id="library"><div class="section-heading"><div><h2>你的题库</h2><p>挑选一套，开始今天的练习。</p></div><span class="section-index">YOUR COLLECTION / 01</span></div><div class="control-wrap"><div class="filter-actions"><lg-segmented id="semester" label="学期分类" value="all"><button value="all">全部</button><button value="current">本学期</button><button value="history">历史题库</button></lg-segmented><label class="sr-only" for="subject" style="position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden">科目筛选</label><select class="subject-select" id="subject" aria-label="科目筛选"><option value="">全部科目</option></select></div><label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5" stroke-linecap="round"/></svg><span class="sr-only" style="position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden">搜索题库</span><input id="search" type="search" placeholder="搜索题库、科目或标签" autocomplete="off"></label></div><div class="results-bar"><span aria-live="polite">共 <b id="resultCount">0</b> 套题库 <span id="sortHint">· 本学期优先</span></span><button class="text-btn" id="reload">↻ 刷新</button></div><div id="cards" class="grid"></div><div id="message" hidden></div><footer class="footer"><span>© 奥利奥利奥 · KEEP LEARNING<br><span class="data-source" id="dataSource"></span></span><a href="#home">回到顶部 ↑</a></footer></section></main>
+<main id="lab" class="wrap lab" hidden><template id="labTemplate"><div id="labContent"><a class="back" href="#home">← 返回首页预览</a><div class="eyebrow" style="margin-top:28px">MATERIAL STUDY</div><h1 class="lab-title">玻璃材质对照</h1><p class="lab-lead">同样的结构，不同的透镜实现。移动分段按钮，观察文字副本在镜片边缘的折射；带纹理的背景用于展示边缘变化，实际题库卡片保持清晰。</p><div class="lab-grid"><section class="lab-card"><div class="lab-canvas" data-lg-backdrop><lg-button tone="light">玻璃按钮</lg-button><lg-segmented label="材质演示" value="b"><button value="a">全部</button><button value="b">本学期</button><button value="c">历史</button></lg-segmented></div><div class="lab-body"><h2>受控背景折射 · SVG 位移</h2><p>折射按位对齐的背景副本；分段镜片折射高亮文字副本。背景不是任意网页实时截图。</p></div></section><section class="lab-card"><div class="lab-canvas"><div class="css-glass">纯 CSS 磨砂对照</div></div><div class="lab-body"><h2>磨砂回退 · CSS</h2><p>使用透明、模糊与边缘高光；对照可看出其无法弯折背景纹理。</p></div></section><section class="lab-card"><div class="lab-canvas plain" data-lg-backdrop><lg-button tone="light">玻璃按钮</lg-button><lg-segmented label="纯背景材质演示" value="b"><button value="a">全部</button><button value="b">本学期</button><button value="c">历史</button></lg-segmented></div><div class="lab-body"><h2>纯色背景</h2><p>背景缺少纹理时，折射仍然存在，但肉眼更难察觉。</p></div></section><section class="lab-card"><div class="lab-canvas"><div class="css-glass" style="background:#fff;color:#30291f;backdrop-filter:none">清晰实体控件</div></div><div class="lab-body"><h2>实体回退</h2><p>减少透明度或增强对比度时提供清晰实体界面；遵循减少动态效果设置。</p></div></section></div><div class="lab-row"><button class="text-btn" id="labTheme">切换亮 / 暗</button><a class="back" href="#home">返回预览</a></div><div class="lab-note">折射实现基于 gentpan/liquidglass v1.0.0（MIT），使用项目内代码，不依赖第三方在线脚本。任意实时网页内容在 Safari / Firefox 中使用磨砂回退；此处未作 iOS 真机性能测试。</div></div></template></main>
 <script>
-const LIST_URL = "./data/list.json";
-let allSets = [];
-let activeSemesterGroup = "";
-let activeSubject = "";
+/* gentpan/liquidglass v1.0.0, MIT; see included license. */
+const LGEngine = (()=>{
+/**
+ * liquid-glass.js v1.0.0 — refractive "liquid glass" for the web that renders the same in Chromium,
+ * WebKit (Safari, every iOS browser) and Gecko (Firefox).
+ *
+ * The glass bends the element's OWN rendered pixels with an SVG feDisplacementMap referenced from
+ * CSS `filter: url(#…)`. `backdrop-filter: url(#…)` would be simpler but only Chromium renders it,
+ * so it is offered only as an opt-in enhancement (mode: 'backdrop').
+ *
+ * The displacement map is a small PNG generated at runtime from the lens shape: red/green hold the
+ * horizontal/vertical bend, blue holds the rim highlight, alpha is the lens coverage. Outside the lens
+ * the source passes through untouched, so text stays crisp, selectable and clickable.
+ *
+ * No dependencies. ES module.
+ */
 
-const $ = (id) => document.getElementById(id);
-function esc(s){return String(s ?? "").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[m]));}
-function readJSON(key, fallback){try{return JSON.parse(localStorage.getItem(key) || "")}catch{return fallback}}
-function itemInitial(item){const s = item.subject || item.title || item.id || "题"; return String(s).trim().slice(0,1).toUpperCase();}
-function toneFor(id){
-  let h = 0;
-  const s = String(id || "");
-  for(let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-  return h % 6;
-}
-function progressFor(item, total){
-  const answers = readJSON(`quiz_answers_${item.id}`, {});
-  const answered = Object.values(answers).filter(v => Array.isArray(v) ? v.some(x=>String(x||"").trim()) : String(v||"").trim()).length;
-  const t = Number(total || item.total || 0);
-  const pct = t ? Math.min(100, Math.round(answered * 100 / t)) : 0;
-  return {answered,total:t,pct};
-}
-function countFromData(data){
-  const single = data.single?.length || 0;
-  const multi = data.multi?.length || 0;
-  const judge = data.judge?.length || 0;
-  const blank = data.blank?.length || data.fill?.length || 0;
-  const matching = data.matching?.length || 0;
-  const short = data.short?.length || 0;
-  const caseQ = data.case?.length || data.cases?.length || 0;
-  const calculation = data.calculation?.length || 0;
-  const mixed = data.questions?.length || 0;
-  if (mixed) return {single:0,multi:0,judge:0,blank:0,matching:0,short:0,caseQ:0,calculation:0,total:mixed,mixed:true};
-  return {single,multi,judge,blank,matching,short,caseQ,calculation,total:single+multi+judge+blank+matching+short+caseQ+calculation,mixed:false};
-}
-async function hydrate(item){
-  try{
-    const res = await fetch(item.file, {cache:"no-store"});
-    if(!res.ok) throw new Error(res.status);
-    const data = await res.json();
-    return {...item, counts: countFromData(data)};
-  }catch{
-    return {...item, counts: {single:item.single||0,multi:item.multi||0,judge:item.judge||0,blank:item.blank||0,total:item.total||0}};
-  }
-}
-function semesterGroupFor(item){
-  return item.semesterGroup === "current" ? "current" : "history";
-}
-function filteredItems(){
-  const q = $("searchInput").value.trim().toLowerCase();
-  return allSets.filter(item => {
-    const groupOk = !activeSemesterGroup || semesterGroupFor(item) === activeSemesterGroup;
-    const subOk = !activeSubject || item.subject === activeSubject;
-    const hay = [item.title,item.desc,item.subject,(item.tags||[]).join(" "),item.id].join(" ").toLowerCase();
-    return groupOk && subOk && (!q || hay.includes(q));
-  });
-}
-function updateHeroStats(){
-  const totalSets = allSets.length;
-  const totalQuestions = allSets.reduce((sum,item)=>sum + Number(item.counts?.total || item.total || 0),0);
-  const totalAnswered = allSets.reduce((sum,item)=>sum + progressFor(item, item.counts?.total).answered,0);
-  const subjectList = [...new Set(allSets.map(x=>x.subject).filter(Boolean))];
-  $("statSets").textContent = totalSets;
-  $("statQuestions").textContent = totalQuestions;
-  $("statAnswered").textContent = totalAnswered;
-  $("statSubjects").textContent = subjectList.length;
+const NS = 'http://www.w3.org/2000/svg';
+const XLINK = 'http://www.w3.org/1999/xlink';
+const NEUTRAL = 128;
+const MAP_CACHE_SIZE = 48;
 
-  const masterPct = totalQuestions ? Math.min(100, Math.round(totalAnswered * 100 / totalQuestions)) : 0;
-  $("masterPctText").textContent = `${totalAnswered} / ${totalQuestions} (${masterPct}%)`;
-  $("masterBar").style.width = `${masterPct}%`;
-
-  const subBar = $("subjectBar");
-  if (subjectList.length > 0) {
-    subBar.hidden = false;
-    subBar.innerHTML = [
-      `<button class="sub-chip liquid-glass ${activeSubject === "" ? "active" : ""}" type="button" data-subject="">全部科目</button>`,
-      ...subjectList.map(s => `<button class="sub-chip liquid-glass ${activeSubject === s ? "active" : ""}" type="button" data-subject="${esc(s)}">${esc(s)}</button>`)
-    ].join("");
-  } else {
-    subBar.hidden = true;
-  }
-}
-function render(){
-  const q = $("searchInput").value.trim();
-  $("btnClearSearch").hidden = !q;
-  const items = filteredItems();
-  $("resultCount").textContent = items.length;
-
-  if (!items.length && activeSemesterGroup && !q) {
-    $("messageBox").innerHTML = `<div class="empty liquid-glass">${activeSemesterGroup === "current" ? "本学期暂无题库。" : "暂无历史题库。"}</div>`;
-  } else {
-    $("messageBox").innerHTML = items.length ? "" : `<div class="empty liquid-glass">没有匹配的题库。换个关键词，或者检查 <code>data/list.json</code> 是否已经更新。</div>`;
-  }
-
-  const circumference = 2 * Math.PI * 17; // r=17
-
-  $("listBox").innerHTML = items.map(item => {
-    const c = item.counts || {};
-    const p = progressFor(item, c.total);
-    const offset = circumference - (p.pct / 100) * circumference;
-    const tags = [item.subject, ...(item.tags||[])].filter(Boolean).slice(0,4);
-    const config = [
-      item.shuffleOptions !== false ? "选项乱序" : "固定选项",
-      item.shuffleQuestions ? "题序乱序" : "固定题序",
-      item.durationMinutes ? `${item.durationMinutes}分钟` : "不限时"
-    ];
-    const typePills = [
-      c.single ? `<span class="pill">单选 ${c.single}</span>` : "",
-      c.multi ? `<span class="pill">多选 ${c.multi}</span>` : "",
-      c.judge ? `<span class="pill">判断 ${c.judge}</span>` : "",
-      c.blank ? `<span class="pill">填空 ${c.blank}</span>` : "",
-      c.matching ? `<span class="pill warn">匹配 ${c.matching}</span>` : "",
-      c.short ? `<span class="pill warn">简答 ${c.short}</span>` : "",
-      c.caseQ ? `<span class="pill warn">案例 ${c.caseQ}</span>` : "",
-      c.calculation ? `<span class="pill warn">计算 ${c.calculation}</span>` : ""
-    ].join("");
-
-    return `<article class="card liquid-glass" data-tone="${toneFor(item.id)}">
-      <div class="card-top">
-        <div class="squircle-badge">${esc(itemInitial(item))}</div>
-        <div class="title-wrap">
-          <h2 title="${esc(item.title)}">${esc(item.title)}</h2>
-          <span class="card-id" title="${esc(item.id)}">${esc(item.id)}</span>
-        </div>
-        <div class="ring-box" title="已答 ${p.answered}/${p.total || "?"}">
-          <svg class="ring-svg" viewBox="0 0 44 44">
-            <circle class="ring-bg" cx="22" cy="22" r="17"></circle>
-            <circle class="ring-meter" cx="22" cy="22" r="17" stroke-dasharray="${circumference.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"></circle>
-          </svg>
-          <span class="ring-pct">${p.pct}%</span>
-        </div>
-      </div>
-
-      <p class="desc">${esc(item.desc || "暂无描述")}</p>
-
-      <div class="meta-flow">
-        <span class="pill highlight">共 ${c.total || item.total || "?"} 题</span>
-        ${typePills}
-        ${tags.map(t=>`<span class="pill good">${esc(t)}</span>`).join("")}
-        ${config.map(t=>`<span class="pill">${esc(t)}</span>`).join("")}
-      </div>
-
-      <div class="card-foot">
-        <div class="foot-status">
-          <span>作答进度</span>
-          <span>已答 <b>${p.answered}</b> / ${p.total || "?"}</span>
-        </div>
-        <div class="action-stack">
-          <a class="open-btn primary" href="/q/${encodeURIComponent(item.id)}">整套刷题</a>
-          <a class="open-btn secondary" href="/p/${encodeURIComponent(item.id)}">逐题练习</a>
-        </div>
-      </div>
-    </article>`;
-  }).join("");
-}
-async function load(){
-  $("messageBox").innerHTML = `<div class="loading liquid-glass">正在读取题库列表...</div>`;
-  try{
-    const res = await fetch(LIST_URL, {cache:"no-store"});
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-    const list = await res.json();
-    if(!Array.isArray(list)) throw new Error("list.json 必须是数组");
-    allSets = await Promise.all(list.filter(x=>x && x.enabled !== false).map(hydrate));
-    allSets.sort((a,b) => Number(semesterGroupFor(b) === "current") - Number(semesterGroupFor(a) === "current"));
-    $("messageBox").innerHTML = "";
-    updateHeroStats();
-    render();
-  }catch(err){
-    $("listBox").innerHTML = "";
-    $("resultCount").textContent = "0";
-    $("statSets").textContent = "0";
-    $("statQuestions").textContent = "0";
-    $("statAnswered").textContent = "0";
-    $("statSubjects").textContent = "0";
-    $("messageBox").innerHTML = `<div class="error liquid-glass"><b>题库列表加载失败。</b><br/>请确认 <code>data/list.json</code> 存在。若刚放入新题库，请先运行 <code>python scripts/reflash.py</code>。并且你需要通过本地服务器或网站访问，而不是直接双击打开 HTML。<br/>错误信息：${esc(err.message)}</div>`;
-  }
-}
-
-$("semesterTabs").querySelectorAll(".dock-tab").forEach(btn => btn.addEventListener("click", () => {
-  activeSemesterGroup = btn.dataset.semesterGroup;
-  $("semesterTabs").querySelectorAll(".dock-tab").forEach(tab => {
-    const active = tab === btn;
-    tab.classList.toggle("active", active);
-    tab.setAttribute("aria-pressed", active);
-  });
-  render();
-}));
-
-$("subjectBar").addEventListener("click", e => {
-  const btn = e.target.closest("[data-subject]");
-  if (!btn) return;
-  activeSubject = btn.dataset.subject;
-  $("subjectBar").querySelectorAll(".sub-chip").forEach(chip => {
-    chip.classList.toggle("active", chip === btn);
-  });
-  render();
+const DEFAULTS = Object.freeze({
+  // Lens rectangle in CSS px, relative to the filtered element's border box.
+  x: 0,
+  y: 0,
+  width: 120,
+  height: 64,
+  radius: 32,
+  // Optics.
+  refraction: 18, // maximum bend at the rim, CSS px
+  bezel: 0.6, // curved rim width as a fraction of the lens half-size (min side); 1 = full dome
+  curvature: 4, // rim profile exponent: 2 = circular, 4 = squircle-like, higher = steeper rim
+  ior: 1.5, // index of refraction; shapes how quickly the bend fades from the rim inward
+  invert: false, // false = convex lens (magnifies), true = concave (content pushed outward)
+  chroma: 0.12, // colour fringe; blue bends (1 + chroma)x as far as red. 0 skips the extra passes
+  blur: 0, // frost, CSS px
+  specular: 0.45, // rim highlight 0..1. 0 skips the pass
+  specularWidth: 2, // rim highlight width, CSS px
+  lightAngle: -120, // degrees; 0 = light from the right, -90 = from the top. The lit rim is brightest, the far rim reflects dimly
+  mapScale: 0, // map pixels per CSS px; 0 = devicePixelRatio capped at 2
 });
 
-$("searchInput").addEventListener("input", render);
-$("btnClearSearch").addEventListener("click", () => {
-  $("searchInput").value = "";
-  render();
-});
-$("btnReloadTop").addEventListener("click", load);
-load();
+// Keys that change the displacement map itself. Everything else (position, strength) is a cheap
+// attribute update on an existing filter.
+const MAP_KEYS = ['width', 'height', 'radius', 'bezel', 'curvature', 'ior', 'invert', 'specular', 'specularWidth', 'lightAngle'];
+
+const engine = detectEngine();
+
+function detectEngine() {
+  if (typeof navigator === 'undefined') return 'unknown';
+  const brands = navigator.userAgentData?.brands;
+  if (brands?.some((b) => /Chromium/.test(b.brand))) return 'blink';
+  const ua = navigator.userAgent;
+  if (/Firefox\//.test(ua)) return 'gecko';
+  // Every iOS browser is WebKit; their UAs carry CriOS/FxiOS rather than Chrome/Firefox.
+  if (/AppleWebKit\//.test(ua) && !/Chrome\/|Chromium\/|Edg\//.test(ua)) return 'webkit';
+  return /Chrome\//.test(ua) ? 'blink' : 'unknown';
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+/* Displacement map                                                                                   */
+/* ------------------------------------------------------------------------------------------------ */
+
+const profileCache = new Map();
+
+// Normalised bend m(s) for s = (distance from rim) / bezel in [0, 1], tabulated once per optics.
+// The glass surface height is h(s) = (1 - (1 - s)^k)^(1/k). A vertical ray hitting a surface tilted
+// by theta refracts to asin(sin(theta) / ior); the lateral offset grows with tan(theta - refracted).
+function profileTable(curvature, ior) {
+  const key = `${curvature}|${ior}`;
+  let table = profileCache.get(key);
+  if (table) return table;
+  const N = 512;
+  table = new Float32Array(N + 1);
+  let max = 0;
+  for (let i = 0; i <= N; i++) {
+    const s = Math.min(i / N, 1 - 1e-6);
+    const a = Math.pow(1 - s, curvature);
+    const slope = Math.pow(1 - s, curvature - 1) * Math.pow(Math.max(1 - a, 1e-9), 1 / curvature - 1);
+    const theta = Math.atan(slope);
+    const refracted = Math.asin(Math.sin(theta) / ior);
+    const bend = Math.tan(theta - refracted);
+    table[i] = bend;
+    if (bend > max) max = bend;
+  }
+  for (let i = 0; i <= N; i++) table[i] /= max || 1;
+  table[N] = 0;
+  profileCache.set(key, table);
+  return table;
+}
+
+/**
+ * Paint the displacement map for a lens into a canvas.
+ * Returns { canvas, width, height, scale } — usable by the SVG path (as a data URL) and by WebGL
+ * (as a texture), so both renderers share one optical model.
+ */
+function renderLensMap(options = {}, scale = 1) {
+  const p = { ...DEFAULTS, ...options };
+  const w = Math.max(2, Math.round(p.width * scale));
+  const h = Math.max(2, Math.round(p.height * scale));
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  const image = ctx.createImageData(w, h);
+  const px = image.data;
+
+  const sx = p.width / w; // CSS px per map pixel (x); equals 1 / scale up to rounding
+  const sy = p.height / h;
+  const hw = p.width / 2;
+  const hh = p.height / 2;
+  const r = Math.max(0, Math.min(p.radius, hw, hh));
+  const bezel = Math.max(0.5, p.bezel * Math.min(hw, hh));
+  const table = profileTable(p.curvature, p.ior);
+  const N = table.length - 1;
+  const rimWidth = Math.max(0.5, p.specularWidth);
+  const aa = Math.max(sx, sy); // one map pixel of anti-aliasing at the rim
+  const angle = (p.lightAngle * Math.PI) / 180;
+  const lx = Math.cos(angle);
+  const ly = Math.sin(angle);
+  const dir = p.invert ? -1 : 1;
+
+  // The rounded rectangle is symmetric in both axes: compute the top-left quadrant only and mirror
+  // it, flipping the sign of the x bend across the vertical axis and of the y bend across the
+  // horizontal axis. This keeps per-frame regeneration (squish, resize) inside the frame budget.
+  const qw = Math.ceil(w / 2);
+  const qh = Math.ceil(h / 2);
+  for (let j = 0; j < qh; j++) {
+    const y = (j + 0.5) * sy - hh; // <= 0
+    for (let i = 0; i < qw; i++) {
+      const x = (i + 0.5) * sx - hw; // <= 0
+      // Signed distance to the rounded rectangle, evaluated on |p|.
+      const qx = -x - (hw - r);
+      const qy = -y - (hh - r);
+      const ox = Math.max(qx, 0);
+      const oy = Math.max(qy, 0);
+      const corner = Math.hypot(ox, oy);
+      const dist = corner + Math.min(Math.max(qx, qy), 0) - r; // < 0 inside
+      const alpha = Math.min(1, Math.max(0, 0.5 - dist / aa));
+      if (alpha <= 0) continue; // transparent: composited over neutral grey in the filter
+
+      // Outward normal on |p| (points away from the centre).
+      let nx;
+      let ny;
+      if (qx > 0 && qy > 0) {
+        nx = ox / corner;
+        ny = oy / corner;
+      } else if (qx > qy) {
+        nx = 1;
+        ny = 0;
+      } else {
+        nx = 0;
+        ny = 1;
+      }
+
+      const inset = Math.max(0, -dist);
+      const s = inset / bezel;
+      const m = s >= 1 ? 0 : table[Math.min(N, Math.round(s * N))];
+      // Convex glass samples from further inside (towards the centre) near the rim.
+      const bx = Math.round(127 * m * nx * dir);
+      const by = Math.round(127 * m * ny * dir);
+
+      // Rim highlight: a crisp line plus a softer inner glow, brightest where the rim faces the
+      // light, with a dimmer reflection on the far side.
+      const crisp = Math.max(0, 1 - inset / rimWidth);
+      const glow = Math.max(0, 1 - inset / (rimWidth * 5));
+      const rim = p.specular * (crisp * crisp + 0.3 * glow * glow);
+      const a = Math.round(alpha * 255);
+
+      const i2 = w - 1 - i;
+      const j2 = h - 1 - j;
+      // top-left: outward normal (-nx, -ny); sample towards +x/+y (inward)
+      write(px, (j * w + i) * 4, NEUTRAL + bx, NEUTRAL + by, rimLight(rim, -nx * lx - ny * ly), a);
+      if (i2 !== i) write(px, (j * w + i2) * 4, NEUTRAL - bx, NEUTRAL + by, rimLight(rim, nx * lx - ny * ly), a);
+      if (j2 !== j) write(px, (j2 * w + i) * 4, NEUTRAL + bx, NEUTRAL - by, rimLight(rim, -nx * lx + ny * ly), a);
+      if (i2 !== i && j2 !== j) write(px, (j2 * w + i2) * 4, NEUTRAL - bx, NEUTRAL - by, rimLight(rim, nx * lx + ny * ly), a);
+    }
+  }
+  ctx.putImageData(image, 0, 0);
+  return { canvas, width: w, height: h, scale };
+}
+
+// Blue channel for a rim pixel: `facing` is n·L for its outward normal.
+function rimLight(rim, facing) {
+  const shade = 0.12 + 0.88 * (facing > 0 ? facing : -0.4 * facing);
+  return NEUTRAL + Math.round(127 * Math.min(1, rim * shade));
+}
+
+function write(px, o, r, g, b, a) {
+  px[o] = r;
+  px[o + 1] = g;
+  px[o + 2] = b;
+  px[o + 3] = a;
+}
+
+const mapCache = new Map();
+
+function mapKeyOf(p, scale) {
+  return MAP_KEYS.map((k) => p[k]).join('|') + '|' + scale;
+}
+
+// Returns { key, url, decoded, ready }. The PNG is decoded through an <img> before the filter uses
+// it: feImage loads data URLs asynchronously, and WebKit caches whatever the filter produced while
+// the image was still missing (an empty result) until the filter id changes.
+function lensMap(p, scale, key) {
+  let entry = mapCache.get(key);
+  if (entry) {
+    mapCache.delete(key); // refresh LRU position
+  } else {
+    const url = renderLensMap(p, scale).canvas.toDataURL('image/png');
+    entry = { key, url, decoded: false, ready: null };
+    const img = new Image();
+    img.src = url;
+    entry.ready = img
+      .decode()
+      .catch(() => {})
+      .then(() => {
+        entry.decoded = true;
+      });
+    if (mapCache.size >= MAP_CACHE_SIZE) mapCache.delete(mapCache.keys().next().value);
+  }
+  mapCache.set(key, entry);
+  return entry;
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+/* SVG filter                                                                                         */
+/* ------------------------------------------------------------------------------------------------ */
+
+let svgRoot = null;
+
+function defsNode() {
+  if (svgRoot?.isConnected) return svgRoot.firstChild;
+  svgRoot = document.createElementNS(NS, 'svg');
+  svgRoot.setAttribute('aria-hidden', 'true');
+  svgRoot.setAttribute('width', '0');
+  svgRoot.setAttribute('height', '0');
+  // Not display:none — filters inside a display:none <svg> stop resolving in some engines.
+  svgRoot.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
+  svgRoot.appendChild(document.createElementNS(NS, 'defs'));
+  document.body.appendChild(svgRoot);
+  return svgRoot.firstChild;
+}
+
+function node(name, attrs) {
+  const n = document.createElementNS(NS, name);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  return n;
+}
+
+const CHANNELS = [
+  '1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0',
+  '0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0',
+  '0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0',
+];
+
+// Filter graph (all coordinates are fractions of the element box — see bendScale):
+//   map        = lens PNG over neutral grey (128 = no bend), only inside the lens rect
+//   bend       = map with R/G squeezed towards 128 where the engine scales x and y differently
+//   refracted  = feDisplacementMap(source, bend)           (x3 with per-channel scale when chroma > 0)
+//   lit        = refracted + white * (2 * map.b - 1)        (rim highlight from the blue channel)
+//   result     = (lit IN lensShape) OVER (source OUT lensShape)
+function buildGraph(filter, p) {
+  filter.replaceChildren();
+  const lensRect = [];
+  const add = (name, attrs, inLens) => {
+    const n = node(name, attrs);
+    filter.appendChild(n);
+    if (inLens) lensRect.push(n);
+    return n;
+  };
+
+  add('feFlood', { 'flood-color': 'rgb(128,128,128)', 'flood-opacity': '1', result: 'neutral' }, true);
+  const image = add('feImage', { preserveAspectRatio: 'none', result: 'lensShape' }, true);
+  add('feComposite', { in: 'lensShape', in2: 'neutral', operator: 'over', result: 'map' }, true);
+  const aspect = engine === 'webkit' ? add('feColorMatrix', { in: 'map', type: 'matrix', result: 'bend' }, true) : null;
+  const bendMap = aspect ? 'bend' : 'map';
+
+  let source = 'SourceGraphic';
+  let blur = null;
+  if (p.blur > 0) {
+    blur = add('feGaussianBlur', { in: 'SourceGraphic', result: 'frosted' });
+    source = 'frosted';
+  }
+
+  const displace = [];
+  if (p.chroma > 0) {
+    CHANNELS.forEach((values, i) => {
+      displace.push(add('feDisplacementMap', { in: source, in2: bendMap, xChannelSelector: 'R', yChannelSelector: 'G' }, true));
+      add('feColorMatrix', { type: 'matrix', values, result: `ch${i}` }, true);
+    });
+    // Premultiplied sum: exact for opaque content, which is why the glass surface needs a background.
+    add('feComposite', { in: 'ch0', in2: 'ch1', operator: 'arithmetic', k1: 0, k2: 1, k3: 1, k4: 0, result: 'rg' }, true);
+    add('feComposite', { in: 'rg', in2: 'ch2', operator: 'arithmetic', k1: 0, k2: 1, k3: 1, k4: 0, result: 'refracted' }, true);
+  } else {
+    displace.push(
+      add('feDisplacementMap', { in: source, in2: bendMap, xChannelSelector: 'R', yChannelSelector: 'G', result: 'refracted' }, true),
+    );
+  }
+
+  let lit = 'refracted';
+  if (p.specular > 0) {
+    add('feColorMatrix', { in: 'map', type: 'matrix', values: `0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 2 0 ${-(2 * NEUTRAL) / 255}`, result: 'rim' }, true);
+    add('feComposite', { in: 'rim', in2: 'refracted', operator: 'arithmetic', k1: 0, k2: 1, k3: 1, k4: 0, result: 'lit' }, true);
+    lit = 'lit';
+  }
+
+  add('feComposite', { in: lit, in2: 'lensShape', operator: 'in', result: 'lens' }, true);
+  add('feComposite', { in: 'SourceGraphic', in2: 'lensShape', operator: 'out', result: 'outside' });
+  add('feComposite', { in: 'lens', in2: 'outside', operator: 'over' });
+  return { image, aspect, blur, displace, lensRect };
+}
+
+// With primitiveUnits="objectBoundingBox" (the only units WebKit renders — userSpaceOnUse turns the
+// whole element blank), feDisplacementMap's `scale` is a fraction of the box, and each engine turns
+// it into pixels differently (measured):
+//   Blink:  x and y both use width
+//   WebKit: x uses width, y uses height
+//   Gecko:  x and y both use sqrt((w^2 + h^2) / 2)
+// Returns the `scale` that bends `px` pixels on both axes, plus per-axis factors (<= 1) that squeeze
+// the map's R/G channels where the engine would otherwise over-bend one axis.
+function bendScale(px, w, h) {
+  if (engine === 'webkit') {
+    const m = Math.min(w, h);
+    return { scale: (2 * px) / m, kx: m / w, ky: m / h };
+  }
+  if (engine === 'gecko') return { scale: (2 * px) / Math.sqrt((w * w + h * h) / 2), kx: 1, ky: 1 };
+  return { scale: (2 * px) / w, kx: 1, ky: 1 };
+}
+
+function setRect(n, x, y, w, h) {
+  n.setAttribute('x', x);
+  n.setAttribute('y', y);
+  n.setAttribute('width', w);
+  n.setAttribute('height', h);
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+/* Controller                                                                                         */
+/* ------------------------------------------------------------------------------------------------ */
+
+let uid = 0;
+
+/**
+ * Put a glass lens on `target`.
+ *
+ * mode 'content' (default): bends target's own pixels. Works everywhere. Put the thing to refract
+ *   INSIDE target (or a decorative copy of it — see references/patterns.md).
+ * mode 'backdrop': bends what is behind target via `backdrop-filter: url()`. Chromium only; other
+ *   engines get `fallback` (a plain CSS backdrop-filter) instead.
+ *
+ * Options: everything in DEFAULTS, plus
+ *   fit: true       lens follows target's own size (x = y = 0, width/height = border box)
+ *   clip: true      clip target to the lens shape (overlay-copy pattern)
+ *   fallback: str   backdrop-filter used by mode 'backdrop' outside Chromium
+ *   sync: true      apply updates immediately instead of on the next animation frame
+ *   hidden: true    no lens at all (filter removed; with clip, the element is clipped away).
+ *                   Toggle with update({ hidden }) — e.g. a magnifier when the pointer leaves
+ *
+ * Lens coordinates are CSS px relative to target's border box; they are converted to fractions of
+ * that box internally, and the filter output is clipped to it.
+ */
+function createGlass(target, options = {}) {
+  const base = `lg${++uid}`;
+  const mode = options.mode ?? 'content';
+  const fallback = options.fallback ?? 'blur(12px) saturate(1.6)';
+  const p = { ...DEFAULTS, ...pick(options) };
+  const flags = { fit: !!options.fit, clip: !!options.clip, sync: !!options.sync, hidden: !!options.hidden };
+  const useBackdropURL = mode === 'backdrop' && engine === 'blink';
+  const active = mode !== 'backdrop' || useBackdropURL;
+
+  if (!active) {
+    target.style.backdropFilter = fallback;
+    target.style.webkitBackdropFilter = fallback;
+  }
+
+  const filter = node('filter', {
+    filterUnits: 'objectBoundingBox',
+    x: 0,
+    y: 0,
+    width: 1,
+    height: 1,
+    primitiveUnits: 'objectBoundingBox',
+    // sRGB keeps 128 meaning "no bend"; the default linearRGB would shift every pixel.
+    'color-interpolation-filters': 'sRGB',
+  });
+  if (active) defsNode().appendChild(filter);
+
+  let graph = null;
+  let structure = '';
+  let wanted = ''; // key of the newest map requested
+  let requested = 0; // request counter, so a slow decode never replaces a newer map
+  let shown = { key: '', seq: -1 }; // map currently referenced by feImage
+  let version = 0;
+  let frame = 0;
+  let settleTimers = [];
+  let destroyed = false;
+  let box = { width: target.offsetWidth, height: target.offsetHeight };
+
+  // Filter coordinates are fractions of the element box, so every resize has to re-flush.
+  const observer = active
+    ? new ResizeObserver(() => {
+        box = { width: target.offsetWidth, height: target.offsetHeight };
+        schedule();
+      })
+    : null;
+  observer?.observe(target);
+
+  // Re-issue the filter id shortly after a map swap: WebKit loads its own copy of the data URL and
+  // does not repaint the filter when that load lands.
+  function settle() {
+    settleTimers.forEach(clearTimeout);
+    settleTimers = [60, 250].map((ms) => setTimeout(schedule, ms));
+  }
+
+  function show(entry, seq) {
+    if (seq <= shown.seq || !graph) return false;
+    graph.image.setAttribute('href', entry.url);
+    graph.image.setAttributeNS(XLINK, 'xlink:href', entry.url);
+    shown = { key: entry.key, seq };
+    settle();
+    return true;
+  }
+
+  function flush() {
+    frame = 0;
+    if (destroyed || !active) return;
+    if (flags.hidden) {
+      if (useBackdropURL) target.style.backdropFilter = '';
+      else target.style.filter = '';
+      if (flags.clip) target.style.clipPath = 'inset(50%)';
+      return;
+    }
+    const W = box.width;
+    const H = box.height;
+    if (W < 1 || H < 1) return; // not laid out yet; the ResizeObserver will call back
+    if (flags.fit) {
+      p.x = 0;
+      p.y = 0;
+      p.width = W;
+      p.height = H;
+    }
+    if (p.width < 1 || p.height < 1) return;
+
+    const s = `${p.chroma > 0}|${p.blur > 0}|${p.specular > 0}`;
+    if (s !== structure) {
+      graph = buildGraph(filter, p);
+      structure = s;
+      shown = { key: '', seq: -1 };
+      wanted = '';
+    }
+
+    const dpr = window.devicePixelRatio || 1;
+    const scale = p.mapScale > 0 ? p.mapScale : Math.min(dpr, 2);
+    // Snap the lens to device pixels: fractional sub-regions shimmer while the lens moves.
+    const snap = (v) => Math.round(v * dpr) / dpr;
+    const x = snap(p.x);
+    const y = snap(p.y);
+    const w = snap(p.width);
+    const h = snap(p.height);
+
+    const key = mapKeyOf(p, scale);
+    if (wanted !== key) {
+      wanted = key;
+      const entry = lensMap(p, scale, key);
+      const seq = ++requested;
+      if (entry.decoded) show(entry, seq);
+      // While a squish animation requests a new map every frame, show the newest map that has
+      // finished decoding (stretched to the current rect) instead of waiting for the latest one.
+      else entry.ready.then(() => !destroyed && show(entry, seq) && schedule());
+    }
+    if (flags.clip) {
+      const r = Math.min(p.radius, w / 2, h / 2);
+      target.style.clipPath = `inset(${y}px ${W - x - w}px ${H - y - h}px ${x}px round ${r}px)`;
+    }
+    if (!shown.key) return; // first map not ready yet: leave the element unfiltered
+
+    for (const n of graph.lensRect) setRect(n, x / W, y / H, w / W, h / H);
+    const { scale: k, kx, ky } = bendScale(p.refraction, W, H);
+    const scales = graph.displace.length === 3 ? [k, k * (1 + p.chroma / 2), k * (1 + p.chroma)] : [k];
+    graph.displace.forEach((n, i) => n.setAttribute('scale', scales[i]));
+    if (graph.aspect) {
+      graph.aspect.setAttribute('values', `${kx} 0 0 0 ${(1 - kx) / 2}  0 ${ky} 0 0 ${(1 - ky) / 2}  0 0 1 0 0  0 0 0 1 0`);
+    }
+    if (graph.blur) {
+      graph.blur.setAttribute('stdDeviation', `${p.blur / W} ${p.blur / H}`);
+      const pad = Math.ceil(p.refraction * (1 + p.chroma) + 3 * p.blur);
+      setRect(graph.blur, (x - pad) / W, (y - pad) / H, (w + 2 * pad) / W, (h + 2 * pad) / H);
+    }
+
+    // WebKit caches filter output per filter id and keeps serving it after the graph changes;
+    // a fresh id on every update forces it to re-read.
+    filter.id = `${base}-v${++version}`;
+    const ref = `url(#${filter.id})`;
+    if (useBackdropURL) target.style.backdropFilter = ref;
+    else target.style.filter = ref;
+  }
+
+  function schedule() {
+    if (flags.sync) flush();
+    else if (!frame) frame = requestAnimationFrame(flush);
+  }
+
+  schedule();
+
+  return {
+    /** Merge new lens geometry / optics. Moving the lens never regenerates the map. */
+    update(next = {}) {
+      const changes = pick(next);
+      const hidden = next.hidden === undefined ? flags.hidden : !!next.hidden;
+      // Skip no-op updates: every flush re-issues the filter id, which repaints the glass.
+      if (hidden === flags.hidden && Object.keys(changes).every((k) => changes[k] === p[k])) return;
+      Object.assign(p, changes);
+      flags.hidden = hidden;
+      schedule();
+    },
+    /** Apply pending changes now (e.g. before measuring or taking a screenshot). */
+    flush() {
+      if (frame) cancelAnimationFrame(frame);
+      flush();
+    },
+    get params() {
+      return { ...p };
+    },
+    get filterId() {
+      return filter.id;
+    },
+    destroy() {
+      destroyed = true;
+      if (frame) cancelAnimationFrame(frame);
+      settleTimers.forEach(clearTimeout);
+      observer?.disconnect();
+      filter.remove();
+      target.style.filter = '';
+      target.style.backdropFilter = '';
+      target.style.webkitBackdropFilter = '';
+      if (flags.clip) target.style.clipPath = '';
+    },
+  };
+}
+
+function pick(o) {
+  const out = {};
+  for (const k in DEFAULTS) if (o[k] !== undefined) out[k] = o[k];
+  return out;
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+/* Motion                                                                                             */
+/* ------------------------------------------------------------------------------------------------ */
+
+const reducedMotion =
+  typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+
+/**
+ * Critically-damped-ish spring for lens position and squish. `onUpdate(value, velocity)` runs every
+ * frame until the spring settles. Honors prefers-reduced-motion by jumping straight to the target.
+ */
+function createSpring(initial, onUpdate, { stiffness = 520, damping = 38, mass = 1 } = {}) {
+  let value = initial;
+  let velocity = 0;
+  let target = initial;
+  let frame = 0;
+  let last = 0;
+
+  function step(now) {
+    // Fixed 1/120 s sub-steps: the animation keeps its duration when frames are slow or throttled,
+    // and one long frame (a background tab coming back) cannot blow the integration up.
+    let remaining = Math.min(0.1, (now - last) / 1000 || 1 / 60);
+    last = now;
+    while (remaining > 1e-6) {
+      const dt = Math.min(1 / 120, remaining);
+      const force = -stiffness * (value - target) - damping * velocity;
+      velocity += (force / mass) * dt;
+      value += velocity * dt;
+      remaining -= dt;
+    }
+    if (Math.abs(velocity) < 0.01 && Math.abs(value - target) < 0.01) {
+      value = target;
+      velocity = 0;
+      frame = 0;
+      onUpdate(value, 0);
+      return;
+    }
+    onUpdate(value, velocity);
+    frame = requestAnimationFrame(step);
+  }
+
+  return {
+    set(next, { immediate = false } = {}) {
+      target = next;
+      if (immediate || reducedMotion.matches) {
+        if (frame) cancelAnimationFrame(frame);
+        frame = 0;
+        value = next;
+        velocity = 0;
+        onUpdate(value, 0);
+        return;
+      }
+      if (!frame) {
+        last = performance.now();
+        frame = requestAnimationFrame(step);
+      }
+    },
+    get value() {
+      return value;
+    },
+    get target() {
+      return target;
+    },
+    stop() {
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
+    },
+  };
+}
+
+
+return {createGlass,createSpring,engine,reducedMotion};
+})();
+(()=>{const {createGlass,createSpring,engine,reducedMotion}=LGEngine;
+/**
+ * components.js v1.0.0 — Liquid Glass web components.
+ *
+ *   <script type="module" src="https://liquidglass.dev/lib/components.js"><\/script>
+ *   <lg-switch checked>Wi-Fi</lg-switch>
+ *
+ * Elements render into light DOM (no shadow root) so SVG filter references resolve against the
+ * document and the page's fonts and tokens apply. Styles are injected once; theme them with the
+ * --lg-* custom properties. Glass that floats over an image refracts an aligned copy of that image
+ * (set `backdrop="<selector>"` or put `data-lg-backdrop` on an ancestor); with no known backdrop it
+ * uses backdrop-filter: real refraction in Chromium, frosted blur elsewhere.
+ *
+ * Toast icons are from Lucide (ISC license).
+ */
+/* ------------------------------------------------------------------------------------------------ */
+/* Styles                                                                                             */
+/* ------------------------------------------------------------------------------------------------ */
+
+const CSS = `
+:where(:root) {
+  --lg-accent: #0a84ff;
+  --lg-on: #34c759;
+  --lg-surface: #ffffff;
+  --lg-track: #e5e7eb;
+  --lg-track-off: #d1d5db;
+  --lg-text: #111827;
+  --lg-text-muted: #6b7280;
+  --lg-on-glass: #ffffff;
+  --lg-tint: rgb(255 255 255 / 0.14);
+  --lg-tint-strong: rgb(255 255 255 / 0.5);
+  --lg-indicator: rgb(255 255 255 / 0.6);
+  --lg-shadow-1: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --lg-shadow-2: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --lg-radius-sm: 8px;
+  --lg-radius: 12px;
+  --lg-radius-lg: 16px;
+  --lg-radius-xl: 24px;
+  --lg-fallback: blur(16px) saturate(1.6);
+  --lg-focus: #0a84ff;
+}
+lg-switch, lg-slider, lg-segmented, lg-button, lg-panel, lg-navbar, lg-menubar, lg-menu, lg-toast, lg-dock, lg-lens { box-sizing: border-box; }
+:is(lg-switch, lg-slider, lg-segmented, lg-button, lg-panel, lg-navbar, lg-menubar, lg-menu, lg-toast, lg-dock, lg-lens) *,
+:is(lg-switch, lg-slider, lg-segmented, lg-button, lg-panel, lg-navbar, lg-menubar, lg-menu, lg-toast, lg-dock, lg-lens) *::before,
+:is(lg-switch, lg-slider, lg-segmented, lg-button, lg-panel, lg-navbar, lg-menubar, lg-menu, lg-toast, lg-dock, lg-lens) *::after { box-sizing: border-box; }
+
+/* glass body over a backdrop */
+.lg-surface { position: absolute; inset: calc(-1 * var(--lg-bleed, 16px)); pointer-events: none; z-index: 0; }
+.lg-surface__glass { position: absolute; inset: 0; overflow: hidden; }
+.lg-surface__glass--fallback { inset: auto; left: 0; top: 0; overflow: visible; backdrop-filter: var(--lg-fallback); -webkit-backdrop-filter: var(--lg-fallback); }
+.lg-surface__copy { position: absolute; left: 0; top: 0; display: block; max-width: none; max-height: none; margin: 0; }
+.lg-surface__shadow, .lg-surface__tint { position: absolute; left: 0; top: 0; }
+.lg-surface__shadow { box-shadow: var(--lg-shadow-2); }
+.lg-surface__tint { background: var(--lg-tint); }
+
+/* overlay-copy controls */
+.lg-refract { position: absolute; pointer-events: none; z-index: 1; background: var(--lg-surface); }
+.lg-thumb { position: absolute; left: 0; top: 0; background: #ffffff; box-shadow: var(--lg-shadow-1); pointer-events: none; z-index: 3; }
+.lg-lens-shadow { position: absolute; left: 0; top: 0; box-shadow: var(--lg-shadow-2); pointer-events: none; z-index: 2; opacity: 0; }
+
+/* switch */
+lg-switch { display: inline-flex; vertical-align: middle; color: var(--lg-text); }
+.lg-switch__text { display: inline-flex; align-items: center; gap: 8px; }
+.lg-switch__text svg { width: 16px; height: 16px; }
+.lg-switch__label { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; cursor: pointer; }
+.lg-switch__control { --p: 0; position: relative; flex: none; width: 64px; height: 28px; }
+.lg-switch__input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; z-index: 4; }
+.lg-switch__track, .lg-switch__fill { border-radius: 14px; background: color-mix(in srgb, var(--lg-track-off), var(--lg-on) calc(var(--p) * 100%)); }
+.lg-switch__track { position: absolute; inset: 0; }
+.lg-switch__control .lg-refract { left: -16px; top: -16px; width: 96px; height: 60px; }
+.lg-switch__fill { position: absolute; left: 16px; top: 16px; width: 64px; height: 28px; }
+.lg-switch__input:focus-visible ~ .lg-thumb { outline: 2px solid var(--lg-focus); outline-offset: 2px; }
+.lg-switch__input:disabled ~ * { opacity: 0.5; }
+lg-switch[disabled] .lg-switch__label { cursor: default; }
+
+/* slider */
+lg-slider { display: inline-block; width: 240px; vertical-align: middle; }
+.lg-slider__control { --t: 0; position: relative; height: 36px; }
+.lg-slider__input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; z-index: 4; }
+.lg-slider__input::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 36px; height: 36px; }
+.lg-slider__input::-moz-range-thumb { width: 36px; height: 36px; border: 0; }
+.lg-slider__track { position: absolute; left: 0; right: 0; top: 15px; height: 6px; border-radius: 3px; background: var(--lg-track); overflow: hidden; }
+.lg-slider__fill { position: absolute; left: 0; top: 0; bottom: 0; width: calc(18px + var(--t) * (100% - 36px)); background: var(--lg-accent); }
+.lg-slider__control .lg-refract { inset: -16px; }
+.lg-slider__control .lg-refract .lg-slider__track { left: 16px; right: 16px; top: 31px; }
+.lg-slider__input:focus-visible ~ .lg-thumb { outline: 2px solid var(--lg-focus); outline-offset: 2px; }
+
+/* segmented control */
+lg-segmented { position: relative; display: inline-flex; padding: 4px; gap: 4px; border-radius: var(--lg-radius); background: var(--lg-track); vertical-align: middle; }
+.lg-seg__option { position: relative; z-index: 0; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 64px; height: 32px; padding: 0 12px;
+  border: 0; border-radius: var(--lg-radius-sm); background: transparent; color: var(--lg-text-muted); font: inherit; font-size: 14px; font-weight: 500; line-height: 32px; white-space: nowrap; cursor: pointer; }
+.lg-seg__option:focus-visible { outline: 2px solid var(--lg-focus); outline-offset: 2px; }
+lg-segmented .lg-refract { inset: 0; display: flex; padding: 4px; gap: 4px; border-radius: var(--lg-radius); background: var(--lg-surface); }
+lg-segmented .lg-refract .lg-seg__option { color: var(--lg-accent); cursor: default; }
+lg-segmented .lg-lens-shadow { opacity: 1; box-shadow: var(--lg-shadow-1); }
+
+/* button */
+lg-button { display: inline-flex; vertical-align: middle; }
+.lg-button__el { position: relative; isolation: isolate; display: inline-flex; text-decoration: none; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px;
+  border: 0; border-radius: 22px; background: transparent; color: var(--lg-on-glass); font: inherit; font-size: 16px; font-weight: 600; white-space: nowrap; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.lg-button__el:hover { text-decoration: none; }
+.lg-button__el:focus-visible { outline: 2px solid var(--lg-focus); outline-offset: 4px; }
+.lg-button__el:disabled { opacity: 0.5; cursor: default; }
+.lg-button__label { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 8px; }
+lg-button[tone="tinted"] .lg-surface__tint { background: color-mix(in srgb, var(--lg-accent) 55%, transparent); }
+lg-button[tone="light"] .lg-button__el { color: var(--lg-text); }
+lg-button[tone="light"] .lg-surface__tint { background: var(--lg-tint-strong); }
+
+/* panel */
+lg-panel { position: relative; isolation: isolate; display: block; color: var(--lg-on-glass); }
+.lg-panel__body { position: relative; z-index: 1; }
+lg-panel[tone="light"] { color: var(--lg-text); }
+lg-panel[tone="light"] .lg-surface__tint { background: var(--lg-tint-strong); }
+
+/* navbar */
+lg-navbar { position: relative; isolation: isolate; display: inline-flex; align-items: center; gap: 4px; padding: 4px; color: var(--lg-on-glass); }
+lg-navbar > a, lg-navbar > button, .lg-nav__copy > span { position: relative; z-index: 2; display: inline-flex; align-items: center; gap: 8px; height: 36px; margin: 0; padding: 0 16px;
+  border: 0; border-radius: 18px; background: transparent; color: inherit; font: inherit; font-size: 14px; font-weight: 500; line-height: 36px; text-decoration: none; white-space: nowrap; cursor: pointer; }
+lg-navbar > a:hover { text-decoration: none; }
+lg-navbar > :is(a, button):focus-visible { outline: 2px solid var(--lg-focus); outline-offset: 2px; }
+.lg-nav__copy { position: absolute; inset: 0; z-index: 3; display: flex; align-items: center; gap: 4px; padding: 4px; pointer-events: none; background: var(--lg-indicator); }
+.lg-nav__copy > span { color: var(--lg-text); }
+lg-navbar[tone="light"] { color: var(--lg-text); }
+lg-navbar[tone="light"] .lg-surface__tint { background: var(--lg-tint-strong); }
+lg-navbar .lg-lens-shadow { opacity: 1; box-shadow: var(--lg-shadow-1); z-index: 1; }
+lg-navbar > .lg-surface { z-index: 0; }
+
+/* menubar and menus */
+lg-menubar { position: relative; isolation: isolate; z-index: 10; display: flex; align-items: center; gap: 4px; height: 44px; padding: 0 12px; color: var(--lg-on-glass); font-size: 14px;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.35); --lg-tint: rgb(17 24 39 / 0.1); }
+lg-menubar .lg-menu__panel { text-shadow: none; }
+lg-menubar > :not(lg-menu):not(.lg-surface) { position: relative; z-index: 1; }
+lg-menu { position: relative; z-index: 1; display: inline-flex; }
+.lg-menu__trigger { height: 32px; padding: 0 12px; border: 0; border-radius: var(--lg-radius-sm); background: transparent; color: inherit; font: inherit; font-weight: 500; cursor: default; }
+.lg-menu__trigger { border-radius: 16px; }
+.lg-menu__trigger[aria-expanded="true"], .lg-menu__trigger:hover { background: rgb(255 255 255 / 0.2); }
+.lg-menu__trigger:focus-visible { outline: 2px solid var(--lg-focus); outline-offset: 2px; }
+.lg-menu__panel { position: absolute; left: 0; top: calc(100% + 10px); isolation: isolate; min-width: 220px; padding: 6px; color: var(--lg-text); }
+.lg-menu__panel[hidden] { display: none; }
+.lg-menu__panel .lg-surface__tint { background: rgb(255 255 255 / 0.55); }
+.lg-menu__items { position: relative; z-index: 2; display: flex; flex-direction: column; }
+.lg-menu__items > button, .lg-menu__copy > span { display: flex; align-items: center; justify-content: space-between; gap: 24px; height: 32px; padding: 0 12px; border: 0; border-radius: var(--lg-radius-sm);
+  background: transparent; color: inherit; font: inherit; font-size: 14px; text-align: left; white-space: nowrap; cursor: default; }
+.lg-menu__items > button:focus-visible { outline: none; }
+.lg-menu__items > hr, .lg-menu__copy > hr { width: calc(100% - 24px); height: 1px; margin: 4px 12px; border: 0; background: rgb(0 0 0 / 0.1); }
+.lg-menu__items kbd, .lg-menu__copy kbd { font: inherit; font-size: 12px; opacity: 0.6; }
+.lg-menu__copy { position: absolute; inset: 6px; z-index: 1; display: flex; flex-direction: column; pointer-events: none; background: var(--lg-accent); color: #ffffff; border-radius: var(--lg-radius-sm); }
+.lg-menu__copy > hr { opacity: 0; }
+.lg-menu__panel .lg-lens-shadow { z-index: 1; box-shadow: none; }
+
+/* toast */
+.lg-toast-region { position: fixed; top: var(--lg-toast-top, 16px); left: 50%; z-index: 1000; display: flex; flex-direction: column; align-items: center; gap: 8px; transform: translateX(-50%); pointer-events: none; }
+.lg-toast-region--local { position: absolute; }
+lg-toast { position: relative; isolation: isolate; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 20px 0 14px; color: var(--lg-on-glass); font-size: 14px; font-weight: 500; pointer-events: auto; }
+lg-toast[tone="light"] { color: var(--lg-text); }
+lg-toast[tone="light"] .lg-surface__tint { background: var(--lg-tint-strong); }
+.lg-toast__icon, .lg-toast__text { position: relative; z-index: 1; display: inline-flex; }
+.lg-toast__icon svg { width: 20px; height: 20px; }
+
+/* dock */
+lg-dock { position: relative; isolation: isolate; display: inline-flex; padding: 8px; }
+.lg-dock__items { position: relative; z-index: 1; display: flex; gap: 8px; padding: 4px; }
+.lg-dock__items > * { flex: none; }
+lg-dock .lg-lens-shadow { z-index: 2; box-shadow: var(--lg-shadow-2); }
+
+/* lens (magnifier) */
+lg-lens { position: relative; display: block; overflow: hidden; touch-action: none; }
+.lg-lens__content { position: relative; background: var(--lg-surface); will-change: filter; }
+lg-lens .lg-lens-shadow { z-index: 2; opacity: 1; }
+
+@media (prefers-reduced-transparency: reduce) {
+  .lg-surface__tint { background: rgb(255 255 255 / 0.85); }
+  lg-button, lg-panel, lg-navbar, lg-menubar, lg-toast { color: var(--lg-text); }
+}
+`;
+
+let styled = false;
+function injectStyles() {
+  if (styled || typeof document === 'undefined') return;
+  styled = true;
+  const style = document.createElement('style');
+  style.id = 'liquid-glass-components';
+  style.textContent = CSS;
+  document.head.prepend(style); // first, so page styles win at equal specificity
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+/* Helpers                                                                                            */
+/* ------------------------------------------------------------------------------------------------ */
+
+const lerp = (a, b, t) => a + (b - a) * t;
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+
+function el(tag, className, attrs) {
+  const n = document.createElement(tag);
+  if (className) n.className = className;
+  if (attrs) for (const k in attrs) n.setAttribute(k, attrs[k]);
+  return n;
+}
+
+function place(node, x, y, w, h, r) {
+  node.style.width = `${w}px`;
+  node.style.height = `${h}px`;
+  node.style.borderRadius = `${r}px`;
+  node.style.transform = `translate(${x}px, ${y}px)`;
+}
+
+// Optics attributes: refraction, bezel, curvature, ior, chroma, blur, specular, specular-width, light-angle.
+const OPTIC_ATTRS = { refraction: 'refraction', bezel: 'bezel', curvature: 'curvature', ior: 'ior', chroma: 'chroma', blur: 'blur', specular: 'specular', 'specular-width': 'specularWidth', 'light-angle': 'lightAngle' };
+function optics(host, defaults) {
+  const out = { ...defaults };
+  for (const [attr, key] of Object.entries(OPTIC_ATTRS)) {
+    const v = host.getAttribute(attr);
+    if (v !== null && v !== '' && !Number.isNaN(Number(v))) out[key] = Number(v);
+  }
+  return out;
+}
+
+function radiusOf(host, fallback) {
+  const v = host.getAttribute('radius');
+  if (v === 'capsule') return Infinity;
+  return v !== null && !Number.isNaN(Number(v)) ? Number(v) : fallback;
+}
+
+// Chroma sums three channel passes in premultiplied space; on a translucent copy that over-counts
+// alpha, so glass over a transparent surface drops the fringe.
+function isOpaque(node) {
+  const bg = getComputedStyle(node).backgroundColor;
+  if (!bg || bg === 'transparent') return false;
+  const m = bg.match(/rgba?\(([^)]+)\)/);
+  if (!m) return true;
+  const parts = m[1].split(/[\s,/]+/).filter(Boolean);
+  return parts.length < 4 || parseFloat(parts[3]) >= 1;
+}
+
+const ICONS = {
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+  alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  bell: '<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>',
+};
+function icon(name) {
+  const body = ICONS[name];
+  if (!body) return name ?? ''; // allow raw SVG markup
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+/* Surface: glass body that refracts what is behind it                                                */
+/* ------------------------------------------------------------------------------------------------ */
+
+function resolveBackdrop(host) {
+  const selector = host.getAttribute('backdrop');
+  if (selector === 'none') return null;
+  if (selector) return document.querySelector(selector);
+  const scope = host.parentElement?.closest('[data-lg-backdrop]');
+  if (!scope) return null;
+  const inner = scope.getAttribute('data-lg-backdrop');
+  return inner ? scope.querySelector(inner) : scope;
+}
+
+// A decorative copy of the backdrop: an <img> is cloned, anything else contributes its CSS background.
+function cloneBackdrop(source) {
+  let copy;
+  if (source instanceof HTMLImageElement) {
+    copy = source.cloneNode(false);
+    copy.removeAttribute('id');
+    copy.removeAttribute('class');
+    copy.removeAttribute('data-lg-backdrop');
+    copy.alt = '';
+    copy.loading = 'eager';
+    const cs = getComputedStyle(source);
+    copy.style.objectFit = cs.objectFit;
+    copy.style.objectPosition = cs.objectPosition;
+  } else {
+    copy = document.createElement('span');
+    const cs = getComputedStyle(source);
+    for (const k of ['backgroundColor', 'backgroundImage', 'backgroundSize', 'backgroundPosition', 'backgroundRepeat', 'backgroundOrigin', 'backgroundClip']) {
+      copy.style[k] = cs[k];
+    }
+  }
+  copy.classList.add('lg-surface__copy');
+  copy.setAttribute('aria-hidden', 'true');
+  return copy;
+}
+
+const surfaces = new Set();
+let syncFrame = 0;
+function requestSync() {
+  if (syncFrame) return;
+  syncFrame = requestAnimationFrame(() => {
+    syncFrame = 0;
+    for (const s of surfaces) s.update();
+  });
+}
+if (typeof window !== 'undefined') {
+  addEventListener('scroll', requestSync, { capture: true, passive: true });
+  addEventListener('resize', requestSync);
+}
+
+/**
+ * Glass body for `host` (which must be position: relative). Modes:
+ *   copy     — an aligned copy of the backdrop image, refracted with filter: url(). Every engine.
+ *   backdrop — backdrop-filter: url(). Chromium only.
+ *   fallback — backdrop-filter blur, for WebKit/Gecko with no known backdrop.
+ */
+class Surface {
+  constructor(host, { radius = 16, bleed = 16, optics: o = {}, owner = host } = {}) {
+    this.host = host;
+    this.owner = owner; // element carrying the backdrop attribute
+    this.radius = radius;
+    this.bleed = bleed;
+    this.optics = o;
+    this.delta = { x: 0, y: 0, w: 0, h: 0 };
+    this.root = el('span', 'lg-surface', { 'aria-hidden': 'true' });
+    this.root.style.setProperty('--lg-bleed', `${bleed}px`);
+    this.shadow = el('span', 'lg-surface__shadow');
+    this.layer = el('span', 'lg-surface__glass');
+    this.tint = el('span', 'lg-surface__tint');
+    this.root.append(this.shadow, this.layer, this.tint);
+    host.prepend(this.root);
+  }
+
+  attach() {
+    this.source = resolveBackdrop(this.owner);
+    if (this.source) {
+      this.mode = 'copy';
+      this.copy = cloneBackdrop(this.source);
+      this.layer.replaceChildren(this.copy);
+      this.glass = createGlass(this.layer, { ...this.optics, clip: true });
+      if (this.source instanceof HTMLImageElement && !this.source.complete) this.source.addEventListener('load', requestSync, { once: true });
+    } else if (engine === 'blink') {
+      this.mode = 'backdrop';
+      this.glass = createGlass(this.layer, { ...this.optics, chroma: 0, mode: 'backdrop', clip: true });
+    } else {
+      this.mode = 'fallback';
+      this.layer.classList.add('lg-surface__glass--fallback');
+    }
+    this.observer = new ResizeObserver(() => this.update());
+    this.observer.observe(this.host);
+    surfaces.add(this);
+    this.update();
+  }
+
+  detach() {
+    this.glass?.destroy();
+    this.glass = null;
+    this.observer?.disconnect();
+    surfaces.delete(this);
+    this.layer.classList.remove('lg-surface__glass--fallback');
+    this.layer.removeAttribute('style');
+    this.layer.replaceChildren();
+    this.copy = null;
+    this.mode = null;
+    this.lastKey = this.alignKey = null;
+  }
+
+  /** Grow/shift the glass relative to the host box (press squish, open animations). */
+  setDelta(d) {
+    Object.assign(this.delta, d);
+    this.update();
+  }
+
+  update() {
+    const W = this.host.offsetWidth;
+    const H = this.host.offsetHeight;
+    if (!W || !H) return;
+    const d = this.delta;
+    const x = this.bleed + d.x;
+    const y = this.bleed + d.y;
+    const w = Math.max(1, W + d.w);
+    const h = Math.max(1, H + d.h);
+    const r = Math.min(this.radius, w / 2, h / 2);
+    const key = `${x}|${y}|${w}|${h}|${r}`;
+    if (key !== this.lastKey) {
+      this.lastKey = key;
+      place(this.shadow, x, y, w, h, r);
+      place(this.tint, x, y, w, h, r);
+      if (this.mode === 'fallback') place(this.layer, x, y, w, h, r);
+      else this.glass?.update({ x, y, width: w, height: h, radius: r });
+    }
+    if (this.mode === 'copy') this.align();
+  }
+
+  // Keep the backdrop copy registered with the real backdrop. Scrolling usually moves both together,
+  // so most calls change nothing and write nothing.
+  align() {
+    const lr = this.layer.getBoundingClientRect();
+    const sr = this.source.getBoundingClientRect();
+    const key = `${sr.width}|${sr.height}|${sr.left - lr.left}|${sr.top - lr.top}`;
+    if (key === this.alignKey) return;
+    this.alignKey = key;
+    this.copy.style.width = `${sr.width}px`;
+    this.copy.style.height = `${sr.height}px`;
+    this.copy.style.transform = `translate(${sr.left - lr.left}px, ${sr.top - lr.top}px)`;
+  }
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+/* Base element                                                                                       */
+/* ------------------------------------------------------------------------------------------------ */
+
+class LgElement extends HTMLElement {
+  connectedCallback() {
+    injectStyles();
+    if (!this._built) {
+      this._built = true;
+      this.build();
+    }
+    this.attach();
+  }
+  disconnectedCallback() {
+    this.detach();
+  }
+  build() {}
+  attach() {}
+  detach() {}
+}
+
+// A native element that follows the pointer press: returns a spring 0..1.
+function pressSpring(target, onUpdate) {
+  const spring = createSpring(0, onUpdate, { stiffness: 600, damping: 36 });
+  target.addEventListener('pointerdown', () => spring.set(1));
+  for (const type of ['pointerup', 'pointercancel', 'pointerleave']) target.addEventListener(type, () => spring.set(0));
+  return spring;
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+/* <lg-switch>                                                                                        */
+/* ------------------------------------------------------------------------------------------------ */
+
+class LgSwitch extends LgElement {
+  static observedAttributes = ['checked', 'disabled'];
+
+  build() {
+    const text = [...this.childNodes];
+    const label = el('label', 'lg-switch__label');
+    const control = el('span', 'lg-switch__control');
+    this.input = el('input', 'lg-switch__input', { type: 'checkbox', role: 'switch' });
+    this.input.checked = this.hasAttribute('checked');
+    this.input.disabled = this.hasAttribute('disabled');
+    for (const a of ['name', 'value', 'aria-label']) if (this.hasAttribute(a)) this.input.setAttribute(a, this.getAttribute(a));
+    this.refract = el('span', 'lg-refract', { 'aria-hidden': 'true' });
+    this.refract.append(el('span', 'lg-switch__fill'));
+    this.shadow = el('span', 'lg-lens-shadow', { 'aria-hidden': 'true' });
+    this.thumb = el('span', 'lg-thumb', { 'aria-hidden': 'true' });
+    control.append(this.input, el('span', 'lg-switch__track', { 'aria-hidden': 'true' }), this.refract, this.shadow, this.thumb);
+    if (text.some((n) => n.textContent.trim())) {
+      const span = el('span', 'lg-switch__text');
+      span.append(...text);
+      label.append(span);
+    }
+    label.append(control);
+    this.replaceChildren(label);
+
+    this.x = this.input.checked ? 1 : 0;
+    this.v = 0;
+    this.p = 0;
+    this.xs = createSpring(this.x, (val, vel) => {
+      this.x = val;
+      this.v = vel;
+      this.render();
+    }, { stiffness: 420, damping: 30 });
+    pressSpring(this.input, (val) => {
+      this.p = val;
+      this.render();
+    });
+    this.input.addEventListener('change', () => this.xs.set(this.input.checked ? 1 : 0));
+  }
+
+  attach() {
+    this.glass = createGlass(this.refract, { clip: true, ...optics(this, { refraction: 10, bezel: 0.9, curvature: 3, chroma: isOpaque(this.refract) ? 0.2 : 0, specular: 0.7, specularWidth: 1.5 }) });
+    this.render();
+  }
+
+  detach() {
+    this.glass?.destroy();
+    this.glass = null;
+  }
+
+  attributeChangedCallback(name) {
+    if (!this.input) return;
+    if (name === 'checked') {
+      this.input.checked = this.hasAttribute('checked');
+      this.xs.set(this.input.checked ? 1 : 0);
+    } else this.input.disabled = this.hasAttribute('disabled');
+  }
+
+  get checked() {
+    return this.input ? this.input.checked : this.hasAttribute('checked');
+  }
+  set checked(v) {
+    this.toggleAttribute('checked', !!v);
+  }
+
+  render() {
+    if (!this.glass) return;
+    const stretch = Math.min(10, Math.abs(this.v) * 1.6);
+    const w = lerp(36, 54, this.p) + stretch;
+    const h = lerp(24, 36, this.p) - stretch * 0.2;
+    const left = 20 + 24 * this.x - w / 2;
+    const top = 14 - h / 2;
+    this.firstChild.lastChild.style.setProperty('--p', this.x.toFixed(3));
+    this.glass.update({ x: left + 16, y: top + 16, width: w, height: h, radius: h / 2 });
+    place(this.thumb, left, top, w, h, h / 2);
+    place(this.shadow, left, top, w, h, h / 2);
+    this.thumb.style.opacity = String(1 - this.p);
+    this.shadow.style.opacity = String(this.p);
+  }
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+/* <lg-slider>                                                                                        */
+/* ------------------------------------------------------------------------------------------------ */
+
+class LgSlider extends LgElement {
+  static observedAttributes = ['value', 'disabled'];
+
+  build() {
+    this.control = el('div', 'lg-slider__control');
+    this.input = el('input', 'lg-slider__input', { type: 'range' });
+    for (const a of ['min', 'max', 'step', 'name']) if (this.hasAttribute(a)) this.input.setAttribute(a, this.getAttribute(a));
+    this.input.setAttribute('aria-label', this.getAttribute('label') ?? this.getAttribute('aria-label') ?? '');
+    this.input.value = this.getAttribute('value') ?? this.input.value;
+    this.input.disabled = this.hasAttribute('disabled');
+    const track = () => {
+      const t = el('span', 'lg-slider__track');
+      t.append(el('span', 'lg-slider__fill'));
+      return t;
+    };
+    this.refract = el('span', 'lg-refract', { 'aria-hidden': 'true' });
+    this.refract.append(track());
+    this.shadow = el('span', 'lg-lens-shadow', { 'aria-hidden': 'true' });
+    this.thumb = el('span', 'lg-thumb', { 'aria-hidden': 'true' });
+    const visibleTrack = track();
+    visibleTrack.setAttribute('aria-hidden', 'true');
+    this.control.append(this.input, visibleTrack, this.refract, this.shadow, this.thumb);
+    this.replaceChildren(this.control);
+
+    this.t = this.fraction();
+    this.v = 0;
+    this.p = 0;
+    this.ts = createSpring(this.t, (val, vel) => {
+      this.t = val;
+      this.v = vel;
+      this.render();
+    }, { stiffness: 900, damping: 50 });
+    pressSpring(this.input, (val) => {
+      this.p = val;
+      this.render();
+    });
+    this.input.addEventListener('input', () => this.ts.set(this.fraction()));
+  }
+
+  fraction() {
+    const min = Number(this.input.min || 0);
+    const max = Number(this.input.max || 100);
+    return clamp((this.input.valueAsNumber - min) / (max - min || 1), 0, 1);
+  }
+
+  attach() {
+    // Softer than the switch: the fill under the glass has to stay readable as a value.
+    this.glass = createGlass(this.refract, { clip: true, ...optics(this, { refraction: 6, bezel: 0.9, curvature: 3, chroma: isOpaque(this.refract) ? 0.15 : 0, specular: 0.7, specularWidth: 1.5 }) });
+    this.observer = new ResizeObserver(() => this.render());
+    this.observer.observe(this);
+    this.render();
+  }
+
+  detach() {
+    this.glass?.destroy();
+    this.glass = null;
+    this.observer?.disconnect();
+  }
+
+  attributeChangedCallback(name) {
+    if (!this.input) return;
+    if (name === 'value') {
+      this.input.value = this.getAttribute('value');
+      this.ts.set(this.fraction());
+    } else this.input.disabled = this.hasAttribute('disabled');
+  }
+
+  get value() {
+    return this.input ? this.input.valueAsNumber : Number(this.getAttribute('value'));
+  }
+  set value(v) {
+    this.setAttribute('value', String(v));
+  }
+
+  render() {
+    if (!this.glass) return;
+    const width = this.control.clientWidth;
+    const stretch = Math.min(10, Math.abs(this.v) * 1.2);
+    const w = lerp(36, 52, this.p) + stretch;
+    const h = lerp(24, 34, this.p) - stretch * 0.2;
+    const left = 18 + this.t * (width - 36) - w / 2;
+    const top = 18 - h / 2;
+    this.control.style.setProperty('--t', this.t.toFixed(4));
+    this.glass.update({ x: left + 16, y: top + 16, width: w, height: h, radius: h / 2 });
+    place(this.thumb, left, top, w, h, h / 2);
+    place(this.shadow, left, top, w, h, h / 2);
+    this.thumb.style.opacity = String(1 - this.p);
+    this.shadow.style.opacity = String(this.p);
+  }
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+/* <lg-segmented>                                                                                     */
+/* ------------------------------------------------------------------------------------------------ */
+
+class LgSegmented extends LgElement {
+  build() {
+    this.setAttribute('role', 'radiogroup');
+    if (this.hasAttribute('label')) this.setAttribute('aria-label', this.getAttribute('label'));
+    this.buttons = [...this.querySelectorAll(':scope > button')];
+    const copy = el('span', 'lg-refract', { 'aria-hidden': 'true' });
+    for (const b of this.buttons) {
+      b.type = 'button';
+      b.classList.add('lg-seg__option');
+      b.setAttribute('role', 'radio');
+      b.addEventListener('click', () => this.select(this.buttons.indexOf(b), { emit: true }));
+    }
+    this.refract = copy;
+    this.fillCopy();
+    this.shadow = el('span', 'lg-lens-shadow', { 'aria-hidden': 'true' });
+    this.append(copy, this.shadow);
+    this.addEventListener('keydown', (e) => {
+      const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      if (!step) return;
+      e.preventDefault();
+      this.select(this.index + step, { emit: true, focus: true });
+    });
+    const initial = this.getAttribute('value');
+    let i = this.buttons.findIndex((b) => (initial !== null ? (b.value || b.textContent.trim()) === initial : b.getAttribute('aria-checked') === 'true'));
+    this.index = Math.max(0, i);
+    this.x = 0;
+    this.v = 0;
+    this.xs = createSpring(0, (val, vel) => {
+      this.x = val;
+      this.v = vel;
+      this.render();
+    }, { stiffness: 380, damping: 28 });
+  }
+
+  attach() {
+    // Thin bezel: the label under the glass must stay legible, only the rim should bend.
+    this.glass = createGlass(this.refract, { clip: true, ...optics(this, { refraction: 5, bezel: 0.35, curvature: 4, chroma: isOpaque(this.refract) ? 0.2 : 0, specular: 0.6, specularWidth: 1.5 }) });
+    this.observer = new ResizeObserver(() => this.select(this.index, { immediate: true }));
+    this.observer.observe(this);
+    this.select(this.index, { immediate: true });
+  }
+
+  detach() {
+    this.glass?.destroy();
+    this.glass = null;
+    this.observer?.disconnect();
+  }
+
+  fillCopy() {
+    this.refract.replaceChildren(
+      ...this.buttons.map((b) => {
+        const c = el('span', 'lg-seg__option');
+        c.innerHTML = b.innerHTML;
+        return c;
+      }),
+    );
+  }
+
+  /** Call after changing option labels so the glass copy matches again. */
+  refresh() {
+    this.fillCopy();
+    this.select(this.index, { immediate: true });
+  }
+
+  get value() {
+    const b = this.buttons?.[this.index];
+    return b ? b.value || b.textContent.trim() : this.getAttribute('value');
+  }
+  set value(v) {
+    const i = this.buttons.findIndex((b) => (b.value || b.textContent.trim()) === String(v));
+    if (i >= 0) this.select(i);
+  }
+
+  select(i, { emit = false, focus = false, immediate = false } = {}) {
+    const n = this.buttons.length;
+    if (!n) return;
+    const next = (i + n) % n;
+    const changed = next !== this.index;
+    this.index = next;
+    this.buttons.forEach((b, j) => {
+      b.setAttribute('aria-checked', String(j === next));
+      b.tabIndex = j === next ? 0 : -1;
+    });
+    if (focus) this.buttons[next].focus();
+    this.xs.set(this.buttons[next].offsetLeft, { immediate });
+    if (emit && changed) this.dispatchEvent(new CustomEvent('change', { bubbles: true, detail: { value: this.value, index: next } }));
+  }
+
+  widthAt(pos) {
+    const lefts = this.buttons.map((b) => b.offsetLeft);
+    if (lefts.length < 2) return this.buttons[0].offsetWidth;
+    let i = 0;
+    while (i < lefts.length - 2 && pos > lefts[i + 1]) i++;
+    const f = clamp((pos - lefts[i]) / (lefts[i + 1] - lefts[i] || 1), 0, 1);
+    return lerp(this.buttons[i].offsetWidth, this.buttons[i + 1].offsetWidth, f);
+  }
+
+  render() {
+    if (!this.glass) return;
+    const first = this.buttons[0];
+    // Dashabi preview: keep the lens dimensions stable while it glides so
+    // moving between equal-width options reuses the displacement map.
+    const stretch = 0;
+    const w = this.widthAt(this.x) + stretch;
+    const h = first.offsetHeight - stretch * 0.25;
+    const left = this.x - stretch / 2;
+    const top = first.offsetTop + (first.offsetHeight - h) / 2;
+    const r = parseFloat(getComputedStyle(first).borderTopLeftRadius) || 8;
+    this.glass.update({ x: left, y: top, width: w, height: h, radius: r });
+    place(this.shadow, left, top, w, h, r);
+  }
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+/* <lg-button>                                                                                        */
+/* ------------------------------------------------------------------------------------------------ */
+
+class LgButton extends LgElement {
+  static observedAttributes = ['disabled'];
+
+  build() {
+    const href = this.getAttribute('href');
+    this.button = href ? el('a', 'lg-button__el', { href }) : el('button', 'lg-button__el', { type: this.getAttribute('type') ?? 'button' });
+    if (href && this.hasAttribute('target')) this.button.setAttribute('target', this.getAttribute('target'));
+    if (!href) this.button.disabled = this.hasAttribute('disabled');
+    if (this.hasAttribute('aria-label')) this.button.setAttribute('aria-label', this.getAttribute('aria-label'));
+    const label = el('span', 'lg-button__label');
+    label.append(...this.childNodes);
+    this.button.append(label);
+    this.replaceChildren(this.button);
+    this.surface = new Surface(this.button, { owner: this, radius: radiusOf(this, Infinity), bleed: 12, optics: optics(this, { refraction: 14, bezel: 0.8, curvature: 3, chroma: 0.12, specular: 0.6, specularWidth: 1.5 }) });
+    pressSpring(this.button, (p) => this.surface.setDelta({ x: -5 * p, y: 2 * p, w: 10 * p, h: -4 * p }));
+  }
+  attach() {
+    this.surface.attach();
+  }
+  detach() {
+    this.surface.detach();
+  }
+  attributeChangedCallback() {
+    if (this.button) this.button.disabled = this.hasAttribute('disabled');
+  }
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+/* <lg-panel>                                                                                         */
+/* ------------------------------------------------------------------------------------------------ */
+
+class LgPanel extends LgElement {
+  build() {
+    const body = el('div', 'lg-panel__body');
+    body.append(...this.childNodes);
+    this.append(body);
+    this.surface = new Surface(this, { radius: radiusOf(this, 24), bleed: 4, optics: optics(this, { refraction: 24, bezel: 0.3, curvature: 4, chroma: 0.1, blur: 2, specular: 0.5, specularWidth: 2 }) });
+  }
+  attach() {
+    this.surface.attach();
+  }
+  detach() {
+    this.surface.detach();
+  }
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+/* <lg-navbar>                                                                                        */
+/* ------------------------------------------------------------------------------------------------ */
+
+class LgNavbar extends LgElement {
+  build() {
+    this.setAttribute('role', this.getAttribute('role') ?? 'navigation');
+    this.links = [...this.querySelectorAll(':scope > a, :scope > button')];
+    this.copy = el('span', 'lg-nav__copy', { 'aria-hidden': 'true' });
+    this.fillCopy();
+    for (const a of this.links) {
+      a.addEventListener('pointerenter', () => this.moveTo(this.links.indexOf(a)));
+      a.addEventListener('focus', () => this.moveTo(this.links.indexOf(a)));
+      a.addEventListener('click', () => this.setCurrent(this.links.indexOf(a)));
+    }
+    this.shadow = el('span', 'lg-lens-shadow', { 'aria-hidden': 'true' });
+    this.append(this.copy, this.shadow);
+    this.addEventListener('pointerleave', () => this.moveTo(this.current));
+    this.addEventListener('focusout', (e) => {
+      if (!this.contains(e.relatedTarget)) this.moveTo(this.current);
+    });
+    this.current = Math.max(0, this.links.findIndex((a) => a.getAttribute('aria-current') === 'page'));
+    this.surface = new Surface(this, { radius: radiusOf(this, Infinity), bleed: 8, optics: optics(this, { refraction: 16, bezel: 0.8, curvature: 3, chroma: 0.1, blur: 1, specular: 0.55, specularWidth: 1.5 }) });
+    this.x = 0;
+    this.v = 0;
+    this.xs = createSpring(0, (val, vel) => {
+      this.x = val;
+      this.v = vel;
+      this.render();
+    }, { stiffness: 380, damping: 30 });
+  }
+
+  attach() {
+    this.surface.attach();
+    this.glass = createGlass(this.copy, { clip: true, refraction: 8, bezel: 0.6, curvature: 3, chroma: 0, specular: 0.7, specularWidth: 1.5 });
+    this.observer = new ResizeObserver(() => this.moveTo(this.target ?? this.current, true));
+    this.observer.observe(this);
+    this.moveTo(this.current, true);
+  }
+
+  detach() {
+    this.surface.detach();
+    this.glass?.destroy();
+    this.glass = null;
+    this.observer?.disconnect();
+  }
+
+  fillCopy() {
+    this.copy.replaceChildren(
+      ...this.links.map((a) => {
+        const c = el('span');
+        c.innerHTML = a.innerHTML;
+        return c;
+      }),
+    );
+  }
+
+  /** Call after changing link text (e.g. a language switch) so the glass copy matches again. */
+  refresh() {
+    this.fillCopy();
+    this.moveTo(this.target ?? this.current, true);
+  }
+
+  setCurrent(i) {
+    this.links.forEach((a, j) => (j === i ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')));
+    this.current = i;
+    this.moveTo(i);
+  }
+
+  moveTo(i, immediate = false) {
+    const a = this.links[i];
+    if (!a) return;
+    this.target = i;
+    this.xs.set(a.offsetLeft, { immediate });
+  }
+
+  widthAt(pos) {
+    const lefts = this.links.map((a) => a.offsetLeft);
+    if (lefts.length < 2) return this.links[0].offsetWidth;
+    let i = 0;
+    while (i < lefts.length - 2 && pos > lefts[i + 1]) i++;
+    const f = clamp((pos - lefts[i]) / (lefts[i + 1] - lefts[i] || 1), 0, 1);
+    return lerp(this.links[i].offsetWidth, this.links[i + 1].offsetWidth, f);
+  }
+
+  render() {
+    if (!this.glass || !this.links.length) return;
+    const first = this.links[0];
+    const stretch = Math.min(14, Math.abs(this.v) * 0.025);
+    const w = this.widthAt(this.x) + stretch;
+    const h = first.offsetHeight - stretch * 0.2;
+    const left = this.x - stretch / 2;
+    const top = first.offsetTop + (first.offsetHeight - h) / 2;
+    this.glass.update({ x: left, y: top, width: w, height: h, radius: h / 2 });
+    place(this.shadow, left, top, w, h, h / 2);
+  }
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+/* <lg-menubar> and <lg-menu>                                                                         */
+/* ------------------------------------------------------------------------------------------------ */
+
+class LgMenubar extends LgElement {
+  build() {
+    this.setAttribute('role', 'menubar');
+    // A glass rod: the bend spans the whole height, so the backdrop visibly lenses across the bar.
+    this.surface = new Surface(this, { radius: radiusOf(this, Infinity), bleed: 8, optics: optics(this, { refraction: 20, bezel: 1, curvature: 2.5, chroma: 0.2, blur: 0.5, specular: 0.9, specularWidth: 2.5 }) });
+    this.addEventListener('keydown', (e) => {
+      const menus = [...this.querySelectorAll(':scope > lg-menu')];
+      const i = menus.findIndex((m) => m.contains(document.activeElement));
+      if (i < 0) return;
+      const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+      if (!step) return;
+      e.preventDefault();
+      const wasOpen = menus[i].open;
+      menus[i].close();
+      const next = menus[(i + step + menus.length) % menus.length];
+      next.trigger.focus();
+      if (wasOpen) next.show();
+    });
+  }
+  attach() {
+    this.surface.attach();
+  }
+  detach() {
+    this.surface.detach();
+  }
+}
+
+let openMenu = null;
+if (typeof document !== 'undefined') {
+  document.addEventListener('pointerdown', (e) => {
+    if (openMenu && !openMenu.contains(e.target)) openMenu.close();
+  });
+}
+
+class LgMenu extends LgElement {
+  build() {
+    const items = [...this.childNodes];
+    this.trigger = el('button', 'lg-menu__trigger', { type: 'button', role: 'menuitem', 'aria-haspopup': 'menu', 'aria-expanded': 'false' });
+    this.trigger.textContent = this.getAttribute('label') ?? '';
+    this.panel = el('div', 'lg-menu__panel', { role: 'menu' });
+    this.panel.hidden = true;
+    this.list = el('div', 'lg-menu__items');
+    this.list.append(...items);
+    this.items = [...this.list.querySelectorAll(':scope > button')];
+    this.copy = el('div', 'lg-menu__copy', { 'aria-hidden': 'true' });
+    for (const node of this.list.children) {
+      if (node.tagName === 'HR') {
+        this.copy.append(el('hr'));
+        continue;
+      }
+      node.type = 'button';
+      node.setAttribute('role', 'menuitem');
+      node.tabIndex = -1;
+      const shortcut = node.getAttribute('data-shortcut');
+      if (shortcut) node.insertAdjacentHTML('beforeend', `<kbd>${shortcut}</kbd>`);
+      const c = el('span');
+      c.innerHTML = node.innerHTML;
+      this.copy.append(c);
+    }
+    this.shadow = el('span', 'lg-lens-shadow', { 'aria-hidden': 'true' });
+    this.panel.append(this.list, this.copy, this.shadow);
+    this.replaceChildren(this.trigger, this.panel);
+    this.surface = new Surface(this.panel, { owner: this, radius: radiusOf(this, 18), bleed: 8, optics: optics(this, { refraction: 22, bezel: 0.35, curvature: 3, chroma: 0.15, blur: 6, specular: 0.8, specularWidth: 2.5 }) });
+
+    this.trigger.addEventListener('click', () => (this.open ? this.close() : this.show()));
+    this.trigger.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.show();
+        this.focusItem(0);
+      }
+    });
+    this.trigger.addEventListener('pointerenter', () => {
+      if (openMenu && openMenu !== this && openMenu.parentElement === this.parentElement) this.show();
+    });
+    this.panel.addEventListener('keydown', (e) => {
+      const i = this.items.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        this.focusItem(i + (e.key === 'ArrowDown' ? 1 : -1));
+      } else if (e.key === 'Escape') {
+        this.close();
+        this.trigger.focus();
+      } else if (e.key === 'Tab') this.close();
+    });
+    for (const [i, item] of this.items.entries()) {
+      item.addEventListener('pointerenter', () => this.highlight(i));
+      item.addEventListener('focus', () => this.highlight(i));
+      item.addEventListener('click', () => {
+        this.dispatchEvent(new CustomEvent('select', { bubbles: true, detail: { item, value: item.value || item.textContent.trim() } }));
+        this.close();
+        this.trigger.focus();
+      });
+    }
+    this.panel.addEventListener('pointerleave', () => this.highlight(-1));
+
+    this.row = { y: 0, v: 0, on: 0 };
+    this.ys = createSpring(0, (val, vel) => {
+      this.row.y = val;
+      this.row.v = vel;
+      this.renderRow();
+    }, { stiffness: 520, damping: 36 });
+    this.os = createSpring(0, (val) => {
+      this.panel.style.opacity = String(clamp(val, 0, 1));
+      this.surface.setDelta({ h: -(1 - val) * this.panel.offsetHeight * 0.35 });
+      if (val <= 0.001 && !this.open) this.panel.hidden = true;
+    }, { stiffness: 520, damping: 34 });
+  }
+
+  attach() {
+    this.lens = createGlass(this.copy, { clip: true, hidden: true, refraction: 6, bezel: 0.5, curvature: 3, chroma: 0.15, specular: 0.4, specularWidth: 1.5 });
+  }
+
+  detach() {
+    this.close();
+    this.surface.detach();
+    this.lens?.destroy();
+    this.lens = null;
+  }
+
+  show() {
+    if (this.open) return;
+    if (openMenu && openMenu !== this) openMenu.close();
+    openMenu = this;
+    this.open = true;
+    this.panel.hidden = false;
+    this.trigger.setAttribute('aria-expanded', 'true');
+    if (!this.surface.mode) this.surface.attach();
+    this.surface.update();
+    this.os.set(1);
+  }
+
+  close() {
+    if (!this.open) return;
+    this.open = false;
+    if (openMenu === this) openMenu = null;
+    this.trigger.setAttribute('aria-expanded', 'false');
+    this.highlight(-1);
+    this.os.set(0);
+  }
+
+  focusItem(i) {
+    const n = this.items.length;
+    if (!n) return;
+    this.items[(i + n) % n].focus();
+  }
+
+  highlight(i) {
+    const item = this.items[i];
+    this.row.index = i;
+    if (!item) {
+      this.lens?.update({ hidden: true });
+      this.shadow.style.opacity = '0';
+      this.row.on = 0;
+      return;
+    }
+    const y = item.offsetTop;
+    this.ys.set(y, { immediate: !this.row.on });
+    this.row.on = 1;
+  }
+
+  renderRow() {
+    const item = this.items[this.row.index];
+    if (!item || !this.lens) return;
+    const stretch = Math.min(6, Math.abs(this.row.v) * 0.01);
+    const w = item.offsetWidth + stretch;
+    const h = item.offsetHeight + stretch * 0.5;
+    const x = item.offsetLeft - stretch / 2;
+    const y = this.row.y - stretch * 0.25;
+    // the copy sits 6px inside the panel (its padding), so lens coords are relative to the copy
+    this.lens.update({ hidden: false, x, y, width: w, height: h, radius: 8 });
+    place(this.shadow, x + 6, y + 6, w, h, 8);
+  }
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+/* <lg-toast> and toast()                                                                             */
+/* ------------------------------------------------------------------------------------------------ */
+
+class LgToast extends LgElement {
+  build() {
+    this.setAttribute('role', 'status');
+    const text = el('span', 'lg-toast__text');
+    text.append(...this.childNodes);
+    const children = [text];
+    const name = this.getAttribute('icon');
+    if (name) {
+      const i = el('span', 'lg-toast__icon');
+      i.innerHTML = icon(name);
+      children.unshift(i);
+    }
+    this.replaceChildren(...children);
+    this.surface = new Surface(this, { radius: radiusOf(this, Infinity), bleed: 16, optics: optics(this, { refraction: 14, bezel: 0.8, curvature: 3, chroma: 0.15, blur: 1, specular: 0.6, specularWidth: 1.5 }) });
+  }
+  attach() {
+    this.surface.attach();
+  }
+  detach() {
+    this.surface.detach();
+  }
+}
+
+const regions = new WeakMap();
+function regionFor(container) {
+  let region = regions.get(container);
+  if (region?.isConnected) return region;
+  region = el('div', 'lg-toast-region', { 'aria-live': 'polite' });
+  if (container !== document.body) {
+    region.classList.add('lg-toast-region--local');
+    if (getComputedStyle(container).position === 'static') container.style.position = 'relative';
+  }
+  container.append(region);
+  regions.set(container, region);
+  return region;
+}
+
+/**
+ * Show a glass toast. Returns { close() }.
+ *   toast('Saved', { icon: 'check' | 'info' | 'alert' | 'bell' | '<svg…>', duration: 2600,
+ *                    container: element, tone: 'dark' | 'light', backdrop: selector })
+ * Inside a container marked data-lg-backdrop the toast refracts that backdrop in every engine.
+ */
+function toast(message, { icon: name = 'check', duration = 2600, container = document.body, tone, backdrop } = {}) {
+  injectStyles();
+  const region = regionFor(container);
+  const t = el('lg-toast', null, name ? { icon: name } : {});
+  if (tone) t.setAttribute('tone', tone);
+  if (backdrop) t.setAttribute('backdrop', backdrop);
+  t.textContent = message;
+  region.prepend(t);
+
+  let y = -64;
+  const place = (val, vel) => {
+    y = val;
+    t.style.transform = `translateY(${val}px)`;
+    t.style.opacity = String(clamp(1 + val / 64, 0, 1));
+    const stretch = Math.min(16, Math.abs(vel) * 0.03);
+    t.surface?.setDelta({ x: -stretch / 2, w: stretch, h: -stretch * 0.3, y: stretch * 0.15 });
+  };
+  const spring = createSpring(y, place, { stiffness: 380, damping: 22 });
+  place(y, 0);
+  requestAnimationFrame(() => spring.set(0));
+
+  let closed = false;
+  const close = () => {
+    if (closed) return;
+    closed = true;
+    spring.set(-64);
+    setTimeout(() => t.remove(), reducedMotion.matches ? 0 : 600);
+  };
+  if (duration > 0) setTimeout(close, duration);
+  t.addEventListener('click', close);
+  return { close, element: t };
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+/* <lg-dock>                                                                                          */
+/* ------------------------------------------------------------------------------------------------ */
+
+class LgDock extends LgElement {
+  build() {
+    this.items = el('div', 'lg-dock__items');
+    this.items.append(...this.childNodes);
+    this.shadow = el('span', 'lg-lens-shadow', { 'aria-hidden': 'true' });
+    this.append(this.items, this.shadow);
+    this.surface = new Surface(this, { radius: radiusOf(this, 24), bleed: 4, optics: optics(this, { refraction: 18, bezel: 0.5, curvature: 4, chroma: 0.1, blur: 2, specular: 0.5, specularWidth: 2 }) });
+    this.pos = 0;
+    this.presence = 0;
+    this.ps = createSpring(0, (val) => {
+      this.presence = val;
+      this.render();
+    }, { stiffness: 500, damping: 34 });
+    this.xs = createSpring(0, (val) => {
+      this.pos = val;
+      this.render();
+    }, { stiffness: 700, damping: 40 });
+    this.addEventListener('pointermove', (e) => {
+      const r = this.items.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      this.xs.set(x, { immediate: this.presence < 0.05 });
+      this.ps.set(1);
+    });
+    this.addEventListener('pointerleave', () => this.ps.set(0));
+    this.addEventListener('focusin', (e) => {
+      const r = this.items.getBoundingClientRect();
+      const b = e.target.getBoundingClientRect();
+      this.xs.set(b.left - r.left + b.width / 2, { immediate: this.presence < 0.05 });
+      this.ps.set(1);
+    });
+    this.addEventListener('focusout', (e) => {
+      if (!this.contains(e.relatedTarget)) this.ps.set(0);
+    });
+  }
+
+  attach() {
+    this.surface.attach();
+    // A dome (bezel 1) magnifies the whole disc, not just its rim.
+    this.lens = createGlass(this.items, { hidden: true, refraction: 16, bezel: 1, curvature: 2, chroma: 0, specular: 0.6, specularWidth: 1.5 });
+  }
+
+  detach() {
+    this.surface.detach();
+    this.lens?.destroy();
+    this.lens = null;
+  }
+
+  render() {
+    if (!this.lens) return;
+    const p = this.presence;
+    if (p < 0.02) {
+      this.lens.update({ hidden: true });
+      this.shadow.style.opacity = '0';
+      return;
+    }
+    const H = this.items.offsetHeight;
+    const size = H * lerp(0.7, 1, p);
+    const x = clamp(this.pos - size / 2, 0, this.items.offsetWidth - size);
+    const y = (H - size) / 2;
+    this.lens.update({ hidden: false, x, y, width: size, height: size, radius: size / 2 });
+    place(this.shadow, x + this.items.offsetLeft, y + this.items.offsetTop, size, size, size / 2);
+    this.shadow.style.opacity = String(p);
+  }
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+/* <lg-lens>                                                                                          */
+/* ------------------------------------------------------------------------------------------------ */
+
+class LgLens extends LgElement {
+  build() {
+    this.content = el('div', 'lg-lens__content');
+    this.content.append(...this.childNodes);
+    this.shadow = el('span', 'lg-lens-shadow', { 'aria-hidden': 'true' });
+    this.append(this.content, this.shadow);
+    const num = (a, d) => (this.hasAttribute(a) ? Number(this.getAttribute(a)) : d);
+    this.size = { w: num('width', num('size', 160)), h: num('height', num('size', 160)) };
+    this.rest = { x: num('x', 50) / 100, y: num('y', 50) / 100 };
+    this.pos = { x: 0, y: 0 };
+    this.press = 0;
+    this.xs = createSpring(0, (v) => {
+      this.pos.x = v;
+      this.render();
+    }, { stiffness: 260, damping: 26 });
+    this.ys = createSpring(0, (v) => {
+      this.pos.y = v;
+      this.render();
+    }, { stiffness: 260, damping: 26 });
+    this.ps = createSpring(0, (v) => {
+      this.press = v;
+      this.render();
+    }, { stiffness: 600, damping: 36 });
+    const follow = (e, immediate) => {
+      const r = this.getBoundingClientRect();
+      this.xs.set(e.clientX - r.left, { immediate });
+      this.ys.set(e.clientY - r.top, { immediate });
+    };
+    this.addEventListener('pointermove', (e) => follow(e, false));
+    this.addEventListener('pointerdown', (e) => {
+      this.ps.set(1);
+      follow(e, false);
+    });
+    this.addEventListener('pointerup', () => this.ps.set(0));
+    this.addEventListener('pointerleave', () => {
+      this.ps.set(0);
+      this.goHome();
+    });
+  }
+
+  attach() {
+    const r = Math.min(this.size.w, this.size.h) / 2;
+    this.glass = createGlass(this.content, { ...optics(this, { refraction: 26, bezel: 0.6, curvature: 4, chroma: 0.15, specular: 0.5, specularWidth: 2 }), radius: radiusOf(this, r) });
+    this.observer = new ResizeObserver(() => this.goHome(true));
+    this.observer.observe(this);
+    this.goHome(true);
+  }
+
+  detach() {
+    this.glass?.destroy();
+    this.glass = null;
+    this.observer?.disconnect();
+  }
+
+  goHome(immediate = false) {
+    this.xs.set(this.clientWidth * this.rest.x, { immediate });
+    this.ys.set(this.clientHeight * this.rest.y, { immediate });
+  }
+
+  /** Change size and optics at runtime: { width, height, radius, refraction, bezel, … }. */
+  configure(next = {}) {
+    if (next.width) this.size.w = next.width;
+    if (next.height) this.size.h = next.height;
+    if (next.radius !== undefined) this.setAttribute('radius', String(next.radius));
+    const { width, height, radius, ...rest } = next;
+    this.glass?.update(rest);
+    this.render();
+  }
+
+  /** Move the lens programmatically (content coordinates, px). */
+  moveTo(x, y) {
+    this.xs.set(x);
+    this.ys.set(y);
+  }
+
+  render() {
+    if (!this.glass) return;
+    const w = this.size.w * (1 + 0.08 * this.press);
+    const h = this.size.h * (1 - 0.05 * this.press);
+    const x = clamp(this.pos.x - w / 2, 0, this.clientWidth - w);
+    const y = clamp(this.pos.y - h / 2, 0, this.clientHeight - h);
+    const r = Math.min(radiusOf(this, Math.min(this.size.w, this.size.h) / 2), w / 2, h / 2);
+    this.glass.update({ x, y, width: w, height: h, radius: r });
+    place(this.shadow, x, y, w, h, r);
+  }
+}
+
+/* ------------------------------------------------------------------------------------------------ */
+
+const ELEMENTS = {
+  'lg-switch': LgSwitch,
+  'lg-slider': LgSlider,
+  'lg-segmented': LgSegmented,
+  'lg-button': LgButton,
+  'lg-panel': LgPanel,
+  'lg-navbar': LgNavbar,
+  'lg-menubar': LgMenubar,
+  'lg-menu': LgMenu,
+  'lg-toast': LgToast,
+  'lg-dock': LgDock,
+  'lg-lens': LgLens,
+};
+if (typeof customElements !== 'undefined') {
+  for (const [name, ctor] of Object.entries(ELEMENTS)) if (!customElements.get(name)) customElements.define(name, ctor);
+}
+
+
+})();
+</script>
+<!--
+MIT License
+
+Copyright (c) 2026 gentpan
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+-->
+<script id="snapshot" type="application/json">{
+  "revision": "87de1d93f85185c8caec96aadbf2c0cc9adae365",
+  "items": [
+    {
+      "id": "probability-key-points-2026",
+      "title": "概率论重点题目汇编（第一至第四章）",
+      "desc": "25道重点题＋9道公式与知识点附录（含六种常见分布均值表）｜答案与解析",
+      "subject": "概率论",
+      "semesterGroup": "current",
+      "tags": [
+        "本学期",
+        "概率论",
+        "重点题",
+        "第一至第四章",
+        "公式填空",
+        "答案解析",
+        "计算题"
+      ],
+      "file": "./data/questions/probability_key_points_2026.json",
+      "shuffleOptions": false,
+      "shuffleJudge": false,
+      "shuffleQuestions": false,
+      "durationMinutes": 0,
+      "enabled": true,
+      "single": 3,
+      "multi": 0,
+      "judge": 0,
+      "blank": 15,
+      "short": 16,
+      "total": 34,
+      "counts": {
+        "single": 3,
+        "multi": 0,
+        "judge": 0,
+        "blank": 15,
+        "matching": 0,
+        "short": 16,
+        "caseQ": 0,
+        "calculation": 0,
+        "total": 34
+      }
+    },
+    {
+      "id": "network-attack-defense-2026",
+      "title": "网络攻防技术与项目实战 三次单元测试",
+      "desc": "本学期三次单元测试，共292题",
+      "subject": "网络攻防技术与项目实战",
+      "semesterGroup": "current",
+      "tags": [
+        "单元测试合集",
+        "本学期",
+        "期末",
+        "自测"
+      ],
+      "file": "./data/questions/network_attack_defense_2026.json",
+      "shuffleOptions": true,
+      "shuffleJudge": false,
+      "shuffleQuestions": true,
+      "durationMinutes": 0,
+      "enabled": true,
+      "single": 287,
+      "multi": 0,
+      "judge": 0,
+      "blank": 3,
+      "short": 2,
+      "total": 292,
+      "counts": {
+        "single": 287,
+        "multi": 0,
+        "judge": 0,
+        "blank": 3,
+        "matching": 0,
+        "short": 2,
+        "caseQ": 0,
+        "calculation": 0,
+        "total": 292
+      }
+    },
+    {
+      "id": "web",
+      "title": "Web安全基础 单元测试题库",
+      "desc": "by 奥利奥",
+      "subject": "Web安全基础",
+      "semesterGroup": "history",
+      "tags": [
+        "简答无答案",
+        "单元测试",
+        "期末",
+        "自测"
+      ],
+      "file": "./data/questions/web_unit_tests_qbank_project_from_user_fixed.json",
+      "shuffleOptions": true,
+      "shuffleJudge": false,
+      "shuffleQuestions": true,
+      "durationMinutes": 0,
+      "enabled": true,
+      "single": 35,
+      "multi": 0,
+      "judge": 5,
+      "blank": 16,
+      "total": 56,
+      "counts": {
+        "single": 35,
+        "multi": 0,
+        "judge": 5,
+        "blank": 16,
+        "matching": 0,
+        "short": 8,
+        "caseQ": 0,
+        "calculation": 0,
+        "total": 64
+      }
+    },
+    {
+      "id": "1",
+      "title": "网络与信息安全三次单元测试题库",
+      "desc": "by 奥利奥",
+      "subject": "网络与信息安全",
+      "semesterGroup": "history",
+      "tags": [
+        "单元测试合集",
+        "期末",
+        "自测"
+      ],
+      "file": "./data/questions/xinan_unit_tests_qbank_project.json",
+      "shuffleOptions": true,
+      "shuffleJudge": false,
+      "shuffleQuestions": true,
+      "durationMinutes": 0,
+      "enabled": true,
+      "single": 81,
+      "multi": 24,
+      "judge": 48,
+      "blank": 5,
+      "total": 158,
+      "counts": {
+        "single": 81,
+        "multi": 24,
+        "judge": 48,
+        "blank": 5,
+        "matching": 0,
+        "short": 21,
+        "caseQ": 0,
+        "calculation": 0,
+        "total": 179
+      }
+    },
+    {
+      "id": "3",
+      "title": "网络与信息安全三次单元测试题库",
+      "desc": "by 奥利奥",
+      "subject": "网络与信息安全",
+      "semesterGroup": "history",
+      "tags": [
+        "单元测试合集",
+        "无多选",
+        "期末",
+        "自测"
+      ],
+      "file": "./data/questions/xinan_unit_tests_qbank_project_no_multi_answer_images.json",
+      "shuffleOptions": true,
+      "shuffleJudge": false,
+      "shuffleQuestions": true,
+      "durationMinutes": 0,
+      "enabled": true,
+      "single": 81,
+      "multi": 0,
+      "judge": 48,
+      "blank": 5,
+      "total": 134,
+      "counts": {
+        "single": 81,
+        "multi": 0,
+        "judge": 48,
+        "blank": 5,
+        "matching": 0,
+        "short": 21,
+        "caseQ": 0,
+        "calculation": 0,
+        "total": 155
+      }
+    },
+    {
+      "id": "2",
+      "title": "恶意代码期末复习题",
+      "desc": "作者：奥利奥",
+      "subject": "恶意代码",
+      "semesterGroup": "history",
+      "tags": [
+        "期末",
+        "自测",
+        "AI题库"
+      ],
+      "file": "./data/questions/恶意代码.json",
+      "shuffleOptions": true,
+      "shuffleJudge": false,
+      "shuffleQuestions": true,
+      "durationMinutes": 0,
+      "enabled": true,
+      "single": 62,
+      "multi": 0,
+      "judge": 0,
+      "blank": 21,
+      "total": 83,
+      "counts": {
+        "single": 62,
+        "multi": 0,
+        "judge": 0,
+        "blank": 21,
+        "matching": 0,
+        "short": 5,
+        "caseQ": 0,
+        "calculation": 0,
+        "total": 88
+      }
+    },
+    {
+      "id": "linear-algebra-blue-check-1",
+      "title": "线性代数",
+      "desc": "线性代数期末复习计算题与解答",
+      "subject": "线性代数",
+      "semesterGroup": "history",
+      "tags": [
+        "线性代数",
+        "期末",
+        "计算题",
+        "自测"
+      ],
+      "file": "./data/questions/线性代数_蓝色对号题目_qbank.json",
+      "shuffleOptions": true,
+      "shuffleJudge": false,
+      "shuffleQuestions": true,
+      "durationMinutes": 0,
+      "enabled": true,
+      "single": 0,
+      "multi": 0,
+      "judge": 0,
+      "blank": 0,
+      "total": 0,
+      "counts": {
+        "single": 0,
+        "multi": 0,
+        "judge": 0,
+        "blank": 0,
+        "matching": 0,
+        "short": 10,
+        "caseQ": 0,
+        "calculation": 0,
+        "total": 10
+      }
+    },
+    {
+      "id": "marxism-basic-principles-unit-tests",
+      "title": "马克思主义基本原理 单元测试题库",
+      "desc": "马克思主义基本原理三次单元测试题",
+      "subject": "马克思主义基本原理",
+      "semesterGroup": "history",
+      "tags": [
+        "马克思主义基本原理",
+        "单元测试",
+        "期末复习",
+        "自测"
+      ],
+      "file": "./data/questions/马克思主义基本原理题库_去除解析.json",
+      "shuffleOptions": true,
+      "shuffleJudge": false,
+      "shuffleQuestions": true,
+      "durationMinutes": 0,
+      "enabled": true,
+      "single": 30,
+      "multi": 30,
+      "judge": 30,
+      "blank": 0,
+      "total": 90,
+      "counts": {
+        "single": 30,
+        "multi": 30,
+        "judge": 30,
+        "blank": 0,
+        "matching": 0,
+        "short": 0,
+        "caseQ": 0,
+        "calculation": 0,
+        "total": 90
+      }
+    }
+  ]
+}
+</script>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id), root=document.documentElement;
+const snap=JSON.parse($('snapshot').textContent), snapshot=snap.items;
+let all=[],semester='all',subject='';$('previewProgressNote').hidden=location.hostname==='dashabi.ao.edu.eu.org';const quizHost='https://dashabi.ao.edu.eu.org';
+const esc=x=>String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const safeRead=k=>{try{return JSON.parse(localStorage.getItem(k)||'{}')}catch{return {}}};
+const answers=item=>{const v=safeRead('quiz_answers_'+item.id);return v&&typeof v==='object'&&!Array.isArray(v)?v:{}};
+const progress=item=>{let a=Object.values(answers(item)).filter(v=>Array.isArray(v)?v.some(x=>String(x||'').trim()):String(v||'').trim()).length;let t=Number(item.counts?.total||item.total||0);return {answered:a,total:t,pct:t?Math.min(100,Math.round(a*100/t)):0}};
+const group=item=>item.semesterGroup==='current'?'current':'history';
+const url=(mode,id)=>`${document.body.dataset.source==='live'?'':quizHost}/${mode}/${encodeURIComponent(id)}`;
+const count=d=>{const n=k=>Array.isArray(d[k])?d[k].length:0;let c={single:n('single'),multi:n('multi'),judge:n('judge'),blank:n('blank')||n('fill'),matching:n('matching'),short:n('short'),caseQ:n('case')||n('cases'),calculation:n('calculation')};const mixed=n('questions');return {...c,total:mixed||Object.values(c).reduce((a,b)=>a+b,0),mixed:!!mixed}};
+const stats=()=>{$('statSets').textContent=all.length;$('statQuestions').textContent=all.reduce((a,x)=>a+Number(x.counts?.total||x.total||0),0);$('statAnswered').textContent=all.reduce((a,x)=>a+progress(x).answered,0)};
+function updateSubjects(){let values=[...new Set(all.map(x=>x.subject).filter(Boolean))];$('subject').innerHTML='<option value="">全部科目</option>'+values.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('');if(values.includes(subject))$('subject').value=subject;else subject=''}
+function feature(){let item=[...all].filter(x=>progress(x).answered>0).sort((a,b)=>progress(b).answered-progress(a).answered)[0]||all[0];if(!item){$('featureTitle').textContent='还没有题库';$('featureSub').textContent='稍后再来看看';$('featureLabel').textContent='准备开始';$('featureRatio').textContent='—';$('featureProgress').style.width='0';$('featureLink').href='#library';return}const p=progress(item);$('featureTitle').textContent=item.title;$('featureLabel').textContent=p.answered?'继续练习':'从这里开始';$('featureSub').textContent=(item.subject||'题库')+' · '+(p.total?p.total+' 道题':'题数待更新');$('featureRatio').textContent=p.total?`${p.answered} / ${p.total}`:'—';$('featureProgress').style.width=p.pct+'%';$('featureLink').href=url('q',item.id);$('featureLink').innerHTML=(p.answered?'继续刷题':'开始刷题')+' <span aria-hidden="true">↗</span>'}
+function card(item,i){let c=item.counts||{},p=progress(item);let types=[['单选',c.single],['多选',c.multi],['判断',c.judge],['填空',c.blank],['简答',c.short],['匹配',c.matching],['案例',c.caseQ],['计算',c.calculation]].filter(x=>x[1]).slice(0,4);let tags=types.map(([name,n])=>`<span class="tag">${name} ${n}</span>`).join('');return `<article class="card"><div class="card-top"><div class="card-kicker"><span class="category">${group(item)==='current'?'本学期':'历史题库'}</span><span class="serial">${String(i+1).padStart(2,'0')} / ${String(all.length).padStart(2,'0')}</span></div><h3>${esc(item.title)}</h3><p>${esc(item.desc||'选择适合你的练习方式')}</p><div class="meta"><span class="tag">${c.total||item.total||'—'} 题</span>${tags}</div></div><div class="card-progress"><div class="progress-caption"><span>练习进度 <strong>${p.answered} / ${p.total||'—'}</strong></span><span>${p.pct}%</span></div><div class="progress"><span style="width:${p.pct}%"></span></div></div><div class="card-footer"><span class="subject-name">${esc(item.subject||'题库练习')}</span><div class="card-links"><a class="practice" href="${esc(url('p',item.id))}">逐题练习</a><a class="start" href="${esc(url('q',item.id))}">${p.answered?'继续刷题':'整套刷题'} <span aria-hidden="true">↗</span></a></div></div></article>`}
+function render(){let q=$('search').value.trim().toLowerCase();const list=all.filter(x=>(semester==='all'||group(x)===semester)&&(!subject||x.subject===subject)&&(!q||[x.title,x.desc,x.subject,(x.tags||[]).join(' '),x.id].join(' ').toLowerCase().includes(q)));$('cards').innerHTML=list.map(card).join('');$('resultCount').textContent=list.length;$('message').hidden=!!list.length;$('message').className='empty';$('message').textContent=list.length?'':(q?'没有找到匹配的题库，试试其他关键词。':'这个分类暂时没有题库。');$('sortHint').hidden=semester!=='all';stats();feature()}
+async function load(){ $('reload').disabled=true;try{const response=await fetch('./data/list.json',{cache:'no-store'});if(!response.ok)throw Error('index HTTP '+response.status);let list=await response.json();if(!Array.isArray(list))throw Error('list is not an array');all=await Promise.all(list.filter(x=>x&&x.enabled!==false).map(async item=>{try{let r=await fetch(item.file,{cache:'no-store'});if(!r.ok)throw Error(r.status);return {...item,counts:count(await r.json())}}catch{return {...item,counts:{total:item.total||0,single:item.single||0,multi:item.multi||0,judge:item.judge||0,blank:item.blank||0}}}}));document.body.dataset.source='live'}catch(e){all=snapshot.filter(x=>x&&x.enabled!==false).map(x=>({...x}));document.body.dataset.source='snapshot'}all.sort((a,b)=>Number(group(b)==='current')-Number(group(a)==='current'));$('dataSource').textContent=document.body.dataset.source==='live'?'题库数据已更新':'预览使用 2026-11-07 题库快照';updateSubjects();render();$('reload').disabled=false}
+function toggleTheme(){root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';try{localStorage.setItem('dashabi_home_preview_theme',root.dataset.theme)}catch{}}
+let t=null;try{t=localStorage.getItem('dashabi_home_preview_theme')}catch{}root.dataset.theme=t||((matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light');
+$('themeBtn').addEventListener('click',toggleTheme);$('layoutChoice').addEventListener('change',e=>root.dataset.layout=e.target.value);
+$('semester').addEventListener('change',e=>{semester=e.detail.value;render()});$('subject').addEventListener('change',e=>{subject=e.target.value;render()});$('search').addEventListener('input',render);$('reload').addEventListener('click',load);
+function route(){let lab=location.hash==='#lab';if(lab&&!$('labContent')){$('lab').append($('labTemplate').content.cloneNode(true));$('labTheme').addEventListener('click',toggleTheme)}else if(!lab&&$('labContent')){$('labContent').remove()}$('lab').hidden=!lab;$('home').hidden=lab;$('labLink').hidden=lab;if(!lab&&location.hash==='#home')window.scrollTo({top:0,behavior:'smooth'})}window.addEventListener('hashchange',route);route();load();
+})();
 </script>
 </body>
 </html>
