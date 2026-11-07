@@ -155,7 +155,7 @@ main.shell{max-width:980px;margin:0 auto;padding:16px 16px calc(110px + env(safe
 .tool.good{color:#fff;background:var(--ok)}
 .tool.good:hover{background:var(--ok)}
 .actions .tool:disabled,.bottom .tool:disabled{opacity:.38;cursor:default;transform:none}
-.answer-line{display:grid;grid-template-rows:0fr;opacity:0;overflow:hidden;margin-top:0;transition:grid-template-rows .3s cubic-bezier(.25,1,.5,1),opacity .25s ease-out,margin-top .3s}
+.answer-line{display:grid;grid-template-rows:0fr;opacity:0;overflow:hidden;margin-top:0;transition:grid-template-rows .3s cubic-bezier(.25,.1,.25,1),opacity .3s ease-out,margin-top .3s}
 .answer-line.open{grid-template-rows:1fr;opacity:1;margin-top:14px}
 .answer-inner{min-height:0;overflow:hidden}
 .answer-line .result{margin-top:0}
@@ -267,11 +267,15 @@ let seed = "";
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[m]));
+let mathRenderPromise=Promise.resolve();
 function renderMath(){
-  if(window.MathJax && MathJax.typesetPromise){
-    MathJax.typesetClear && MathJax.typesetClear();
-    MathJax.typesetPromise([$('app')]).catch(err => console.warn('MathJax typeset failed:', err));
-  }
+ const app=$('app');
+ mathRenderPromise=mathRenderPromise.catch(()=>{}).then(async()=>{
+  if(!app.isConnected)return;
+  if(window.MathJax?.startup?.promise)await window.MathJax.startup.promise;
+  if(window.MathJax?.typesetPromise&&app.isConnected)await window.MathJax.typesetPromise([app]);
+ }).catch(e=>console.warn('MathJax typeset failed:',e));
+ return mathRenderPromise;
 }
 function answerKey(){return `quiz_answers_${setId}`}
 function seedKey(){return `quiz_seed_${setId}`}
@@ -333,7 +337,7 @@ function mediaListFrom(q, singleKeys, multiKeys){
   multiKeys.forEach(key=>{ if(Array.isArray(q[key])) q[key].forEach(item=>{if(typeof item === "string") list.push({src:item, caption:""}); else if(item && item.src) list.push({src:item.src, caption:item.caption || item.title || ""});}); });
   return list;
 }
-function renderImageBlock(imgs, className, altText){return `<div class="${className}">${imgs.map(img=>`<figure><img src="${esc(img.src)}" alt="${esc(img.caption || altText || "图片")}" loading="lazy"/>${img.caption ? `<figcaption>${esc(img.caption)}</figcaption>` : ""}</figure>`).join("")}</div>`;}
+function renderImageBlock(imgs, className, altText){return `<div class="${className}">${imgs.map(img=>`<figure><img src="${esc(img.src)}" alt="${esc(img.caption || altText || "图片")}" loading="${className==='answer-images'?'eager':'lazy'}" decoding="async"/>${img.caption ? `<figcaption>${esc(img.caption)}</figcaption>` : ""}</figure>`).join("")}</div>`;}
 function renderQuestionImages(q){const imgs=imageList(q); return imgs.length ? renderImageBlock(imgs,"q-images",q.stem || "题目图片") : "";}
 function renderAnswerImages(q){const imgs=mediaListFrom(q,["answerImage","solutionImage","explanationImage"],["answerImages","solutionImages","explanationImages"]); return imgs.length ? renderImageBlock(imgs,"answer-images","答案图片") : "";}
 function getOptions(q){
@@ -436,10 +440,10 @@ function render(animateReveal=false){
   '<button class="tool" id="btnReveal" type="button">只看答案</button></div>'+
   '<div class="right-actions"><button class="tool" id="btnFirst" type="button">第一题</button>'+
   '<button class="tool" id="btnLast" type="button">最后一题</button></div></div>';
- $('btnCheck').addEventListener('click',()=>{const before=feedbackShown(q);markFeedback(q);render(!before);});
- $('btnReveal').addEventListener('click',()=>{const before=feedbackShown(q);markFeedback(q);render(!before);});
- $('btnFirst').addEventListener('click',()=>{currentIndex=0;saveState();render();});
- $('btnLast').addEventListener('click',()=>{currentIndex=Math.max(0,ordered.length-1);saveState();render();});
+ $('btnCheck').addEventListener('click',()=>{markFeedback(q);refreshCurrentFeedback(q);});
+ $('btnReveal').addEventListener('click',()=>{markFeedback(q);refreshCurrentFeedback(q);});
+ $('btnFirst').addEventListener('click',()=>navigateToIndex(0));
+ $('btnLast').addEventListener('click',()=>navigateToIndex(ordered.length-1));
  $('btnFirst').disabled=currentIndex===0;
  $('btnLast').disabled=currentIndex===ordered.length-1;
  updateProgress();updateStats();renderMath();
@@ -451,6 +455,64 @@ function render(animateReveal=false){
      requestAnimationFrame(()=>{if(panel.isConnected)panel.classList.add('open');});
    }
  }
+}
+function currentFeedbackStatus(q){
+ if(q.type==='short')return isAnswered(q)?'<span class="tag info">已写</span>':'<span class="tag warn">未写</span>';
+ if(!feedbackShown(q))return '<span class="tag warn">未查看答案</span>';
+ if(!isAnswered(q))return '<span class="tag warn">未答</span>';
+ return isCorrect(q)?'<span class="tag ok">正确</span>':'<span class="tag bad">错误</span>';
+}
+function refreshCurrentFeedback(q){
+ const card=$('app').querySelector('.question');
+ if(!card||card.dataset.qkey!==q.key)return;
+ const shown=feedbackShown(q),answered=isAnswered(q);
+ const status=card.querySelector('.q-meta .tag:last-child');
+ if(status)status.outerHTML=currentFeedbackStatus(q);
+ const correctKeys=normalizeChoiceAnswer(q.answer);
+ for(const option of card.querySelectorAll('.opt')){
+  const input=option.querySelector('input');
+  if(!input)continue;
+  option.classList.toggle('correct',shown&&correctKeys.includes(input.value));
+  option.classList.toggle('wrong',shown&&input.checked&&!correctKeys.includes(input.value));
+ }
+ if(q.type==='blank'){
+  const expected=blankExpected(q);
+  for(const input of card.querySelectorAll('.blank-input')){
+   const ok=(expected[Number(input.dataset.blankIndex)]||[]).map(normalizeText).includes(normalizeText(input.value));
+   input.classList.toggle('correct',shown&&answered&&ok);
+   input.classList.toggle('wrong',shown&&answered&&!ok);
+  }
+ }
+ const panel=card.querySelector('.answer-line');
+ if(panel){
+  const result=panel.querySelector('.result');
+  if(result){
+   result.classList.toggle('good',shown&&answered&&q.type!=='short'&&isCorrect(q));
+   result.classList.toggle('bad',shown&&answered&&q.type!=='short'&&!isCorrect(q));
+  }
+  const mine=panel.querySelector('.result-row:nth-child(2) .result-value');
+  if(mine&&q.type!=='short'){
+   const display=userDisplay(q,getOptions(q))||'未答';
+   if(mine.textContent!==display){window.MathJax?.typesetClear?.([mine]);mine.textContent=display;}
+  }
+  panel.setAttribute('aria-hidden',String(!shown));
+  panel.classList.toggle('open',shown);
+ }
+ updateProgress();updateStats();
+}
+function scrollToCurrentQuestion(){
+ const card=$('app').querySelector('.question');
+ if(!card)return;
+ const header=document.querySelector('.top');
+ const y=window.scrollY+card.getBoundingClientRect().top-(header?.getBoundingClientRect().bottom||0)-12;
+ window.scrollTo({top:Math.max(0,y),behavior:'auto'});
+}
+function navigateToIndex(index){
+ if(!ordered.length)return;
+ const next=Math.max(0,Math.min(ordered.length-1,index));
+ if(next===currentIndex)return;
+ currentIndex=next;saveState();render();
+ requestAnimationFrame(scrollToCurrentQuestion);
 }
 function updateProgress(){
  const total=ordered.length;
@@ -479,15 +541,19 @@ function onChoiceChange(input){
  const card=input.closest('.q');
  if(q.type==='multi')answers[q.key]=[...card.querySelectorAll('input:checked')].map(x=>x.value);
  else{answers[q.key]=input.value;markFeedback(q);}
- saveAnswers();render(q.type!=='multi');
+ saveAnswers();refreshCurrentFeedback(q);
 }
 function onBlankInput(input){
-  const q=questions.find(x=>x.key===input.dataset.qkey); if(!q) return;
-  const expected=blankExpected(q); const vals=Array.isArray(answers[q.key])?[...answers[q.key]]:Array(expected.length).fill('');
-  vals[Number(input.dataset.blankIndex)] = input.value; answers[q.key]=vals; saveAnswers();
+ const q=questions.find(x=>x.key===input.dataset.qkey);if(!q)return;
+ const expected=blankExpected(q),vals=Array.isArray(answers[q.key])?[...answers[q.key]]:Array(expected.length).fill('');
+ vals[Number(input.dataset.blankIndex)]=input.value;answers[q.key]=vals;
+ saveAnswers();refreshCurrentFeedback(q);
 }
-function onShortInput(input){const q=questions.find(x=>x.key===input.dataset.qkey); if(!q) return; answers[q.key]=input.value; saveAnswers();}
-function nextQuestion(delta){if(!ordered.length) return; currentIndex=Math.min(Math.max(currentIndex+delta,0),ordered.length-1); saveState(); render();}
+function onShortInput(input){
+ const q=questions.find(x=>x.key===input.dataset.qkey);if(!q)return;
+ answers[q.key]=input.value;saveAnswers();refreshCurrentFeedback(q);
+}
+function nextQuestion(delta){navigateToIndex(currentIndex+delta);}
 function getSetIdFromUrl(){
   const params=new URLSearchParams(location.search); const fromQuery=params.get('set'); if(fromQuery) return fromQuery;
   let match=location.pathname.match(/^\/p\/([^/]+)\/?$/); if(match) return decodeURIComponent(match[1]);
@@ -514,7 +580,7 @@ async function loadPractice(){
 }
 document.addEventListener('change',e=>{if(e.target.matches('input[type="radio"],input[type="checkbox"]')) onChoiceChange(e.target);});
 document.addEventListener('input',e=>{if(e.target.matches('.blank-input')) onBlankInput(e.target); if(e.target.matches('.short-answer')) onShortInput(e.target);});
-document.addEventListener('click',e=>{const btn=e.target.closest('[data-type-filter]'); if(!btn) return; typeFilter=btn.dataset.typeFilter || 'all'; currentIndex=0; saveState(); render();});
+document.addEventListener('click',e=>{const btn=e.target.closest('[data-type-filter]'); if(!btn) return; typeFilter=btn.dataset.typeFilter || 'all'; currentIndex=0; saveState(); render(); requestAnimationFrame(scrollToCurrentQuestion);});
 $('btnPrev').addEventListener('click',()=>nextQuestion(-1));
 $('btnNext').addEventListener('click',()=>nextQuestion(1));
 $('btnResetPractice').addEventListener('click',()=>{if(confirm('确定清空逐题练习的答案显示进度？作答内容不会删除。')){feedback={};currentIndex=0;saveFeedback();saveState();render();$('dialog').close();}});
