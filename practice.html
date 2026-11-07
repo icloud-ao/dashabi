@@ -209,6 +209,12 @@ function render(){
   const q=currentQ();
   document.querySelectorAll('[data-type-filter]').forEach(btn=>btn.classList.toggle('active', btn.dataset.typeFilter === typeFilter));
   if(!q){$('app').innerHTML = `<div class="empty">当前题型没有题目。</div>`; updateProgress(); updateStats(); return;}
+  if(q.noteOnly){
+    $('app').innerHTML = `<div class="q"><div class="q-head"><div class="q-title">知识点汇总 · 无需作答</div></div><div class="stem" style="white-space:pre-line">${esc(q.stem || "")}</div></div><div class="actions"><div class="right-actions"><button class="btn" id="btnFirst">第一题</button><button class="btn" id="btnLast">最后一题</button></div></div>`;
+    $('btnFirst').addEventListener('click',()=>{currentIndex=0; saveState(); render();});
+    $('btnLast').addEventListener('click',()=>{currentIndex=Math.max(0,ordered.length-1); saveState(); render();});
+    updateProgress(); updateStats(); renderMath(); return;
+  }
   const shown=feedbackShown(q);
   const status = q.type === "short" ? (isAnswered(q) ? `<span class="tag info">已写</span>` : `<span class="tag warn">未写</span>`) : (!shown ? `<span class="tag warn">未查看答案</span>` : (!isAnswered(q) ? `<span class="tag warn">未答</span>` : (isCorrect(q) ? `<span class="tag ok">正确</span>` : `<span class="tag bad">错误</span>`)));
   let body = q.type === "blank" ? renderBlank(q) : (q.type === "short" ? renderShort(q) : `<div class="stem ${q.code ? "code" : ""}">${esc(q.stem || "")}</div>${renderQuestionImages(q)}${renderChoice(q)}`);
@@ -226,10 +232,10 @@ function updateProgress(){
   $('progressText').textContent = total ? `第 ${currentIndex+1} / ${total} 题` : '无题目';
   $('progressBar').style.width = `${p}%`;
   if(!q){$('resultText').textContent='';return;}
-  $('resultText').textContent = feedbackShown(q) ? (q.type === 'short' ? '已显示参考答案' : (isCorrect(q) ? '本题正确' : '本题错误 / 未答')) : '作答后查看答案';
+  $('resultText').textContent = q.noteOnly ? '知识点汇总（无需作答）' : (feedbackShown(q) ? (q.type === 'short' ? '已显示参考答案' : (isCorrect(q) ? '本题正确' : '本题错误 / 未答')) : '作答后查看答案');
 }
 function updateStats(){
-  const scope = questions.filter(q=>typeFilter==='all'||q.type===typeFilter);
+  const scope = questions.filter(q=>!q.noteOnly && (typeFilter==='all'||q.type===typeFilter));
   const total=scope.length; const answered=scope.filter(isAnswered).length; const done=scope.filter(q=>feedbackShown(q)).length;
   $('topStats').innerHTML = `<span class="pill">已答 <strong>${answered}</strong>/${total}</span><span class="pill">已看答案 <strong>${done}</strong>/${total}</span>`;
   $('statusBar').innerHTML = `当前：<b>${typeFilter==='all'?'全部':qLabel(typeFilter)}</b>；已答 <b>${answered}</b>/${total}；已看答案 <b>${done}</b>/${total}`;
