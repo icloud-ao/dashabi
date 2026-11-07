@@ -27,10 +27,26 @@ jobs:
           npx playwright install chromium --with-deps
       - name: Run responsive and functional browser QA
         run: node tests/claude_preview.mjs
-      - name: Upload preview screenshots and results
+      - name: Preview instructions
+        if: always()
+        run: |
+          cat > PREVIEW.txt <<'EOF'
+          Claude 逐题 V2 独立预览包（非生产部署）
+          在当前目录运行 python -m http.server 8000
+          浏览器访问 http://localhost:8000/practice_claude_v2.html?set=1
+          可以把 set=1 换成 data/list.json 内的其他题库 ID。
+          PDF/公式显示需要能够连接 MathJax CDN。
+          本包包含测试分支 HTML、真实题库及多端截图。
+          EOF
+      - name: Upload preview bundle
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: claude-v2-preview-screens
-          path: preview-screens/
+          name: claude-v2-offline-preview
+          path: |
+            practice_claude_v2.html
+            data/list.json
+            data/questions/
+            preview-screens/
+            PREVIEW.txt
           if-no-files-found: warn

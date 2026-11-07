@@ -38,6 +38,7 @@ try{
   await page.locator('[data-side-position="left"]').click();
   a=await rect(page,'.app');side=await rect(page,'#sidebar');
   assert(side.x+side.width<a.x,'move sidebar to left');
+  await page.screenshot({path:screenshots+'/desktop-left-light.png'});
   const grip=page.locator('#sideGrip');let r=await grip.boundingBox();
   await page.mouse.move(r.x+r.width/2,r.y+90);
   await page.mouse.down();
@@ -64,6 +65,20 @@ try{
   await page.waitForTimeout(120);
   assert((await page.locator('#tchip').innerText()).includes('多选'),'type filter changes question');
   assert(await page.locator('#sidebarContent .n[aria-current="step"]').count()===1,'sidebar highlights current question');
+  const beforeKey=await page.locator('#cnt').innerText();
+  await page.evaluate(()=>document.activeElement?.blur());
+  await page.keyboard.press('ArrowRight');
+  await page.waitForTimeout(70);
+  assert((await page.locator('#cnt').innerText())!==beforeKey,'desktop keyboard ArrowRight switches question');
+  await page.locator('#btnMenu').click();
+  await page.locator('#sheet [data-mode="exam"]').click();
+  await page.locator('#mask').click({position:{x:5,y:5}});
+  await page.locator('#card .opt').first().click();
+  assert(await page.locator('#card .res').count()===0,'exam mode hides result before submission');
+  page.once('dialog',dlg=>dlg.accept());
+  await page.locator('#sidebarContent [data-act="submit"]').click();
+  await page.waitForTimeout(130);
+  assert((await page.locator('#sidebarContent .sum').innerText()).includes('已交卷'),'sidebar supports exam submission');
   await context.close();
  }
  // iPad landscape and dark theme
@@ -84,6 +99,7 @@ try{
   await page.locator('#btnCard').click();
   assert(await page.locator('body').evaluate(x=>x.classList.contains('sh')),'mobile answer drawer opens');
   assert(await page.locator('#sheet [data-tf="multi"]').count()===1,'drawer has type filters');
+  await page.screenshot({path:screenshots+'/phone-drawer.png'});
   await page.locator('#mask').click({position:{x:4,y:80}});
   await page.screenshot({path:screenshots+'/phone-portrait.png'});
   await checkNoX(page,390,'phone portrait');
@@ -104,6 +120,7 @@ try{
   await checkNoX(page,920,'narrow desktop');
   await context.close();
  }
+ assert(results.length===0,'no uncaught page JavaScript errors');
  await writeFile(screenshots+'/results.json',JSON.stringify({tests:results,passed:true},null,2));
  console.log('VISUAL_QA_SUCCESS');
 } catch(e){
