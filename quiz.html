@@ -1,453 +1,181 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
 <base href="/">
 <title>答题页</title>
 <link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png">
-
 <script>
 window.MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']],
-    displayMath: [['$$', '$$'], ['\\[', '\\]']],
-    processEscapes: true
-  },
-  options: {
-    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-    enableMenu: false
-  }
+  tex: {inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']], processEscapes: true},
+  options: {skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']}
 };
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <style>
-:root{
-  --bg:#070b12;
-  --bg2:#0b1220;
-  --panel:rgba(15,23,42,.78);
-  --panel2:rgba(17,24,39,.72);
-  --card:rgba(15,23,42,.72);
-  --card2:rgba(30,41,59,.52);
-  --text:#e5e7eb;
-  --muted:#94a3b8;
-  --soft:#cbd5e1;
-  --border:rgba(148,163,184,.18);
-  --border2:rgba(148,163,184,.28);
-  --ok:#10b981;
-  --bad:#ef4444;
-  --warn:#f59e0b;
-  --link:#93c5fd;
-  --blue:#60a5fa;
-  --violet:#a78bfa;
-  --shadow:0 24px 70px rgba(0,0,0,.38);
-  --radius:22px;
+
+:root{color-scheme:light dark;--font-ios:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","PingFang SC","Helvetica Neue",Helvetica,Arial,sans-serif;--bg:#f2f2f7;--card:#fff;--card-elevated:#fff;--option:#f8f8fa;--option-hover:#f0f0f4;--ink:#1c1c1e;--mut:#8e8e93;--mut-light:#aeaeb2;--line:rgba(60,60,67,.12);--line-strong:rgba(60,60,67,.2);--tc:#007aff;--tc-hover:#0066d6;--on-accent:#fff;--selected:rgba(0,122,255,.08);--selected-border:rgba(0,122,255,.35);--ok:#34c759;--okbg:rgba(52,199,89,.1);--ok-border:rgba(52,199,89,.32);--bad:#ff3b30;--badbg:rgba(255,59,48,.09);--bad-border:rgba(255,59,48,.32);--header:rgba(255,255,255,.70);--header-touch:rgba(255,255,255,.66);--header-border:rgba(60,60,67,.14);--shadow-sm:0 1px 2px rgba(0,0,0,.03),0 2px 6px rgba(0,0,0,.02);--shadow-card:0 2px 8px -1px rgba(0,0,0,.04),0 12px 24px -4px rgba(0,0,0,.03);--shadow-dialog:0 24px 64px rgba(0,0,0,.18),0 4px 16px rgba(0,0,0,.06)}
+@media(prefers-color-scheme:dark){:root{--bg:#000;--card:#1c1c1e;--card-elevated:#2c2c2e;--option:#242426;--option-hover:#2c2c2e;--ink:#f2f2f7;--mut:#8e8e93;--mut-light:#636366;--line:rgba(255,255,255,.12);--line-strong:rgba(255,255,255,.22);--tc:#0a84ff;--tc-hover:#409cff;--on-accent:#fff;--selected:rgba(10,132,255,.16);--selected-border:rgba(10,132,255,.45);--ok:#30d158;--okbg:rgba(48,209,88,.14);--ok-border:rgba(48,209,88,.4);--bad:#ff453a;--badbg:rgba(255,69,58,.14);--bad-border:rgba(255,69,58,.4);--header:rgba(28,28,30,.72);--header-touch:rgba(28,28,30,.70);--header-border:rgba(255,255,255,.12);--shadow-sm:0 1px 2px rgba(0,0,0,.4);--shadow-card:0 2px 8px rgba(0,0,0,.3),0 12px 28px rgba(0,0,0,.25);--shadow-dialog:0 24px 64px rgba(0,0,0,.65)}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{scroll-behavior:smooth;scroll-padding-top:175px}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-ios);line-height:1.55;letter-spacing:-.012em;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}button,input,textarea{font:inherit;color:inherit}button{cursor:pointer;border:0}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--tc);outline-offset:2px}a{color:inherit;text-decoration:none}[hidden]{display:none!important}
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--header);
+  -webkit-backdrop-filter: saturate(150%) blur(14px);
+  backdrop-filter: saturate(150%) blur(14px);
+  border-bottom: .5px solid var(--header-border);
+  transition: background-color .3s, border-color .3s;
 }
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  margin:0;
-  min-height:100vh;
-  color:var(--text);
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",Arial,sans-serif;
-  line-height:1.55;
-  background:
-    radial-gradient(circle at 14% 0%, rgba(96,165,250,.20), transparent 28rem),
-    radial-gradient(circle at 90% 8%, rgba(167,139,250,.18), transparent 28rem),
-    linear-gradient(180deg,#070b12 0%,#09111f 45%,#070b12 100%);
+.top-inner{max-width:980px;margin:auto;padding:calc(6px + env(safe-area-inset-top)) 16px 8px}.top-row{display:flex;align-items:center;gap:12px;min-width:0;height:44px}.icon{display:inline-flex;align-items:center;justify-content:center;flex:none;width:36px;height:36px;border-radius:50%;background:transparent;color:var(--tc);font-size:20px;font-weight:500;transition:transform .18s cubic-bezier(.25,1,.5,1),background-color .18s}.icon:hover{background:var(--selected)}#closeDialog:focus-visible{outline:none}.icon:active{transform:scale(.92);opacity:.8}.title{flex:1;min-width:0;font-size:17px;font-weight:600;letter-spacing:-.015em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}.progress-label{flex:none;color:var(--mut);font-size:13px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.01em}.progress-label b{color:var(--ink);font-weight:600}
+.bar{height:3.5px;margin:4px 0 8px;border-radius:99px;background:rgba(120,120,128,.16);overflow:hidden}.bar span{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--tc),#5856d6);transition:width .35s cubic-bezier(.25,1,.5,1)}
+.toolbar{display:flex;align-items:center;gap:8px;min-width:0}.filters{display:flex;align-items:center;flex:1;min-width:0;gap:4px;overflow-x:auto;scrollbar-width:none;padding:2px}.filters::-webkit-scrollbar{display:none}.pill,.tool{flex:none;height:32px;border:.5px solid transparent;border-radius:99px;padding:0 12px;font-size:13px;font-weight:550;letter-spacing:-.01em;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;transition:transform .2s cubic-bezier(.25,1,.5,1),background-color .2s,color .2s,border-color .2s}.pill{color:var(--mut);background:transparent}.pill:hover{color:var(--ink);background:rgba(120,120,128,.08)}.pill.active{color:var(--ink);background:var(--card);border-color:var(--line);box-shadow:0 2px 6px rgba(0,0,0,.06),0 .5px 1px rgba(0,0,0,.04)}@media(prefers-color-scheme:dark){.pill.active{background:var(--card-elevated);box-shadow:0 2px 6px rgba(0,0,0,.4)}}.pill:active,.tool:active{transform:scale(.96)}.tool{color:var(--tc);background:rgba(120,120,128,.08)}.tool:hover{background:rgba(120,120,128,.14)}.tool.active{background:var(--selected);color:var(--tc)}.tool.primary{background:var(--tc);color:var(--on-accent);box-shadow:0 2px 8px rgba(0,122,255,.28)}.tool.primary:hover{background:var(--tc-hover)}
+.jump{width:110px;min-width:0;height:32px;border:.5px solid var(--line);border-radius:99px;padding:0 12px;background:rgba(120,120,128,.08);font-size:13px;font-weight:500;transition:background-color .2s,border-color .2s,box-shadow .2s}.jump::placeholder{color:var(--mut-light)}.jump:focus{background:var(--card);border-color:var(--tc);box-shadow:0 0 0 3px rgba(0,122,255,.15)}
+main{max-width:980px;margin:auto;padding:16px 16px calc(48px + env(safe-area-inset-bottom))}.summary{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;margin:4px 4px 14px;color:var(--mut);font-size:13px;font-weight:500}.summary b{color:var(--ink);font-weight:600}.section{margin:0 0 28px}.section h2{margin:0 6px 10px;color:var(--mut);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.03em}.question-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}.question{content-visibility:auto;contain-intrinsic-size:auto 340px;min-width:0;padding:22px 24px;background:var(--card);border:.5px solid var(--line);border-radius:20px;box-shadow:var(--shadow-card);scroll-margin-top:175px;transition:transform .2s cubic-bezier(.25,1,.5,1),box-shadow .2s,border-color .2s}
+.question[data-type="multi"]{--type-color:#30b0c7;--type-bg:rgba(48,176,199,.12)}.question[data-type="judge"]{--type-color:#ff9500;--type-bg:rgba(255,149,0,.12)}.question[data-type="blank"]{--type-color:#af52de;--type-bg:rgba(175,82,222,.12)}.question[data-type="short"]{--type-color:#5856d6;--type-bg:rgba(88,86,214,.12)}.question-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.type-badge,.status{display:inline-flex;align-items:center;font-size:12px;font-weight:600;border-radius:6px;padding:2px 7px;line-height:1.4;letter-spacing:-.01em}.type-badge{background:var(--type-bg,rgba(0,122,255,.1));color:var(--type-color,var(--tc))}.status{color:var(--mut);background:rgba(120,120,128,.08)}.status.good{color:var(--ok);background:var(--okbg)}.status.bad{color:var(--bad);background:var(--badbg)}
+.stem{font-size:16.5px;line-height:1.7;font-weight:550;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink)}.stem.code{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:13.5px;background:var(--option);border:.5px solid var(--line);border-radius:12px;padding:14px}.stem mjx-container,.result mjx-container{max-width:100%;overflow-x:auto;overflow-y:hidden}
+.options{display:grid;gap:9px;margin-top:16px}.opt{display:flex;align-items:center;gap:12px;min-height:50px;padding:10px 14px;border:.5px solid var(--line);border-radius:14px;cursor:pointer;background-color:var(--option);transition:transform .18s cubic-bezier(.25,1,.5,1),border-color .2s,background-color .2s;user-select:none}.opt:hover{background-color:var(--option-hover);border-color:var(--line-strong)}.opt:active,.opt:has(input:active){transform:scale(.985);background-color:var(--option-hover)}.opt:has(input:focus-visible){outline:2px solid var(--tc);outline-offset:2px}.opt input{position:absolute;opacity:0;width:1px;height:1px}.letter{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:9px;background-color:var(--card);color:var(--mut);border:.5px solid var(--line);font-size:13px;font-weight:650;transition:background-color .2s,color .2s,border-color .2s;box-shadow:0 1px 2px rgba(0,0,0,.04)}.opt .text{flex:1;min-width:0;font-size:15px;font-weight:450;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.feedback-icon{flex:0 0 22px;height:22px;border-radius:50%;display:grid;place-items:center;opacity:0;transform:scale(.7);background:var(--ok);color:#fff;font-size:13px;font-weight:700;transition:opacity .25s,transform .25s cubic-bezier(.175,.885,.32,1.275),background-color .2s}.feedback-icon::before{content:"✓"}.opt:has(input:checked){border-color:var(--selected-border);background-color:var(--selected)}.opt:has(input:checked) .letter{background-color:var(--tc);border-color:transparent;color:var(--on-accent);box-shadow:0 2px 8px rgba(0,122,255,.35)}.opt.correct,.opt.correct:has(input:checked){border-color:var(--ok-border);background-color:var(--okbg)}.opt.correct .letter,.opt.correct:has(input:checked) .letter{background-color:var(--ok);border-color:transparent;color:#fff;box-shadow:0 2px 8px rgba(52,199,89,.35)}.opt.correct .feedback-icon{opacity:1;transform:scale(1)}.opt.wrong,.opt.wrong:has(input:checked){border-color:var(--bad-border);background-color:var(--badbg)}.opt.wrong .letter,.opt.wrong:has(input:checked) .letter{background-color:var(--bad);border-color:transparent;color:#fff;box-shadow:0 2px 8px rgba(255,59,48,.35)}.opt.wrong .feedback-icon{opacity:1;transform:scale(1);background:var(--bad)}.opt.wrong .feedback-icon::before{content:"✕"}
+.blank-input{display:inline-block;min-width:110px;max-width:100%;min-height:38px;margin:2px 4px;padding:4px 10px;border:1px solid transparent;border-bottom:2px solid var(--tc);border-radius:8px 8px 0 0;background:rgba(120,120,128,.08);font-size:15px;font-weight:500;transition:background-color .2s,border-color .2s,box-shadow .2s}.blank-input:focus{background:var(--selected);border-bottom-color:var(--tc-hover)}.blank-input.correct{border-bottom-color:var(--ok);color:var(--ok);background:var(--okbg)}.blank-input.wrong{border-bottom-color:var(--bad);color:var(--bad);background:var(--badbg)}
+textarea.short-answer{width:100%;min-height:100px;margin-top:14px;padding:12px 14px;border:.5px solid var(--line);border-radius:14px;background:var(--option);resize:vertical;font-size:15px;line-height:1.6;transition:background-color .2s,border-color .2s,box-shadow .2s}textarea.short-answer:focus{background:var(--card);border-color:var(--tc);box-shadow:0 0 0 3px rgba(0,122,255,.15)}.note,.self-note{margin:8px 2px 0;color:var(--mut);font-size:13px;line-height:1.4}
+.reveal{display:grid;grid-template-rows:0fr;opacity:0}.reveal.animate{transition:grid-template-rows .3s cubic-bezier(.25,1,.5,1),opacity .25s ease-out}.reveal.open{grid-template-rows:1fr;opacity:1}.reveal-inner{min-height:0;overflow:hidden}
+@media (any-pointer: coarse) {
+  .reveal.animate {
+    transition: grid-template-rows 300ms cubic-bezier(.35,0,.35,1), opacity 300ms ease-in-out;
+  }
+  .reveal.open.animate {
+    transition-duration: 300ms;
+  }
 }
-a{color:var(--link);text-decoration:none}
-a:hover{text-decoration:underline}
-.wrap{max-width:1120px;margin:0 auto;padding:22px 18px 112px}
-.top-shell{
-  position:sticky;
-  top:0;
-  z-index:20;
-  background:linear-gradient(180deg,rgba(7,11,18,.92),rgba(7,11,18,.74));
-  backdrop-filter:blur(18px);
-  border-bottom:1px solid var(--border);
+.result{display:grid;gap:6px;margin-top:14px;padding:14px 16px;border-radius:14px;background:var(--option);border:.5px solid var(--line);font-size:14px;line-height:1.6}.result.good{background:var(--okbg);border-color:var(--ok-border)}.result.bad{background:var(--badbg);border-color:var(--bad-border)}.result-row{display:flex;align-items:baseline;gap:10px;min-width:0}.result-label{flex:none;color:var(--mut);font-size:12px;font-weight:600;text-transform:uppercase}.result.good .result-label{color:var(--ok)}.result.bad .result-label{color:var(--bad)}.result-value,.result-explanation{min-width:0;white-space:pre-wrap;overflow-wrap:anywhere;font-weight:500}.result-explanation{margin-top:4px;padding-top:8px;border-top:.5px solid var(--line)}.result-explanation .result-label{display:block;margin-bottom:2px}
+.q-images,.answer-images{margin-top:12px;display:grid;gap:8px}.q-images img,.answer-images img{display:block;max-width:100%;height:auto;border-radius:14px;border:.5px solid var(--line)}figure{margin:0}figcaption{margin-top:4px;color:var(--mut);font-size:12px}
+dialog{width:min(500px,calc(100% - 32px));max-height:min(85dvh,760px);border:.5px solid var(--line);border-radius:22px;padding:0;background:var(--card);color:var(--ink);box-shadow:var(--shadow-dialog);overflow:hidden}dialog[open]{animation:ios-dialog-in .28s cubic-bezier(.25,1,.5,1)}dialog::backdrop{background:rgba(0,0,0,.38);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:backdrop-in .22s ease-out}dialog.closing{animation:ios-dialog-out .2s cubic-bezier(.25,1,.5,1) forwards}dialog.closing::backdrop{animation:backdrop-out .2s ease-in forwards}@keyframes ios-dialog-in{from{opacity:0;transform:scale(.94) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}@keyframes ios-dialog-out{from{opacity:1;transform:scale(1) translateY(0)}to{opacity:0;transform:scale(.96) translateY(8px)}}@keyframes backdrop-in{from{opacity:0}to{opacity:1}}@keyframes backdrop-out{from{opacity:1}to{opacity:0}}
+.dialog-head{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--card);border-bottom:.5px solid var(--line);font-size:16px;font-weight:600}.dialog-body{padding:12px 18px 24px;overflow-y:auto;max-height:calc(min(85dvh,760px) - 72px)}.dialog-body h3{margin:18px 0 8px;font-size:13px;font-weight:600;color:var(--mut);text-transform:uppercase}.dialog-actions{display:flex;flex-wrap:wrap;gap:8px}.dialog-actions button{min-height:40px;border:.5px solid var(--line);border-radius:12px;background:var(--option);padding:8px 16px;font-size:14px;font-weight:600;transition:transform .18s,background-color .18s,color .18s,border-color .18s}.dialog-actions button:hover{background:var(--option-hover)}.dialog-actions button:active{transform:scale(.96)}.dialog-actions button.active{background:var(--selected);color:var(--tc);border-color:var(--selected-border)}.dialog-actions button.danger{color:var(--bad);background:var(--badbg);border-color:var(--bad-border)}
+.empty{padding:60px 20px;text-align:center;color:var(--mut);background:var(--card);border:.5px solid var(--line);border-radius:20px;box-shadow:var(--shadow-sm);font-size:15px}.error{padding:18px 20px;border-radius:16px;background:var(--badbg);color:var(--bad);border:.5px solid var(--bad-border);font-size:14px}
+@media(max-width:640px){.top-inner{padding-left:12px;padding-right:12px}.toolbar{flex-wrap:wrap;gap:6px}.filters{flex-basis:100%;order:2;padding:2px 0}.tool{padding-inline:10px;height:30px;font-size:12.5px}.jump{width:88px;height:30px;font-size:16px;margin-right:auto}.blank-input,textarea.short-answer{font-size:16px}main{padding:12px 10px calc(40px + env(safe-area-inset-bottom))}.question{padding:16px;border-radius:18px;scroll-margin-top:190px}.stem{font-size:15.5px}.opt{min-height:46px;padding:8px 12px;border-radius:12px}html{scroll-padding-top:195px}}
+.question.no-motion .opt,.question.no-motion .letter,.question.no-motion .feedback-icon,.question.no-motion .blank-input,.question.no-motion .short-answer{transition:none!important}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+
+/* Fade ends at the type pills; one eased surface has no lower seam. */
+:root{--touch-header-rgb:255,255,255;--header-solid:calc(60px + env(safe-area-inset-top))}
+@media(prefers-color-scheme:dark){:root{--touch-header-rgb:28,28,30}}
+.top::before{
+  content:"";display:none;position:absolute;inset:0 0 10px;
+  z-index:-1;pointer-events:none;
+  background:linear-gradient(to bottom,
+    rgba(var(--touch-header-rgb),1) 0,
+    rgba(var(--touch-header-rgb),1) var(--header-solid),
+    rgba(var(--touch-header-rgb),.896) calc(var(--header-solid) + (100% - var(--header-solid)) * .2),
+    rgba(var(--touch-header-rgb),.648) calc(var(--header-solid) + (100% - var(--header-solid)) * .4),
+    rgba(var(--touch-header-rgb),.352) calc(var(--header-solid) + (100% - var(--header-solid)) * .6),
+    rgba(var(--touch-header-rgb),.104) calc(var(--header-solid) + (100% - var(--header-solid)) * .8),
+    rgba(var(--touch-header-rgb),0) 100%);
 }
-.header-inner{max-width:1120px;margin:0 auto;padding:16px 18px 14px;display:grid;gap:12px}
-.title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
-.title-main{min-width:260px;flex:1 1 520px}
-.header-side{display:flex;flex-direction:column;gap:9px;align-items:flex-end;justify-content:flex-start;flex:0 1 auto}
-.crumb{display:inline-flex;gap:8px;align-items:center;color:var(--muted);font-size:12px;margin-bottom:8px}
-.crumb a{color:#bfdbfe}
-h1{margin:0;font-size:24px;line-height:1.15;letter-spacing:.2px;font-weight:900}
-.sub{color:var(--muted);font-size:13px;margin-top:7px}
-.stats{display:flex;gap:7px;flex-wrap:wrap;align-items:center;justify-content:flex-end;min-width:0}
-.pill{
-  border:1px solid var(--border);
-  border-radius:999px;
-  padding:5px 8px;
-  background:rgba(15,23,42,.65);
-  color:var(--muted);
-  font-size:11px;
-  box-shadow:0 8px 30px rgba(0,0,0,.18);
+@media (max-width:640px), (hover:none) and (pointer:coarse){
+  .top{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;border-bottom:0}
+  .top::before{display:block}
+  .top::after{content:none;display:none}
 }
-.pill strong{color:#fff;font-weight:900}
-.controls{display:grid;grid-template-columns:minmax(260px,1fr) minmax(300px,1.15fr);gap:12px}
-.typebar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
-.typebar-title{color:var(--muted);font-size:11px;font-weight:800;margin-right:2px}
-.btn.type-btn{padding:6px 9px;border-radius:999px;font-size:11px;line-height:1.15}
-.btn.type-btn.active{background:linear-gradient(135deg,rgba(37,99,235,.62),rgba(167,139,250,.28));border-color:rgba(147,197,253,.62);color:#eff6ff;box-shadow:0 10px 26px rgba(37,99,235,.18)}
-.ctrl{
-  position:relative;
-  overflow:hidden;
-  background:linear-gradient(180deg,rgba(15,23,42,.82),rgba(15,23,42,.55));
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:12px;
-  box-shadow:var(--shadow);
+html.ipad-parity .top{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;border-bottom:0}
+html.ipad-parity .top::before{display:block}
+html.ipad-parity .top::after{content:none;display:none}
+/* Match the page at rest; the longer in-header fade appears over scrolled cards. */
+html.ipad-parity{--touch-header-rgb:242,242,247;--header-solid:calc(44px + env(safe-area-inset-top))}
+@media(prefers-color-scheme:dark){html.ipad-parity{--touch-header-rgb:0,0,0}}
+
+/* Native-size text inside two opposing clipping windows. Only a handful of
+   cards intersecting the old/new viewport receive compositor animations. */
+.question.phone-reveal-prepared{content-visibility:visible}
+.question.phone-reveal-ready{
+  position:relative;isolation:isolate;contain:layout style;
+  background:transparent;border-color:transparent;
+  box-shadow:none;transition:none;
 }
-.ctrl::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(120deg,rgba(96,165,250,.10),transparent 42%,rgba(167,139,250,.08));pointer-events:none}
-.ctrl-row{position:relative;display:flex;gap:9px;flex-wrap:wrap;align-items:center;justify-content:space-between}
-.input{
-  flex:1 1 260px;
-  width:100%;
-  background:rgba(2,6,23,.62);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:11px 12px;
-  color:var(--text);
-  font-size:13px;
-  outline:none;
+.phone-reveal-ready .card-surface{
+  position:absolute;z-index:-1;pointer-events:none;
+  border:.5px solid var(--line);
+  border-radius:inherit;background:var(--card);box-shadow:var(--shadow-card);transform-origin:top;
 }
-.input:focus{border-color:rgba(96,165,250,.72);box-shadow:0 0 0 4px rgba(96,165,250,.13)}
-.btn{
-  appearance:none;
-  border:1px solid var(--border);
-  background:rgba(15,23,42,.85);
-  color:var(--text);
-  border-radius:14px;
-  padding:10px 13px;
-  cursor:pointer;
-  font-size:13px;
-  font-weight:800;
-  transition:transform .05s ease,border-color .15s ease,background .15s ease;
-  white-space:nowrap;
+.phone-reveal-ready .reveal{
+  display:block;height:0;overflow:hidden;opacity:1;transition:none;grid-template-rows:none;
 }
-.btn:hover{border-color:rgba(203,213,225,.38);background:rgba(30,41,59,.82)}
-.btn:active{transform:translateY(1px)}
-.btn.primary{background:linear-gradient(135deg,rgba(37,99,235,.55),rgba(59,130,246,.28));border-color:rgba(96,165,250,.62);color:#eff6ff}
-.btn.danger{background:rgba(127,29,29,.35);border-color:rgba(248,113,113,.48);color:#fee2e2}
-.btn.ghost{background:rgba(2,6,23,.34)}
-.note{color:var(--muted);font-size:12px;margin:9px 0 0;position:relative}
-.section{margin-top:24px}
-.section h2{
-  display:flex;align-items:center;gap:10px;
-  margin:0 0 12px;
-  font-size:15px;color:#f8fafc;letter-spacing:.2px;
+.phone-reveal-ready .reveal.open{height:auto}
+.phone-reveal-ready .reveal-inner{height:auto;overflow:hidden}
+@media(prefers-reduced-motion:reduce){.reveal{transition:none!important}}
+
+/* Shared touch reveals own their reading anchor, including full-width iPad views. */
+html.reading-anchor-active,html.reading-anchor-active body{overflow-anchor:none}
+@media(max-width:640px){
+ .question.buffer-animating{content-visibility:visible}
+ html.phone-anim-contain .question.buffer-animating{contain:content}
 }
-.section h2::before{content:"";width:8px;height:18px;border-radius:99px;background:linear-gradient(180deg,var(--blue),var(--violet))}
-.q{
-  position:relative;
-  overflow:hidden;
-  background:linear-gradient(180deg,rgba(15,23,42,.82),rgba(15,23,42,.62));
-  border:1px solid var(--border);
-  border-radius:22px;
-  padding:16px;
-  margin:12px 0;
-  box-shadow:0 16px 44px rgba(0,0,0,.26);
-  scroll-margin-top:220px;
+@media(max-width:640px) and (any-pointer:coarse){
+ html.phone-anim-contain .reveal.animate{transition-duration:260ms}
 }
-.q::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,rgba(96,165,250,.72),rgba(167,139,250,.54));opacity:.75}
-.q.correct{border-color:rgba(16,185,129,.52);background:linear-gradient(180deg,rgba(6,78,59,.22),rgba(15,23,42,.72))}
-.q.correct::after{background:var(--ok)}
-.q.wrong{border-color:rgba(239,68,68,.52);background:linear-gradient(180deg,rgba(127,29,29,.22),rgba(15,23,42,.72))}
-.q.wrong::after{background:var(--bad)}
-.q.unanswered{border-color:rgba(245,158,11,.52);background:linear-gradient(180deg,rgba(120,53,15,.20),rgba(15,23,42,.72))}
-.q.unanswered::after{background:var(--warn)}
-.q-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
-.q-title{
-  display:inline-flex;align-items:center;gap:8px;
-  font-weight:900;font-size:13px;color:#dbeafe;
-  border:1px solid rgba(96,165,250,.24);
-  background:rgba(37,99,235,.14);
-  border-radius:999px;
-  padding:5px 10px;
+/* Avoid root programmatic scroll glitches on older iPhone WebKit. */
+html.ios-inner-scroll,html.ios-inner-scroll body{height:100%;overflow:hidden}
+html.ios-inner-scroll #quizScroll{
+  height:100%;height:100dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  scroll-padding-top:175px;overflow-anchor:none;
 }
-.q-meta{color:var(--muted);font-size:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
-.tag{border:1px solid var(--border);background:rgba(2,6,23,.28);padding:4px 8px;border-radius:999px;font-size:12px;color:var(--muted)}
-.tag:empty{display:none}
-.tag.ok{border-color:rgba(16,185,129,.55);color:#a7f3d0;background:rgba(16,185,129,.10)}
-.tag.bad{border-color:rgba(239,68,68,.55);color:#fecaca;background:rgba(239,68,68,.10)}
-.tag.warn{border-color:rgba(245,158,11,.55);color:#fde68a;background:rgba(245,158,11,.10)}
-.tag.info{border-color:rgba(96,165,250,.55);color:#bfdbfe;background:rgba(96,165,250,.10)}
-.stem{margin-top:8px;white-space:pre-wrap;word-break:break-word;font-size:15px;color:#f1f5f9;line-height:1.68}
-.stem.code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:13px;background:rgba(2,6,23,.38);border:1px solid var(--border);border-radius:16px;padding:12px}
-
-.q-images,.answer-images{margin-top:12px;display:grid;gap:10px}
-.q-images img,.answer-images img{display:block;max-width:100%;height:auto;border-radius:16px;border:1px solid var(--border);background:rgba(2,6,23,.38);box-shadow:0 12px 34px rgba(0,0,0,.22)}
-.q-images figure,.answer-images figure{margin:0}
-.q-images figcaption,.answer-images figcaption{margin-top:6px;color:var(--muted);font-size:12px}
-.options{margin-top:14px;display:grid;gap:10px}
-.opt{
-  display:flex;
-  gap:12px;
-  align-items:flex-start;
-  padding:12px 13px;
-  border-radius:16px;
-  border:1px solid var(--border);
-  background:rgba(2,6,23,.30);
-  cursor:pointer;
-  user-select:none;
-  transition:border-color .15s ease,background .15s ease,transform .05s ease;
-}
-.opt:hover{border-color:rgba(147,197,253,.45);background:rgba(30,41,59,.55)}
-.opt:active{transform:translateY(1px)}
-.opt input{margin-top:4px;accent-color:#60a5fa}
-.opt .letter{
-  flex:0 0 auto;
-  width:28px;height:28px;
-  display:inline-flex;align-items:center;justify-content:center;
-  border-radius:10px;
-  background:rgba(96,165,250,.14);
-  border:1px solid rgba(96,165,250,.26);
-  font-weight:950;color:#bfdbfe;font-size:13px;
-}
-.opt .text{flex:1;white-space:pre-wrap;word-break:break-word;font-size:14px;color:#e5e7eb;line-height:1.55}
-.opt.correct{border-color:rgba(16,185,129,.66);background:rgba(16,185,129,.12)}
-.opt.correct .letter{background:rgba(16,185,129,.18);border-color:rgba(16,185,129,.42);color:#bbf7d0}
-.opt.wrong{border-color:rgba(239,68,68,.66);background:rgba(239,68,68,.12)}
-.opt.wrong .letter{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.42);color:#fecaca}
-.blank-input{display:inline-block;min-width:160px;max-width:100%;padding:8px 10px;margin:3px 4px;border-radius:12px;border:1px solid var(--border);background:rgba(2,6,23,.48);color:var(--text);outline:none;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:13px}
-.blank-input:focus{border-color:rgba(96,165,250,.75);box-shadow:0 0 0 4px rgba(96,165,250,.14)}
-.blank-input.correct{border-color:rgba(16,185,129,.85);box-shadow:0 0 0 4px rgba(16,185,129,.16)}
-.blank-input.wrong{border-color:rgba(239,68,68,.85);box-shadow:0 0 0 4px rgba(239,68,68,.16)}
-.short-answer{width:100%;min-height:150px;margin-top:14px;padding:12px 13px;border-radius:16px;border:1px solid var(--border);background:rgba(2,6,23,.40);color:var(--text);outline:none;resize:vertical;font:14px/1.65 system-ui,-apple-system,Segoe UI,Roboto,"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",Arial,sans-serif}
-.short-answer:focus{border-color:rgba(96,165,250,.75);box-shadow:0 0 0 4px rgba(96,165,250,.14)}
-.self-note{margin-top:9px;color:var(--muted);font-size:12px}
-.answer-line{margin-top:12px;font-size:13px;color:var(--muted);display:none;border-top:1px dashed var(--border);padding-top:11px;line-height:1.7;white-space:pre-wrap;
-word-break:break-word}
-.answer-line.show{display:block}
-.answer-line b{color:#f8fafc}
-.answer-line{white-space:normal;min-width:0}
-.answer-field{display:grid;gap:4px;min-width:0}
-.answer-field+.answer-field,.answer-explanation{margin-top:10px}
-.answer-explanation{padding-top:10px;border-top:1px solid var(--border)}
-.answer-label{display:block;color:#f8fafc;font-size:12px;font-weight:750}
-.math-prose{min-width:0;white-space:pre-line;overflow-wrap:anywhere;line-height:1.7}
-/* Keep compact display-math spacing; MathJax 3 controls alignment and overflow. */
-.stem mjx-container[display="true"],
-.answer-line mjx-container[display="true"],
-.opt .text mjx-container[display="true"]{
-  margin:.38em 0!important;
-}
-.bottom-bar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:linear-gradient(180deg,rgba(7,11,18,.54),rgba(7,11,18,.94));backdrop-filter:blur(18px);border-top:1px solid var(--border)}
-.bottom-inner{max-width:1120px;margin:0 auto;padding:12px 18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
-.status{font-size:13px;color:var(--muted)}
-.status b{color:#fff;font-weight:900}
-.right-buttons{display:flex;gap:9px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
-.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:24px 0 8px}
-.error{border:1px solid rgba(239,68,68,.55);border-radius:22px;padding:18px;color:#fecaca;background:rgba(127,29,29,.16);box-shadow:var(--shadow)}
-code{background:rgba(148,163,184,.12);border:1px solid var(--border);border-radius:8px;padding:1px 5px;color:#dbeafe}
-@media(max-width:860px){
-  .controls{grid-template-columns:1fr}
-  .header-side{align-items:flex-start;width:100%}
-  .stats,.typebar{justify-content:flex-start}
-  .q{scroll-margin-top:300px}
-}
-@media(max-width:620px){
-  .wrap{padding:16px 12px 150px}
-  .header-inner{padding:13px 12px}
-  h1{font-size:20px}
-  .bottom-inner{align-items:stretch}
-  .right-buttons{width:100%;justify-content:space-between}
-  .right-buttons .btn{flex:1 1 auto}
-  .ctrl-row{align-items:stretch}
-  .ctrl-row .btn{flex:1 1 auto}
-}
-@media (max-width: 700px) {
-  .controls {
-    grid-template-columns: 1fr;
-  }
-
-  .controls .ctrl:first-child {
-    display: none;
-  }
-  .wrap {
-    padding-top: 12px;
-  }
-
-  .header-inner {
-    gap: 8px;
-    padding: 12px 12px 10px;
-  }
-
-  .crumb {
-    font-size: 11px;
-    margin-bottom: 5px;
-  }
-
-  h1 {
-    font-size: 24px;
-    line-height: 1.18;
-  }
-
-  .sub {
-    font-size: 12px;
-    margin-top: 4px;
-  }
-
-  .title-row {
-    gap: 10px;
-  }
-
-  .header-side {
-    gap: 6px;
-  }
-
-  .typebar {
-    gap: 5px;
-  }
-
-  .typebar-title {
-    display: none;
-  }
-
-  .btn.type-btn {
-    padding: 6px 9px;
-    font-size: 12px;
-    border-radius: 999px;
-  }
-
-  .stats {
-    gap: 6px;
-  }
-
-  .pill {
-    padding: 4px 7px;
-    font-size: 11px;
-  }
-
-  .controls {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
-  .controls .ctrl:first-child {
-    display: none;
-  }
-
-  .ctrl {
-    padding: 10px;
-    border-radius: 18px;
-  }
-
-  .ctrl-row {
-    gap: 7px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .ctrl-row .btn {
-    padding: 9px 6px;
-    font-size: 12px;
-    border-radius: 14px;
-  }
-
-  .ctrl .note {
-    display: none;
-  }
-
-  .q {
-    margin: 10px 0;
-    padding: 14px 12px;
-    border-radius: 20px;
-  }
-
-  .stem {
-    font-size: 15px;
-    line-height: 1.7;
-  }
-
-  .opt {
-    padding: 11px 10px;
-    border-radius: 15px;
-  }
-
-  .opt .letter {
-    width: 26px;
-    height: 26px;
-  }
-
-  .bottom-inner {
-    padding: 9px 12px;
-    gap: 8px;
-  }
-
-  .status {
-    font-size: 12px;
-  }
-
-  .right-buttons {
-    gap: 7px;
-  }
-
-  .right-buttons .btn {
-    padding: 10px 8px;
-    font-size: 13px;
-    border-radius: 14px;
-  }
-
-}
+@media(max-width:640px){html.ios-inner-scroll #quizScroll{scroll-padding-top:195px}}
 </style>
 </head>
 <body>
-<header class="top-shell">
-  <div class="header-inner">
-    <div class="title-row">
-      <div class="title-main">
-        <div class="crumb"><a href="/">← 返回主页</a><span>·</span><span>题库练习</span></div>
-        <h1 id="title">答题页</h1>
-        <div class="sub"><span id="subtitle">正在加载题库...</span></div>
-      </div>
-      <div class="header-side">
-        <div class="typebar" id="typeBar">
-          <span class="typebar-title">题型</span>
-          <button class="btn ghost type-btn active" data-type-filter="all">全部</button>
-          <button class="btn ghost type-btn" data-type-filter="single">单选</button>
-          <button class="btn ghost type-btn" data-type-filter="multi">多选</button>
-          <button class="btn ghost type-btn" data-type-filter="judge">判断</button>
-          <button class="btn ghost type-btn" data-type-filter="blank">填空</button>
-          <button class="btn ghost type-btn" data-type-filter="short">简答</button>
-        </div>
-        <div class="stats" id="statsTop"></div>
-      </div>
+<div id="quizScroll">
+<header class="top">
+  <div class="top-inner">
+    <div class="top-row">
+      <a class="icon" href="/" aria-label="返回主页">‹</a>
+      <div class="title" id="title">答题页</div>
+      <div class="progress-label" id="statsTop"><b id="answeredCount">0</b> / <span id="totalCount">0</span> 已答</div>
+      <button class="icon" id="settings" type="button" aria-label="设置">⋯</button>
     </div>
-    <div class="controls">
-      <div class="ctrl">
-        <div class="ctrl-row">
-          <input id="jumpInput" class="input" placeholder="跳题：数字=单选；M10=多选；J3=判断；F2=填空；Q1=简答" />
-          <button class="btn ghost" id="btnShowAll">显示全部</button>
-        </div>
-        <div class="note">作答会自动保存到本机浏览器，不同题库互不覆盖。</div>
+    <div class="bar" role="progressbar" aria-label="答题进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress"><span></span></div>
+    <div class="toolbar">
+      <div class="filters" id="typeBar" aria-label="题型筛选">
+        <button class="pill type-btn active" type="button" data-type-filter="all">全部</button>
+        <button class="pill type-btn" type="button" data-type-filter="single">单选</button>
+        <button class="pill type-btn" type="button" data-type-filter="multi">多选</button>
+        <button class="pill type-btn" type="button" data-type-filter="judge">判断</button>
+        <button class="pill type-btn" type="button" data-type-filter="blank">填空</button>
+        <button class="pill type-btn" type="button" data-type-filter="short">简答</button>
+        <button class="pill" type="button" id="btnFilterUnanswered">未答</button>
+        <button class="pill" type="button" id="btnFilterWrong">错题</button>
       </div>
-      <div class="ctrl">
-        <div class="ctrl-row">
-          <button class="btn ghost" id="btnFilterUnanswered">只看未答</button>
-          <button class="btn ghost" id="btnFilterWrong">只看错题</button>
-          <button class="btn ghost" id="btnToggleAnswers">显示答案</button>
-          <button class="btn ghost" id="btnReshuffle">重新乱序</button>
-        </div>
-        <div class="note">乱序只改变显示顺序，判分仍按题库原始答案判断。</div>
-      </div>
+      <input class="jump" id="jumpInput" aria-label="跳题" title="数字=单选，M=多选，J=判断，F=填空，Q=简答。输入后按回车" placeholder="跳题 如 M10">
+      <button class="tool" id="btnToggleAnswers" type="button">显示答案</button>
+      <button class="tool primary" id="btnGrade" type="button">交卷判分</button>
     </div>
   </div>
 </header>
-<main class="wrap" id="app"><div class="note">正在加载...</div></main>
-<div class="bottom-bar">
-  <div class="bottom-inner">
-    <div class="status" id="statusBar">未判分</div>
-    <div class="right-buttons">
-      <button class="btn primary" id="btnGrade">提交判分</button>
-      <button class="btn" id="btnClear">清空作答</button>
-      <button class="btn danger" id="btnReset">清空本题库保存</button>
+<main>
+  <div class="summary"><span id="statusBar" aria-live="polite">未判分</span><span id="subtitle"></span></div>
+  <div id="app"><div class="empty">正在加载题库...</div></div>
+</main>
+</div>
+<dialog id="dialog" aria-labelledby="dialogTitle">
+  <div class="dialog-head"><span id="dialogTitle">设置</span><button class="icon" id="closeDialog" type="button" aria-label="关闭">×</button></div>
+  <div class="dialog-body">
+    <h3>筛选和题序</h3>
+    <div class="dialog-actions"><button id="btnShowAll" type="button">显示全部</button><button id="btnReshuffle" type="button">重新乱序</button></div>
+    <p class="note">乱序只改变显示顺序，答案仍按原始选项判分。</p>
+    <h3>作答记录</h3>
+    <div class="dialog-actions"><button id="btnClear" type="button">清空作答</button><button class="danger" id="btnReset" type="button">清空本题库保存</button></div>
+    <p class="note">作答保存在当前浏览器。</p>
+    <div id="legacyQuizActions" hidden>
+      <h3>答题页版本</h3>
+      <div class="dialog-actions">
+        <a class="tool" id="legacyQuizLink" href="/quiz_old.html">返回旧版</a>
+      </div>
     </div>
   </div>
-</div>
+</dialog>
 <script>
+
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const LIST_URL = "./data/list.json";
 let setId = "";
@@ -460,51 +188,44 @@ let showAnswers = false;
 let filterMode = "all";
 let typeFilter = "all";
 let seed = "";
+let cardRecords = [];
+let sectionRecords = [];
+let lastAnswered = null;
+// Keep track of cards near the viewport. On phones this avoids reading the
+// layout of every question during each global answer toggle.
+let cardObserver = null;
+const nearbyCardIndexes = new Set();
+const pendingFeedbackCards = new Set();
+let motionRestoreFrame = 0;
+function observeCards(){
+  if(cardObserver) cardObserver.disconnect();
+  nearbyCardIndexes.clear();
+  pendingFeedbackCards.clear();
+  if(!('IntersectionObserver' in window)) return;
+  cardObserver = new IntersectionObserver(entries => {
+    for(const entry of entries){
+      const index = Number(entry.target.dataset.visIndex);
+      if(!Number.isInteger(index)) continue;
+      if(entry.isIntersecting && !entry.target.hidden){
+        nearbyCardIndexes.add(index);
+        if(pendingFeedbackCards.delete(entry.target)){
+          entry.target.classList.add('no-motion');
+          refreshFeedback(entry.target,cardRecords[index].question,false);
+        }
+        // Re-enable normal option feedback once the card enters the screen.
+        entry.target.classList.remove('no-motion');
+      }else nearbyCardIndexes.delete(index);
+    }
+  }, {root:quizScroll, rootMargin:'64px 0px', threshold:0});
+  cardRecords.forEach((record,index) => {
+    record.card.dataset.visIndex = String(index);
+    cardObserver.observe(record.card);
+  });
+}
+
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[m]));
-
-/* Formatting only: never mutate source JSON or scoring answers. */
-function alignLongDisplayMath(tex){
-  const expr=tex.trim();
-  // Already structured equations, independent statements, and multi-column math stay unchanged.
-  if(expr.length<60 || /\\begin\{|\\end\{|\\left\b|\\right\b|\\\\|&|\\(?:quad|qquad)\b/.test(expr))return tex;
-  const parts=[];
-  let token="",braceDepth=0,groupDepth=0;
-  for(let i=0;i<expr.length;i++){
-    const ch=expr[i];
-    if(ch==="\\" && i+1<expr.length){token+=ch+expr[++i];continue;}
-    if(ch==="{")braceDepth++;
-    if(ch==="}")braceDepth--;
-    if((ch==="("||ch==="[") && braceDepth===0)groupDepth++;
-    if((ch===")"||ch==="]") && braceDepth===0)groupDepth--;
-    if(braceDepth<0||groupDepth<0)return tex;
-    // Top-level commas separate statements, not steps in a single calculation.
-    if(ch==="," && braceDepth===0 && groupDepth===0)return tex;
-    if(ch==="=" && braceDepth===0 && groupDepth===0){parts.push(token.trim());token="";}
-    else token+=ch;
-  }
-  parts.push(token.trim());
-  if(braceDepth!==0||groupDepth!==0||parts.length<3||parts.some(x=>!x))return tex;
-  return "\\begin{aligned}"+parts[0]+"&="+parts[1]+
-    parts.slice(2).map(x=>"\\\\\n&="+x).join("")+"\\end{aligned}";
-}
-function renderMathText(value){
-  return esc(String(value??"").replace(/\\\[([\s\S]*?)\\\]/g,
-    (_,tex)=>"\\[\n"+alignLongDisplayMath(tex)+"\n\\]"));
-}
-function renderAnswerLine(q,label,reference,mine=null){
-  const field=(name,value)=>'<div class="answer-field"><span class="answer-label">'+name+
-    '</span><div class="math-prose">'+renderMathText(value)+'</div></div>';
-  const explanation=q.explanation
-    ? '<div class="answer-explanation"><span class="answer-label">解析</span>'+
-      '<div class="math-prose">'+renderMathText(q.explanation)+'</div></div>'
-    : '';
-  return '<div class="answer-line '+((graded||showAnswers)?'show':'')+'">'+
-    field(label,reference||'暂无')+(mine===null?'':field('你的答案',mine||'未答'))+
-    explanation+renderAnswerImages(q)+'</div>';
-}
-
 function imageList(q){
   const list = [];
   if(q.image) list.push({src:q.image, caption:q.imageCaption || q.caption || ""});
@@ -624,11 +345,11 @@ function isCorrect(q){
 function renderStemWithBlanks(q){
   const expected = blankExpected(q);
   let used = 0;
-  const stem = renderMathText(q.stem || "").replace(/\{\{blank\}\}|_{3,}/g, () => blankInput(q, used++));
-  if(used === 0){
-    return stem + `<div style="margin-top:10px">${expected.map((_,i)=>blankInput(q,i)).join(" ")}</div>`;
+  const stem = esc(q.stem || "").replace(/\{\{blank\}\}|_{3,}/g, () => blankInput(q, used++));
+  if(used < expected.length){
+    const remaining = expected.slice(used).map((_,i)=>blankInput(q, used+i)).join(" ");
+    return stem + `<div style="margin-top:10px">${remaining}</div>`;
   }
-  while(used < expected.length){ used++; }
   return stem;
 }
 function blankInput(q, i){
@@ -640,6 +361,14 @@ function blankInput(q, i){
   }
   return `<input class="${cls}" data-qkey="${esc(q.key)}" data-blank-index="${i}" value="${esc(vals[i] || "")}" placeholder="填空 ${i+1}" />`;
 }
+function resultClass(q){
+  return graded && q.type !== "short" && isAnswered(q) ? (isCorrect(q) ? " good" : " bad") : "";
+}
+function renderAnswerPanel(q, label, answer, userAnswer = null){
+  const userRow = userAnswer === null ? "" : `<div class="result-row"><span class="result-label">你的答案</span><span class="result-value user-answer" data-value="${esc(userAnswer)}">${esc(userAnswer)}</span></div>`;
+  const explanation = q.explanation ? `<div class="result-explanation"><span class="result-label">解析</span>${esc(q.explanation)}</div>` : "";
+  return `<div class="reveal ${showAnswers?"open":""}" aria-hidden="${!showAnswers}"><div class="reveal-inner"><div class="result${resultClass(q)}"><div class="result-row"><span class="result-label">${label}</span><span class="result-value">${esc(answer || "暂无")}</span></div>${userRow}${explanation}${renderAnswerImages(q)}</div></div></div>`;
+}
 function renderChoiceQuestion(q){
   const opts = getOptions(q);
   const val = answers[q.key];
@@ -649,24 +378,20 @@ function renderChoiceQuestion(q){
     const checked = selected.includes(o.origKey) ? "checked" : "";
     const inputType = q.type === "multi" ? "checkbox" : "radio";
     let cls = "opt";
-    if((graded || showAnswers) && correctOrig.includes(o.origKey)) cls += " correct";
+    if(correctOrig.includes(o.origKey) && (showAnswers || (graded && selected.includes(o.origKey)))) cls += " correct";
     if(graded && selected.includes(o.origKey) && !correctOrig.includes(o.origKey)) cls += " wrong";
-    return `<label class="${cls}"><input type="${inputType}" name="${esc(q.key)}" data-qkey="${esc(q.key)}" value="${esc(o.origKey)}" ${checked}/><span class="letter">${o.display}</span><span class="text">${renderMathText(o.text)}</span></label>`;
-  }).join("")}</div>
-  ${renderAnswerLine(q, "正确答案", correctDisplay(q,opts), userDisplay(q,opts))}`;
+    return `<label class="${cls}"><input type="${inputType}" name="${esc(q.key)}" data-qkey="${esc(q.key)}" value="${esc(o.origKey)}" ${checked}/><span class="letter">${o.display}</span><span class="text">${esc(o.text)}</span><span class="feedback-icon" aria-hidden="true"></span></label>`;
+  }).join("")}</div>${renderAnswerPanel(q, "正确答案", correctDisplay(q,opts), userDisplay(q,opts) || "未答")}`;
 }
 function renderBlankQuestion(q){
-  return `<div class="stem ${q.code ? "code" : ""}">${renderStemWithBlanks(q)}</div>${renderQuestionImages(q)}
-  ${renderAnswerLine(q, "参考答案", formatBlankAnswer(q), userDisplay(q,[]))}`;
+  return `<div class="stem ${q.code ? "code" : ""}">${renderStemWithBlanks(q)}</div>${renderQuestionImages(q)}${renderAnswerPanel(q, "参考答案", formatBlankAnswer(q), userDisplay(q,[]) || "未答")}`;
 }
-
 function renderShortQuestion(q){
   const val = String(answers[q.key] || "");
   const answerText = String(q.answer ?? q.reference ?? "");
-  return `<div class="stem ${q.code ? "code" : ""}">${renderMathText(q.stem || "")}</div>${renderQuestionImages(q)}
+  return `<div class="stem ${q.code ? "code" : ""}">${esc(q.stem || "")}</div>${renderQuestionImages(q)}
   <textarea class="short-answer" data-qkey="${esc(q.key)}" placeholder="在这里写你的答案，系统会自动保存。">${esc(val)}</textarea>
-  <div class="self-note">简答 / 案例 / 计算题按自评处理，提交后查看参考答案。</div>
-  ${renderAnswerLine(q, "参考答案", answerText)}`;
+  <div class="self-note">简答 / 案例 / 计算题按自评处理，提交后查看参考答案。</div>${renderAnswerPanel(q, "参考答案", answerText)}`;
 }
 function shouldShowQuestion(q){
   if(!typeVisible(q)) return false;
@@ -674,18 +399,20 @@ function shouldShowQuestion(q){
   if(filterMode === "wrong" && (q.type === "short" || !graded || !isAnswered(q) || isCorrect(q))) return false;
   return true;
 }
+function gradeStatus(q){
+  return q.type === "short"
+    ? (isAnswered(q) ? `<span class="status">已写</span>` : `<span class="status">未写</span>`)
+    : (!graded ? "" : (!isAnswered(q) ? `<span class="status">未答</span>` : (isCorrect(q) ? `<span class="status good">正确</span>` : `<span class="status bad">错误</span>`)));
+}
 function renderQuestion(q, displayNo){
   let cls = "q";
   if(graded && q.type !== "short"){ cls += !isAnswered(q) ? " unanswered" : (isCorrect(q) ? " correct" : " wrong"); }
-  const status = q.type === "short"
-    ? (isAnswered(q) ? `<span class="tag info">已写</span>` : `<span class="tag warn">未写</span>`)
-    : (!graded ? "" : (!isAnswered(q) ? `<span class="tag warn">未答</span>` : (isCorrect(q) ? `<span class="tag ok">正确</span>` : `<span class="tag bad">错误</span>`)));
   let body = "";
   if(q.type === "blank") body = renderBlankQuestion(q);
   else if(q.type === "short") body = renderShortQuestion(q);
-  else body = `<div class="stem ${q.code ? "code" : ""}">${renderMathText(q.stem || "")}</div>${renderQuestionImages(q)}${renderChoiceQuestion(q)}`;
-  return `<article class="${cls}" id="q-${q.type}-${displayNo}" data-qkey="${esc(q.key)}">
-    <div class="q-head"><div class="q-title">${qLabel(q.type)} ${esc(displayNo)}</div><div class="q-meta"><span class="tag">${esc(q.point || q.tag || "")}</span>${status}</div></div>
+  else body = `<div class="stem ${q.code ? "code" : ""}">${esc(q.stem || "")}</div>${renderQuestionImages(q)}${renderChoiceQuestion(q)}`;
+  return `<article class="question ${cls}" id="q-${q.type}-${displayNo}" data-type="${esc(q.type)}" data-qkey="${esc(q.key)}">
+    <div class="question-head"><div class="type-badge">${qLabel(q.type)} ${esc(displayNo)}</div><div class="q-meta">${q.point || q.tag ? `<span class="status">${esc(q.point || q.tag)}</span> ` : ""}<span class="grade-status">${gradeStatus(q)}</span></div></div>
     ${body}
   </article>`;
 }
@@ -702,45 +429,99 @@ function groupQuestions(){
 }
 function typesetMath(){
   if(window.MathJax && MathJax.typesetPromise){
-    MathJax.typesetPromise([$('app')]).catch(err => console.warn('MathJax typeset failed:', err));
+    return MathJax.typesetPromise([$("app")]).catch(err => console.warn("MathJax typeset failed:", err));
   }
+  return Promise.resolve(window.MathJax?.startup?.promise).catch(err => console.warn("MathJax startup failed:", err));
 }
 function render(){
-  // Clear old math while it is still in the DOM (MathJax 4).
-  if(window.MathJax?.typesetClear) MathJax.typesetClear([$('app')]);
+  finishPhoneReveal();
+  stopReadingAnchor();
   const groups = groupQuestions();
   const titles = {single:"单选题",multi:"多选题",judge:"判断题",blank:"填空题",short:"简答题"};
   const order = ["single","multi","judge","blank","short"];
+  if (window.MathJax?.typesetClear) MathJax.typesetClear([$("app")]);
   $("app").innerHTML = order.map(type => {
-    if(typeFilter !== "all" && typeFilter !== type) return "";
-    const items = groups[type].map((q,i)=>({q, displayNo:i+1}));
-    const visible = items.filter(({q}) => shouldShowQuestion(q));
-    const html = visible.map(({q,displayNo}) => renderQuestion(q, displayNo)).join("");
-    if(!groups[type].length || !html) return "";
-    return `<div class="section" id="sec-${type}"><h2>${titles[type]}（共 ${groups[type].length} 题）</h2><div>${html}</div></div><div class="divider"></div>`;
-  }).join("") || `<div class="note">当前筛选条件下没有题目。</div>`;
+    if (!groups[type].length) return "";
+    const html = groups[type].map((q,i) => renderQuestion(q, i + 1)).join("");
+    return `<div class="section" id="sec-${type}"><h2>${titles[type]}（共 ${groups[type].length} 题）</h2><div class="question-grid">${html}</div></div>`;
+  }).join("") + '<div class="empty" id="filterEmpty" hidden>当前筛选条件下没有题目。</div>';
+  const orderedQuestions = order.flatMap(type => groups[type]);
+  cardRecords = [...$("app").querySelectorAll(".question")].map((card,index) => ({card, question:orderedQuestions[index]}));
+  sectionRecords = [...$("app").querySelectorAll(".section")].map(section => ({section, cards:[...section.querySelectorAll(".question")]}));
+  if(usePhoneReveal()){
+    document.documentElement.classList.add('phone-reveal-enabled');
+    initializePhoneRevealCards(cardRecords.map(record=>record.card));
+  }
+  applyFilters(false);
+  observeCards();
+  return typesetMath();
+}
+function applyFilters(preservePosition = true){
+  finishPhoneReveal();
+  stopReadingAnchor();
+  const top = document.querySelector(".top").getBoundingClientRect().bottom;
+  const wasVisible = cardRecords.filter(record => !record.card.hidden);
+  const anchor = preservePosition && scrollPosition() > top
+    ? wasVisible.find(record => record.card.getBoundingClientRect().bottom > top)
+    : null;
+  const oldTop = anchor?.card.getBoundingClientRect().top;
+  const visible = cardRecords.map(record => shouldShowQuestion(record.question));
+  let target = anchor && visible[cardRecords.indexOf(anchor)] ? anchor : null;
+  if (anchor && !target){
+    const anchorIndex = cardRecords.indexOf(anchor);
+    let distance = Infinity;
+    visible.forEach((show, index) => {
+      const delta = Math.abs(index - anchorIndex);
+      if (show && delta < distance) { target = cardRecords[index]; distance = delta; }
+    });
+  }
+
+  cardRecords.forEach((record,index) => { record.card.hidden = !visible[index]; });
+  sectionRecords.forEach(({section,cards}) => { section.hidden = cards.every(card => card.hidden); });
+  $("filterEmpty").hidden = visible.some(Boolean);
   updateControls();
   updateStats();
-  typesetMath();
+  if (target){
+    const targetTop = target === anchor ? oldTop : Math.max(top + 8, oldTop);
+    const delta = target.card.getBoundingClientRect().top - targetTop;
+    if (Math.abs(delta) > 1) scrollPageBy(delta);
+  }
 }
 function activeQuestions(){return questions.filter(typeVisible);}
 function updateControls(){
-  document.querySelectorAll("[data-type-filter]").forEach(btn=>btn.classList.toggle("active", btn.dataset.typeFilter === typeFilter));
+  document.querySelectorAll("[data-type-filter]").forEach(btn=>{
+    const active = btn.dataset.typeFilter === typeFilter;
+    btn.classList.toggle("active", active);
+    btn.setAttribute("aria-pressed", active);
+  });
   $("btnToggleAnswers").textContent = showAnswers ? "隐藏答案" : "显示答案";
-  $("btnFilterUnanswered").classList.toggle("primary", filterMode === "unanswered");
-  $("btnFilterWrong").classList.toggle("primary", filterMode === "wrong");
-  $("btnShowAll").classList.toggle("primary", filterMode === "all");
+  $("btnFilterUnanswered").classList.toggle("active", filterMode === "unanswered");
+  $("btnFilterWrong").classList.toggle("active", filterMode === "wrong");
+  $("btnFilterUnanswered").setAttribute("aria-pressed", filterMode === "unanswered");
+  $("btnFilterWrong").setAttribute("aria-pressed", filterMode === "wrong");
+  $("btnShowAll").classList.toggle("active", filterMode === "all");
 }
 function updateStats(){
   const scope = activeQuestions();
   const total = scope.length;
   const answered = scope.filter(isAnswered).length;
   const objective = scope.filter(q=>q.type !== "short");
-  const correct = objective.filter(q=>isAnswered(q)&&isCorrect(q)).length;
-  const wrong = objective.filter(q=>isAnswered(q)&&!isCorrect(q)).length;
+  const correct = graded ? objective.filter(q=>isAnswered(q)&&isCorrect(q)).length : 0;
+  const wrong = graded ? objective.filter(q=>isAnswered(q)&&!isCorrect(q)).length : 0;
   const typeName = typeFilter === "all" ? "全部" : qLabel(typeFilter);
-  $("statsTop").innerHTML = `<span class="pill">题型 <strong>${typeName}</strong></span><span class="pill">已答 <strong>${answered}</strong>/${total}</span>${graded ? `<span class="pill">正确 <strong>${correct}</strong></span><span class="pill">错误 <strong>${wrong}</strong></span>` : `<span class="pill">未判分</span>`}`;
-  $("statusBar").innerHTML = graded ? `当前题型：<b>${typeName}</b>；已判分：正确 <b>${correct}</b>，错误 <b>${wrong}</b>，未答 <b>${total-answered}</b>` : `当前题型：<b>${typeName}</b>；未判分：已答 <b>${answered}</b>/${total}`;
+  const counter = $("answeredCount");
+  counter.textContent = answered;
+  $("totalCount").textContent = total;
+  if (lastAnswered !== null && lastAnswered !== answered && !reducedMotion.matches){
+    counter.getAnimations().forEach(animation => animation.cancel());
+    counter.animate([{opacity:.55},{opacity:1}], {duration:180, easing:"ease-out"});
+  }
+  lastAnswered = answered;
+  const percent = total ? Math.round(answered / total * 100) : 0;
+  $("progress").setAttribute("aria-valuenow", percent);
+  $("progress").firstElementChild.style.width = `${percent}%`;
+  $("statusBar").innerHTML = graded ? `${typeName} · 正确 <b>${correct}</b> · 错误 <b>${wrong}</b> · 未答 <b>${total-answered}</b>` : `${typeName} · 未判分`;
+  $("btnGrade").textContent = graded ? "重新判分" : "交卷判分";
 }
 function onChoiceChange(input){
   const card = input.closest(".q");
@@ -752,6 +533,7 @@ function onChoiceChange(input){
     answers[q.key] = input.value;
   }
   saveAnswers();
+  if (graded || showAnswers) refreshFeedback(card, q, true);
 }
 function onBlankInput(input){
   const q = questions.find(x=>x.key===input.dataset.qkey);
@@ -761,6 +543,7 @@ function onBlankInput(input){
   vals[Number(input.dataset.blankIndex)] = input.value;
   answers[q.key] = vals;
   saveAnswers();
+  if (graded || showAnswers) refreshFeedback(input.closest(".question"), q);
 }
 
 function onShortInput(input){
@@ -768,6 +551,685 @@ function onShortInput(input){
   if(!q) return;
   answers[q.key] = input.value;
   saveAnswers();
+  input.closest(".question").querySelector(".grade-status").innerHTML = gradeStatus(q);
+}
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const touchInput = window.matchMedia("(any-pointer: coarse)");
+
+const optionShakes = new WeakMap();
+function setWrongFeedback(option, wrong, animate){
+  const wasWrong = option.classList.contains("wrong");
+  option.classList.toggle("wrong", wrong);
+  if (!wrong){
+    optionShakes.get(option)?.cancel();
+    optionShakes.delete(option);
+  } else if (!wasWrong && animate && !reducedMotion.matches){
+    optionShakes.get(option)?.cancel();
+    const animation = option.animate([
+      {transform:"translateX(0)"}, {transform:"translateX(-3px)"},
+      {transform:"translateX(2px)"}, {transform:"translateX(0)"}
+    ], {duration:260, easing:"ease-out"});
+    optionShakes.set(option, animation);
+  }
+}
+
+function refreshFeedback(card, q, animate = false){
+  const answered = isAnswered(q);
+  const correct = graded && answered && isCorrect(q);
+  const wrong = graded && answered && !correct && q.type !== "short";
+  const correctKeys = normalizeChoiceAnswer(q.answer);
+  for (const option of card.querySelectorAll(".opt")){
+    const input = option.querySelector("input");
+    const correctOption = correctKeys.includes(input.value);
+    option.classList.toggle("correct", correctOption && (showAnswers || (graded && input.checked)));
+    setWrongFeedback(option, graded && input.checked && !correctOption, animate);
+  }
+  if (q.type === "blank"){
+    const expected = blankExpected(q);
+    for (const input of card.querySelectorAll(".blank-input")){
+      const accepted = (expected[Number(input.dataset.blankIndex)] || []).map(normalizeText);
+      const matches = accepted.includes(normalizeText(input.value));
+      input.classList.toggle("correct", graded && answered && matches);
+      input.classList.toggle("wrong", graded && answered && !matches);
+    }
+  }
+
+  card.classList.toggle("correct", correct);
+  card.classList.toggle("wrong", wrong);
+  card.classList.toggle("unanswered", graded && !answered && q.type !== "short");
+  card.querySelector(".grade-status").innerHTML = gradeStatus(q);
+  const result = card.querySelector(".result");
+  result.classList.toggle("good", correct);
+  result.classList.toggle("bad", wrong);
+  const userAnswer = result.querySelector(".user-answer");
+  if (userAnswer){
+    const answer = userDisplay(q, getOptions(q)) || "未答";
+    if (userAnswer.dataset.value !== answer){
+      if (q.type === "blank") window.MathJax?.typesetClear?.([userAnswer]);
+      userAnswer.textContent = answer;
+      userAnswer.dataset.value = answer;
+      if (q.type === "blank") window.MathJax?.typesetPromise?.([userAnswer])?.catch(() => {});
+    }
+  }
+}
+
+// Touch animation coordinator. It keeps the main reading card at the
+// same viewport position while neighboring panels expand/collapse together.
+let readingAnchorFrame=0;
+let readingAnchorToken=0;
+let readingAnchorSession=null;
+let readingAnchorObserver=null;
+let bufferReleaseTimer=0;
+let activeBufferCards=new Set();
+function stopReadingAnchor(keepSuppression=false){
+  readingAnchorToken++;
+  if(readingAnchorFrame) cancelAnimationFrame(readingAnchorFrame);
+  if(readingAnchorObserver)readingAnchorObserver.disconnect();
+  readingAnchorObserver=null;
+  readingAnchorFrame=0;
+  readingAnchorSession=null;
+  if(!keepSuppression)document.documentElement.classList.remove('reading-anchor-active');
+}
+// iPadOS can use a narrow split view with a desktop-like user agent.
+const isIPad = /iPad/i.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+// iPad's visual and reveal behavior is also used on desktop in V5.
+const isPhoneDevice = /iPhone|iPod|Android.+Mobile/i.test(navigator.userAgent);
+function useIPadPresentation(){
+  return isIPad || !isPhoneDevice;
+}
+// Safari's native scroll anchoring arrived after the affected iOS releases.
+const iosInnerScroll=!isIPad && /iPhone|iPod/i.test(navigator.userAgent) &&
+  !(window.CSS && CSS.supports && CSS.supports('overflow-anchor','auto'));
+const quizScroll=iosInnerScroll ? $('quizScroll') : null;
+if(quizScroll)document.documentElement.classList.add('ios-inner-scroll');
+function scrollPosition(){return quizScroll ? quizScroll.scrollTop : window.scrollY;}
+function scrollPageTo(top){
+  if(quizScroll)quizScroll.scrollTop=top;
+  else window.scrollTo({top,behavior:'instant'});
+}
+function scrollPageBy(top){
+  if(quizScroll)quizScroll.scrollTop+=top;
+  else window.scrollBy({top,behavior:'instant'});
+}
+// Preserve normal reload/back scroll restoration for the element scroller.
+if(quizScroll){
+  window.addEventListener('pagehide',()=>{
+    if(!setId)return;
+    try{sessionStorage.setItem(`quiz_viewport_${setId}`,String(quizScroll.scrollTop));}catch{}
+  });
+}
+function restoreInnerScroll(mathReady){
+  if(!quizScroll)return;
+  let saved=null;
+  try{
+    const nav=performance.getEntriesByType?.('navigation')?.[0];
+    if(nav && nav.type!=='reload' && nav.type!=='back_forward')return;
+    const value=sessionStorage.getItem(`quiz_viewport_${setId}`);
+    if(value!==null && Number.isFinite(Number(value)))saved=Number(value);
+  }catch{return;}
+  if(saved===null)return;
+  let cancelled=false;
+  const cancel=()=>{cancelled=true;};
+  for(const name of ['pointerdown','touchstart','wheel','keydown'])
+    window.addEventListener(name,cancel,{capture:true,once:true,passive:true});
+  const apply=()=>{if(!cancelled)quizScroll.scrollTop=saved;};
+  requestAnimationFrame(apply);
+  Promise.resolve(mathReady).then(()=>requestAnimationFrame(apply)).catch(()=>{});
+  if(!window.MathJax?.typesetPromise){
+    const script=document.querySelector('script[src*="mathjax"]');
+    script?.addEventListener('load',()=>{
+      Promise.resolve(window.MathJax?.startup?.promise).then(()=>requestAnimationFrame(apply)).catch(()=>{});
+    },{once:true});
+  }
+}
+document.documentElement.classList.toggle('ipad-parity',useIPadPresentation());
+if(!isIPad)document.documentElement.classList.add('phone-anim-contain');
+function layoutTop(element){
+  let y=0;
+  for(let node=element;node;node=node.offsetParent)y+=node.offsetTop;
+  return y;
+}
+function stabilizeReadingAnchor(card, initialTop, initialTarget){
+  const previous=readingAnchorFrame && readingAnchorSession?.card===card ? readingAnchorSession : null;
+  stopReadingAnchor(true);
+  if(!card || reducedMotion.matches){stopReadingAnchor();return;}
+  const token=readingAnchorToken;
+  const start=performance.now();
+  // Each layout movement contributes once to an absolute target. Do not feed
+  // a still-pending iOS scroll back into another relative correction.
+  const session=isIPad ? null : (previous || {card,baseLayout:layoutTop(card),baseScroll:initialTarget,lastTarget:initialTarget});
+  readingAnchorSession=session;
+  document.documentElement.classList.add('reading-anchor-active');
+  const correctPhonePosition=()=>{
+    const target=session.baseScroll+layoutTop(card)-session.baseLayout;
+    if(Math.abs(target-session.lastTarget)>.35){
+      session.lastTarget=target;
+      scrollPageTo(target);
+    }
+  };
+  // ResizeObserver runs after layout and before paint. The active cards are
+  // materialized during the transition, so their changing size signals each
+  // relevant movement without forcing layout at the start of every frame.
+  if(!isIPad && 'ResizeObserver' in window){
+    let observer=null;
+    try{
+      observer=new ResizeObserver(()=>{
+        if(token===readingAnchorToken && readingAnchorSession===session && card.isConnected)correctPhonePosition();
+      });
+      observer.observe($('app'));
+      for(const bufferedCard of activeBufferCards)observer.observe(bufferedCard);
+      readingAnchorObserver=observer;
+    }catch(error){
+      observer?.disconnect();
+      readingAnchorObserver=null;
+    }
+  }
+  const tick=now=>{
+    if(token!==readingAnchorToken) return;
+    if(!card.isConnected){stopReadingAnchor();return;}
+    if(isIPad){
+      const displacement=card.getBoundingClientRect().top-initialTop;
+      if(Math.abs(displacement)>.35)scrollPageBy(displacement);
+    }else if(!readingAnchorObserver){
+      correctPhonePosition();
+    }
+    // Keep tracking while the buffered transitions actually settle.
+    const stillMoving=!isIPad && now-start>=360 && now-start<1500 && !!bufferReleaseTimer;
+    if(now-start<360 || stillMoving){
+      readingAnchorFrame=requestAnimationFrame(tick);
+    }else{
+      if(readingAnchorObserver)readingAnchorObserver.disconnect();
+      readingAnchorObserver=null;
+      readingAnchorFrame=0;
+      readingAnchorSession=null;
+      document.documentElement.classList.remove('reading-anchor-active');
+    }
+  };
+  readingAnchorFrame=requestAnimationFrame(tick);
+}
+// A reader's own navigation takes priority over position correction. Keep the
+// current anchor when the answer buttons are tapped again mid-transition.
+function cancelAnchorForNavigation(event){
+  if(usePhoneReveal() && readingAnchorSession && event.target instanceof Element &&
+     event.target.closest('#btnToggleAnswers,#btnGrade') &&
+     (event.type==='pointerdown' || (event.type==='keydown' && event.key===' ')))return;
+  if(readingAnchorFrame || readingAnchorSession)stopReadingAnchor(true);
+}
+for(const name of ['touchmove','wheel','pointerdown']){
+  window.addEventListener(name,cancelAnchorForNavigation,{passive:true});
+}
+window.addEventListener('keydown',event=>{
+  if(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' '].includes(event.key))cancelAnchorForNavigation(event);
+});
+// Keep text at its natural size. Only the card surface, clipping windows and
+// neighboring cards move; the question list does not reflow on every frame.
+let phoneRevealMotion=null;
+let phoneRevealBorder=.5;
+function usePhoneReveal(){
+  return useIPadPresentation() || touchInput.matches && (isPhoneDevice ||
+    window.matchMedia('(max-width:640px)').matches ||
+    document.documentElement.classList.contains('phone-reveal-enabled'));
+}
+function initializePhoneRevealCards(cards){
+  if(cards.length && cards.some(card=>!card.classList.contains('phone-reveal-ready')))
+    phoneRevealBorder=parseFloat(getComputedStyle(cards[0]).borderTopWidth);
+  for(const card of cards)ensurePhoneRevealCard(card);
+}
+function ensurePhoneRevealCard(card,border=phoneRevealBorder){
+  let surface=card.querySelector('.card-surface');
+  if(!surface){
+    surface=document.createElement('div');surface.className='card-surface';
+    surface.setAttribute('aria-hidden','true');
+    surface.style.top=surface.style.bottom=surface.style.left=surface.style.right=`${-border}px`;
+    card.append(surface);card.classList.add('phone-reveal-ready');
+  }
+  return surface;
+}
+function finishPhoneReveal(keepPrepared=false){
+  const motion=phoneRevealMotion;
+  if(!motion)return;
+  phoneRevealMotion=null;
+  if(motion.timer)clearTimeout(motion.timer);
+  if(motion.sizeFrame)cancelAnimationFrame(motion.sizeFrame);
+  motion.sizeObserver?.disconnect();
+  for(const animation of motion.animations)animation.cancel();
+  for(const entry of motion.entries){
+    entry.card.classList.remove('phone-reveal-motion');
+    for(const [element,property,value,priority] of entry.restore) {
+      if(value)element.style.setProperty(property,value,priority);else element.style.removeProperty(property);
+    }
+  }
+  if(keepPrepared!==true){
+    motion.correctPosition?.();
+    for(const card of motion.prepared)card.classList.remove('phone-reveal-prepared');
+  }
+  if(readingAnchorSession===motion.session){
+    motion.correctPosition?.();
+    stopReadingAnchor();
+  }else if(!readingAnchorSession)document.documentElement.classList.remove('reading-anchor-active');
+}
+function updatePhoneFeedback(remainingTime=null){
+  const top=document.querySelector('.top').getBoundingClientRect().bottom;
+  const bottom=quizScroll ? quizScroll.getBoundingClientRect().bottom : window.innerHeight;
+  const cards=cardRecords.map(record=>record.card);
+  document.documentElement.classList.add('phone-reveal-enabled');
+  initializePhoneRevealCards(cards);
+  // These are two batched layout snapshots, never a per-frame position loop.
+  const before=cards.map(card=>card.hidden?null:card.getBoundingClientRect());
+  const visible=before.map(rect=>!!rect && rect.top<bottom && rect.bottom>top);
+  const previous=phoneRevealMotion;
+  const keepReadingPosition=remainingTime===null ||
+    !!previous?.session && readingAnchorSession===previous.session;
+  const oldPanels=new Map();
+  if(previous)for(const entry of previous.entries){
+    const transform=getComputedStyle(entry.inner).transform;
+    const y=transform==='none'?0:new DOMMatrixReadOnly(transform).m42;
+    oldPanels.set(entry.card,{
+      shown:Math.max(0,Math.min(entry.fullHeight,entry.fullHeight+y)),
+      height:entry.surface.getBoundingClientRect().height,
+      opacity:Number(getComputedStyle(entry.result).opacity)
+    });
+  }
+  let readingIndex=previous?.session && readingAnchorSession===previous.session
+    ?cards.indexOf(previous.session.card):-1;
+  if(readingIndex<0 || !visible[readingIndex]){
+    // Prefer the question whose heading/stem is actually being read. An old
+    // question's last option must not take priority over a complete question.
+    readingIndex=cards.findIndex((card,i)=>{
+      if(!visible[i])return false;
+      const head=card.querySelector('.question-head').getBoundingClientRect();
+      const stem=card.querySelector('.stem').getBoundingClientRect();
+      return head.top>=top-2 && head.top<bottom-48 ||
+        stem.top>=top-8 && stem.top<bottom-48;
+    });
+    if(readingIndex<0){
+      let largest=0;
+      visible.forEach((show,i)=>{
+        if(!show)return;
+        const area=Math.min(before[i].bottom,bottom)-Math.max(before[i].top,top);
+        if(area>largest){largest=area;readingIndex=i;}
+      });
+    }
+  }
+  const readingCard=keepReadingPosition && readingIndex>=0?cards[readingIndex]:null;
+  const desiredTop=before[readingIndex]?.top;
+  const snapshots=cards.map((card,i)=>{
+    if(!before[i])return null;
+    const panel=card.querySelector('.reveal');
+    const open=panel.classList.contains('open');
+    return oldPanels.get(card) || {shown:open?(visible[i]?panel.getBoundingClientRect().height:null):0,
+      height:before[i].height,opacity:open?1:0};
+  });
+  const prepared=new Set(cards.filter((card,i)=>visible[i]));
+  if(previous)for(const card of previous.prepared)prepared.add(card);
+  for(const card of prepared)card.classList.add('phone-reveal-prepared');
+  finishPhoneReveal(true);
+  stopReadingAnchor(true);
+  if(bufferReleaseTimer)clearTimeout(bufferReleaseTimer);
+  bufferReleaseTimer=0;
+  for(const card of activeBufferCards)card.classList.remove('buffer-animating');
+  activeBufferCards.clear();
+  document.documentElement.classList.add('reading-anchor-active');
+  cards.forEach((card,i)=>{
+    const animate=visible[i] && !reducedMotion.matches;
+    card.classList.toggle('no-motion',!animate);
+    // Judge from the full data as usual; defer only offscreen DOM decoration.
+    if(visible[i] || !cardObserver){
+      pendingFeedbackCards.delete(card);
+      refreshFeedback(card,cardRecords[i].question,animate);
+    }else pendingFeedbackCards.add(card);
+    const panel=card.querySelector('.reveal');
+    panel.classList.remove('animate','in-motion');
+    panel.classList.toggle('open',showAnswers);
+    panel.setAttribute('aria-hidden',String(!showAnswers));
+  });
+  let session=null;
+  if(readingCard){
+    const moved=readingCard.getBoundingClientRect().top-desiredTop;
+    if(Math.abs(moved)>.35)scrollPageBy(moved);
+    session={card:readingCard,baseLayout:layoutTop(readingCard),
+      baseScroll:scrollPosition(),lastTarget:scrollPosition()};
+  }
+  readingAnchorSession=session;
+  const token=readingAnchorToken;
+  const correctPosition=()=>{
+    if(!session || readingAnchorSession!==session || token!==readingAnchorToken || !session.card.isConnected)return;
+    const target=session.baseScroll+layoutTop(session.card)-session.baseLayout;
+    if(Math.abs(target-session.lastTarget)>.35){session.lastTarget=target;scrollPageTo(target);}
+  };
+  let after=cards.map(card=>card.hidden?null:card.getBoundingClientRect());
+  let refreshed=false;
+  cards.forEach((card,i)=>{
+    const rect=after[i];
+    if(rect && rect.top<bottom && rect.bottom>top){
+      if(!prepared.has(card)){prepared.add(card);card.classList.add('phone-reveal-prepared');refreshed=true;}
+      if(pendingFeedbackCards.delete(card)){refreshFeedback(card,cardRecords[i].question,false);refreshed=true;}
+    }
+  });
+  if(refreshed){
+    correctPosition();
+    after=cards.map(card=>card.hidden?null:card.getBoundingClientRect());
+  }
+  const entries=[];
+  if(!reducedMotion.matches)cards.forEach((card,i)=>{
+    if(!before[i] || !after[i])return;
+    const inFinalView=after[i].top<bottom && after[i].bottom>top;
+    if(!visible[i] && !inFinalView)return;
+    const panel=card.querySelector('.reveal'),inner=panel.firstElementChild;
+    const result=inner.firstElementChild,style=getComputedStyle(card);
+    const panelRect=panel.getBoundingClientRect(),resultRect=result.getBoundingClientRect();
+    const resultStyle=getComputedStyle(result);
+    const fullHeight=resultRect.height+parseFloat(resultStyle.marginTop);
+    const resultExtras=['paddingTop','paddingBottom','borderTopWidth','borderBottomWidth']
+      .reduce((sum,name)=>sum+parseFloat(resultStyle[name]),0);
+    const baseHeight=after[i].height-panelRect.height;
+    const start=snapshots[i];
+    const oldShown=start.shown??fullHeight;
+    if(Math.abs((showAnswers?fullHeight:0)-oldShown)<.1 &&
+       Math.abs(before[i].top-after[i].top)<.1 && Math.abs(start.height-after[i].height)<.1)return;
+    entries.push({card,panel,inner,result,fullHeight,baseHeight,resultHeight:resultRect.height,resultExtras,
+      fullCardHeight:baseHeight+fullHeight,finalHeight:after[i].height,
+      oldShown:Math.min(fullHeight,start.shown??fullHeight),
+      oldHeight:visible[i]?start.height:baseHeight+(start.shown??fullHeight),oldOpacity:start.opacity,
+      shift:before[i].top-after[i].top,panelTop:panelRect.top-after[i].top-parseFloat(style.borderTopWidth),
+      panelLeft:panelRect.left-after[i].left-parseFloat(style.borderLeftWidth),panelWidth:panelRect.width});
+  });
+  const motion={entries,prepared,animations:[],session,correctPosition,timer:0,sizeObserver:null,sizeFrame:0,deadline:0};
+  phoneRevealMotion=motion;
+  for(const entry of entries){
+    const surface=ensurePhoneRevealCard(entry.card);
+    entry.surface=surface;entry.restore=[];
+    const set=(element,property,value)=>{
+      entry.restore.push([element,property,element.style.getPropertyValue(property),element.style.getPropertyPriority(property)]);
+      element.style.setProperty(property,typeof value==='number'?`${value}px`:value);
+    };
+    set(entry.card,'height',entry.finalHeight);
+    set(entry.panel,'position','absolute');set(entry.inner,'height','100%');
+    set(entry.panel,'height',entry.fullHeight);set(entry.panel,'top',entry.panelTop);
+    set(entry.panel,'left',entry.panelLeft);set(entry.panel,'right','auto');
+    set(entry.panel,'width',entry.panelWidth);
+    set(surface,'height',entry.fullCardHeight);
+    entry.card.classList.add('phone-reveal-motion');
+    entry.card.classList.remove('no-motion');
+  }
+  // The two translated clipping windows cancel their text movement, so math
+  // and body text reveal at full size without scaling or height animation.
+  const ratio=entries.reduce((n,e)=>Math.max(n,
+    Math.abs((showAnswers?e.fullHeight:0)-e.oldShown)/Math.max(1,e.fullHeight)),0);
+  const timing={duration:remainingTime===null?(useIPadPresentation()?300:260)*Math.max(.55,Math.min(1,ratio)):Math.max(60,remainingTime),
+    easing:'cubic-bezier(.25,.1,.25,1)',fill:'both'};
+  motion.deadline=performance.now()+timing.duration;
+  const animate=(element,keyframes)=>{
+    const animation=element.animate(keyframes,timing);
+    motion.animations.push(animation);
+  };
+  for(const entry of entries){
+    const {card,inner,result,surface,fullHeight,fullCardHeight}=entry;
+    const finalShown=showAnswers?fullHeight:0;
+    if(Math.abs(entry.shift)>.1)animate(card,[{transform:`translateY(${entry.shift}px)`},{transform:'translateY(0)'}]);
+    animate(surface,[{transform:`scaleY(${entry.oldHeight/fullCardHeight})`},
+      {transform:`scaleY(${entry.finalHeight/fullCardHeight})`}]);
+    animate(inner,[{transform:`translateY(${entry.oldShown-fullHeight}px)`},
+      {transform:`translateY(${finalShown-fullHeight}px)`}]);
+    animate(result,[{transform:`translateY(${fullHeight-entry.oldShown}px)`,opacity:entry.oldOpacity},
+      {transform:`translateY(${fullHeight-finalShown}px)`,opacity:showAnswers?1:0}]);
+  }
+  // Only late image/font size changes can require another anchor correction.
+  // Compositor transforms do not resize the observed list on every frame.
+  if(session && 'ResizeObserver' in window){
+    try{readingAnchorObserver=new ResizeObserver(correctPosition);readingAnchorObserver.observe($('app'));}catch{}
+  }
+  if(entries.length && 'ResizeObserver' in window){
+    try{
+      motion.sizeObserver=new ResizeObserver(changes=>{
+        if(phoneRevealMotion!==motion)return;
+        const resized=changes.some(change=>{
+          const entry=entries.find(e=>e.result===change.target);
+          if(!entry)return false;
+          const box=change.borderBoxSize;
+          const size=box && (box[0] || box);
+          const height=size?.blockSize ?? change.contentRect.height+entry.resultExtras;
+          return Math.abs(height-entry.resultHeight)>1;
+        });
+        // A late font/image resize must retarget from the current pose, not
+        // cancel every visible answer into its final state in the first frame.
+        if(resized && !motion.sizeFrame){
+          motion.sizeFrame=requestAnimationFrame(()=>{
+            motion.sizeFrame=0;
+            if(phoneRevealMotion===motion)updatePhoneFeedback(motion.deadline-performance.now());
+          });
+        }
+      });
+      for(const entry of entries){
+        try{motion.sizeObserver.observe(entry.result,{box:'border-box'});}
+        catch{motion.sizeObserver.observe(entry.result);}
+      }
+    }catch{motion.sizeObserver?.disconnect();}
+  }
+  const finish=()=>{if(phoneRevealMotion===motion)finishPhoneReveal();};
+  if(motion.animations.length){
+    Promise.allSettled(motion.animations.map(a=>a.finished)).then(finish);
+    motion.timer=setTimeout(finish,500);
+  }else if(session){
+    // Even without motion, let skipped-card geometry settle before releasing.
+    motion.timer=setTimeout(finish,50);
+  }else finish();
+  if(filterMode==='wrong' && cardRecords.some(r=>r.card.hidden===shouldShowQuestion(r.question)))applyFilters();
+}
+function updateFeedback(){
+  updateControls();
+  updateStats();
+  if(usePhoneReveal()){
+    updatePhoneFeedback();
+    return;
+  }
+  const top=document.querySelector('.top').getBoundingClientRect().bottom;
+  const cards=cardRecords.map(record=>record.card);
+  const phone=window.matchMedia('(max-width: 640px)').matches && touchInput.matches;
+  const touch=touchInput.matches;
+  const revealed=showAnswers;
+  const viewportBottom=quizScroll ? quizScroll.getBoundingClientRect().bottom : window.innerHeight;
+  // Preserve the desktop strategy; iPad and phones use the shared reveal above.
+  const inspectAll=!phone || nearbyCardIndexes.size===0;
+  const positions=cards.map((card,index)=>
+    inspectAll||nearbyCardIndexes.has(index)?card.getBoundingClientRect():null);
+  const visibleCards=positions.map((rect,index)=>
+    !!rect&&!cards[index].hidden&&rect.top<viewportBottom&&rect.bottom>top);
+  // Observer callbacks are asynchronous; after a jump they may describe the old viewport.
+  let needsPreparation=phone && (!cardObserver || nearbyCardIndexes.size===0);
+  if(phone){
+    const inspect=index=>{
+      if(cards[index].hidden)return false;
+      const alreadyMeasured=!!positions[index];
+      const rect=positions[index] || cards[index].getBoundingClientRect();
+      positions[index]=rect;
+      visibleCards[index]=rect.top<viewportBottom&&rect.bottom>top;
+      if(!alreadyMeasured && visibleCards[index])needsPreparation=true;
+      return visibleCards[index];
+    };
+    const first=visibleCards.indexOf(true),last=visibleCards.lastIndexOf(true);
+    if(first<0){
+      for(let i=0;i<cards.length;i++)inspect(i);
+    }else{
+      for(let i=first+1;i<last;i++)inspect(i);
+      for(let i=first-1;i>=0;i--){
+        if(cards[i].hidden)continue;
+        if(!inspect(i))break;
+      }
+      for(let i=last+1;i<cards.length;i++){
+        if(cards[i].hidden)continue;
+        if(!inspect(i))break;
+      }
+    }
+  }
+  const singlePanel=touch||cards.length>100;
+  const anchorIndex=singlePanel
+    ?visibleCards.indexOf(true)
+    :positions.findIndex((rect,index)=>visibleCards[index]&&rect.top>=top);
+  const anchorTop=positions[anchorIndex]?.top;
+
+  let animationIndexes=null;
+  let readingIndex=-1;
+  let readingTop=null;
+  let readingCard=null;
+  if(phone){
+    // A small sliver from the previous card must not displace the main card.
+    // Use the card with the largest visible area as the reading anchor.
+    let largest=-1;
+    // Keep the same reading card through a quick reversal; the largest
+    // visible area can otherwise switch back and forth during expansion.
+    const retained=!isIPad && readingAnchorFrame && readingAnchorSession
+      ?cards.indexOf(readingAnchorSession.card):-1;
+    if(retained>=0 && !cards[retained].hidden)readingIndex=retained;
+    else for(let index=0;index<cards.length;index++){
+      if(!visibleCards[index])continue;
+      const rect=positions[index];
+      const area=Math.max(0,Math.min(rect.bottom,viewportBottom)-Math.max(rect.top,top));
+      if(area>largest){largest=area;readingIndex=index;}
+    }
+    readingCard=readingIndex>=0?cards[readingIndex]:null;
+    readingTop=readingCard?.getBoundingClientRect().top;
+    // Animate ALL visible cards, plus two visible-in-the-list before/after.
+    // Filtering may hide cards, so count unhidden question cards only.
+    const first=visibleCards.indexOf(true);
+    const last=visibleCards.lastIndexOf(true);
+    animationIndexes=new Set();
+    if(first>=0){
+      for(let index=first;index<=last;index++){
+        if(!cards[index].hidden)animationIndexes.add(index);
+      }
+      let n=0;
+      for(let index=first-1;index>=0&&n<2;index--){
+        if(!cards[index].hidden){animationIndexes.add(index);n++;}
+      }
+      n=0;
+      for(let index=last+1;index<cards.length&&n<2;index++){
+        if(!cards[index].hidden){animationIndexes.add(index);n++;}
+      }
+    }
+  }
+  let touchPanelIndex=-1;
+  if(!phone&&touch&&!reducedMotion.matches){
+    touchPanelIndex=cards.findIndex((card,index)=>{
+      if(!visibleCards[index])return false;
+      const panel=card.querySelector('.reveal');
+      const rect=panel.getBoundingClientRect();
+      return panel.classList.contains('open')!==revealed&&
+        rect.top<viewportBottom&&rect.bottom>=top;
+    });
+  }
+
+  if(phone){
+    // Avoid native and manual scroll anchoring fighting each other during the transition.
+    document.documentElement.classList.add('reading-anchor-active');
+    if(bufferReleaseTimer)clearTimeout(bufferReleaseTimer);
+    // Preserve running transitions for cards that remain in the animation area.
+    for(const oldCard of activeBufferCards){
+      const index=cards.indexOf(oldCard);
+      if(!animationIndexes.has(index)){
+        oldCard.classList.remove('buffer-animating');
+        oldCard.querySelector('.reveal').classList.remove('in-motion','animate');
+      }
+    }
+    activeBufferCards=new Set();
+    if(!reducedMotion.matches){
+      for(const index of animationIndexes){
+        cards[index].classList.add('buffer-animating');
+        activeBufferCards.add(cards[index]);
+      }
+      // Materialize the new viewport only when observer data is stale.
+      if(needsPreparation && activeBufferCards.size)void $('app').offsetHeight;
+    }
+  }
+  cards.forEach((card,index)=>{
+    const visible=visibleCards[index];
+    const animated=phone ? animationIndexes.has(index) :
+      (touch?index===touchPanelIndex:
+        singlePanel?index===anchorIndex:visible&&(anchorIndex<0||index>=anchorIndex));
+    if(phone){
+      card.classList.toggle('buffer-animating',animated&&!reducedMotion.matches);
+      if(animated&&!reducedMotion.matches)activeBufferCards.add(card);
+    }
+    const animateFeedback=phone ? animated :visible&&(!touch||index===anchorIndex);
+    card.classList.toggle('no-motion',!animateFeedback);
+    refreshFeedback(card,cardRecords[index].question,animateFeedback);
+    const panel=card.querySelector('.reveal');
+    const changing=panel.classList.contains('open')!==revealed;
+    // Cards outside the visible and buffered area should settle immediately.
+    if(phone && !animated)panel.classList.remove('in-motion','animate');
+    if(changing){
+      if(phone){
+        if(!reducedMotion.matches&&animated){
+          panel.classList.add('animate','in-motion');
+        }else{
+          panel.classList.remove('animate','in-motion');
+        }
+      }else{
+        panel.classList.toggle('animate',animated);
+      }
+    }
+    panel.classList.toggle('open',revealed);
+    panel.setAttribute('aria-hidden',String(!revealed));
+  });
+  if(phone){
+    const releaseCards=activeBufferCards;
+    const releaseStarted=performance.now();
+    const releaseWhenSettled=()=>{
+      if(activeBufferCards!==releaseCards)return;
+      const running=[...releaseCards].some(card=>
+        card.querySelector('.reveal').getAnimations().some(animation=>
+          animation.transitionProperty==='grid-template-rows' && (animation.playState==='running'||(!isIPad&&animation.pending))));
+      if(running && performance.now()-releaseStarted<(isIPad?750:1500)){
+        bufferReleaseTimer=setTimeout(releaseWhenSettled,50);
+        return;
+      }
+      bufferReleaseTimer=0;
+      for(const card of releaseCards){
+        card.classList.remove('buffer-animating');
+        card.querySelector('.reveal').classList.remove('in-motion','animate');
+      }
+      releaseCards.clear();
+      if(!readingAnchorFrame)document.documentElement.classList.remove('reading-anchor-active');
+    };
+    bufferReleaseTimer=setTimeout(releaseWhenSettled,340);
+    // First compensate the synchronous relayout, then track the
+    // transition itself. Cancelling a previous tracker avoids stacked RAFs.
+    if(readingCard&&readingTop!==null){
+      const delta=readingCard.getBoundingClientRect().top-readingTop;
+      const continuing=!isIPad && readingAnchorFrame && readingAnchorSession?.card===readingCard;
+      const initialTarget=scrollPosition()+(!continuing&&Math.abs(delta)>1?delta:0);
+      if(continuing){
+        // Reversing can synchronously resize unrendered cards above this one.
+        const target=readingAnchorSession.baseScroll+layoutTop(readingCard)-readingAnchorSession.baseLayout;
+        if(Math.abs(target-readingAnchorSession.lastTarget)>.35){
+          readingAnchorSession.lastTarget=target;
+          scrollPageTo(target);
+        }
+      }else if(Math.abs(delta)>1){
+        if(isIPad)scrollPageBy(delta);
+        else scrollPageTo(initialTarget);
+      }
+      stabilizeReadingAnchor(readingCard,readingTop,initialTarget);
+    }else stopReadingAnchor();
+  }else if(anchorIndex>=0){
+    const moved=cards[anchorIndex].getBoundingClientRect().top-anchorTop;
+    if(Math.abs(moved)>1)scrollPageBy(moved);
+  }
+  if(phone){
+    if(motionRestoreFrame)cancelAnimationFrame(motionRestoreFrame);
+    motionRestoreFrame=requestAnimationFrame(()=>{
+      motionRestoreFrame=0;
+      // Buffer cards also participate in the normal option transitions.
+      for(const index of animationIndexes)cards[index].classList.remove('no-motion');
+    });
+  }else{
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      cards.forEach(card=>card.classList.remove('no-motion'));
+    }));
+  }
+  // Re-filter only if grading or an edited answer actually changed membership.
+  if(filterMode==='wrong' && cardRecords.some(record=>record.card.hidden===shouldShowQuestion(record.question)))applyFilters();
 }
 function getSetIdFromUrl(){
   const params = new URLSearchParams(location.search);
@@ -789,6 +1251,8 @@ async function loadQuiz(){
     const list = await listRes.json();
     setInfo = list.find(x=>x.id===setId);
     if(!setInfo) throw new Error(`list.json 中没有找到题库 ID：${setId}`);
+    $("legacyQuizLink").href = `/quiz_old.html?set=${encodeURIComponent(setId)}`;
+    $("legacyQuizActions").hidden = false;
     const dataRes = await fetch(setInfo.file, {cache:"no-store"});
     if(!dataRes.ok) throw new Error(`${setInfo.file} HTTP ${dataRes.status}`);
     rawData = await dataRes.json();
@@ -799,21 +1263,29 @@ async function loadQuiz(){
     seed = localStorage.getItem(seedKey());
     if(!seed){ seed = `${Date.now()}-${Math.random()}`; localStorage.setItem(seedKey(), seed); }
     $("title").textContent = rawData.meta?.title || setInfo.title || "答题页";
+    document.title = $("title").textContent;
     $("subtitle").textContent = `${setInfo.desc || ""} ${setInfo.shuffleOptions !== false ? "· 选项乱序已开启" : "· 选项固定"}`;
-    render();
+    const mathReady=render();
+    restoreInnerScroll(mathReady);
   }catch(err){
     $("app").innerHTML = `<div class="error"><b>题库加载失败。</b><br/>${esc(err.message)}<br/><br/>检查：1）是否通过服务器访问；2）data/list.json 的 id 和 file 是否正确；3）题库 JSON 是否是合法 JSON。</div>`;
   }
 }
+document.addEventListener('transitionend', event => {
+  if(event.propertyName !== 'grid-template-rows' ||
+     !event.target.classList?.contains('reveal') ||
+     !event.target.classList.contains('in-motion')) return;
+  event.target.classList.remove('in-motion','animate');
+});
 document.addEventListener("change", e=>{if(e.target.matches('input[type="radio"],input[type="checkbox"]')) onChoiceChange(e.target);});
 document.addEventListener("input", e=>{if(e.target.matches(".blank-input")) onBlankInput(e.target); if(e.target.matches(".short-answer")) onShortInput(e.target);});
-document.addEventListener("click", e=>{const btn=e.target.closest("[data-type-filter]"); if(!btn) return; typeFilter=btn.dataset.typeFilter || "all"; saveState(); render();});
-$("btnGrade").addEventListener("click",()=>{graded=true;showAnswers=true;saveState();render();});
-$("btnToggleAnswers").addEventListener("click",()=>{showAnswers=!showAnswers;$("btnToggleAnswers").textContent=showAnswers?"隐藏答案":"显示答案";saveState();render();});
-$("btnFilterUnanswered").addEventListener("click",()=>{filterMode="unanswered";saveState();render();});
-$("btnFilterWrong").addEventListener("click",()=>{filterMode="wrong";saveState();render();});
-$("btnShowAll").addEventListener("click",()=>{filterMode="all";saveState();render();});
-$("btnClear").addEventListener("click",()=>{answers={};graded=false;saveAnswers();saveState();render();});
+document.addEventListener("click", e=>{const btn=e.target.closest("[data-type-filter]"); if(!btn) return; typeFilter=btn.dataset.typeFilter || "all"; saveState(); applyFilters();});
+$("btnGrade").addEventListener("click",()=>{graded=true;showAnswers=true;saveState();updateFeedback();});
+$("btnToggleAnswers").addEventListener("click",()=>{showAnswers=!showAnswers;saveState();updateFeedback();});
+$("btnFilterUnanswered").addEventListener("click",()=>{filterMode="unanswered";saveState();applyFilters();});
+$("btnFilterWrong").addEventListener("click",()=>{filterMode="wrong";saveState();applyFilters();});
+$("btnShowAll").addEventListener("click",()=>{filterMode="all";saveState();applyFilters();});
+$("btnClear").addEventListener("click",()=>{answers={};graded=false;showAnswers=false;if(filterMode === "wrong") filterMode="all";saveAnswers();saveState();render();});
 $("btnReset").addEventListener("click",()=>{if(confirm("确定清空本题库的作答、判分状态和乱序种子？")){localStorage.removeItem(answerKey());localStorage.removeItem(stateKey());localStorage.removeItem(seedKey());answers={};graded=false;showAnswers=false;filterMode="all";typeFilter="all";seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed);render();}});
 $("btnReshuffle").addEventListener("click",()=>{if(confirm("重新生成选项/题序乱序？已选答案会保留，但显示位置可能变化。")){seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed);render();}});
 $("jumpInput").addEventListener("keydown", e=>{
@@ -822,12 +1294,44 @@ $("jumpInput").addEventListener("keydown", e=>{
   const m = v.match(/^([SMJFQ])?\s*(\d+)$/); if(!m) return;
   const map = {S:"single",M:"multi",J:"judge",F:"blank",Q:"short"};
   const type = map[m[1] || "S"]; const num = m[2];
-  filterMode="all"; typeFilter=type; saveState(); render();
+  filterMode="all"; typeFilter=type; saveState(); applyFilters(false);
   setTimeout(()=>{const el = $(`q-${type}-${num}`); if(el) el.scrollIntoView({behavior:"smooth",block:"start"});},30);
 });
-
+let phoneRevealWidth=window.innerWidth;
+window.addEventListener('resize',()=>{
+  const width=window.innerWidth;
+  if(width!==phoneRevealWidth){
+    phoneRevealWidth=width;
+    finishPhoneReveal();
+    document.documentElement.classList.toggle('ipad-parity',useIPadPresentation());
+  }
+},{passive:true});
+function closeSettings(){
+  const dialog = $("dialog");
+  if (!dialog.open || dialog.classList.contains("closing")) return;
+  if (reducedMotion.matches){ dialog.close(); return; }
+  dialog.classList.add("closing");
+  const finish = event => {
+    if (event.target !== dialog || event.animationName !== "ios-dialog-out") return;
+    dialog.removeEventListener("animationend", finish);
+    dialog.classList.remove("closing");
+    dialog.close();
+  };
+  dialog.addEventListener("animationend", finish);
+}
+$("settings").addEventListener("click", () => $("dialog").showModal());
+$("closeDialog").addEventListener("click", closeSettings);
+$("dialog").addEventListener("cancel", event => { event.preventDefault(); closeSettings(); });
+$("dialog").addEventListener("click", event => { if(event.target === $("dialog")) closeSettings(); });
+document.addEventListener("focusout", e => {
+  if (!(graded || showAnswers) || !e.target.matches(".blank-input, .short-answer")) return;
+  const q = questions.find(item => item.key === e.target.dataset.qkey);
+  if (q) refreshFeedback(e.target.closest(".question"), q);
+});
 loadQuiz();
 </script>
 </body>
 </html>
+
+
 
