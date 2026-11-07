@@ -14,8 +14,10 @@ const results=[];
 async function make(width,height,scheme='light'){
  const context=await browser.newContext({viewport:{width,height},colorScheme:scheme,isMobile:width<900,hasTouch:width<900});
  const page=await context.newPage();
+ // External MathJax CDN must not block responsive UI tests; MathJax is validated separately.
+ await page.route('https://cdn.jsdelivr.net/**',route=>route.abort());
  page.on('pageerror',e=>{results.push('JS ERROR: '+e.message);console.error(e)});
- await page.goto(BASE,{waitUntil:'domcontentloaded'});
+ await page.goto(BASE,{waitUntil:'commit'});
  await page.locator('#qbox .stem').waitFor({timeout:20000});
  await page.waitForTimeout(220);
  return {context,page};
