@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark">
+<base href="/">
+<title>答题页</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png">
+<script>
+window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']],processEscapes:true},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+/* 一题一屏：中性底色，题型只用一个强调色体现 */
+:root{--tc:#3b5bdb;--bg:#f2f3f6;--card:#fff;--ink:#151a24;--mut:#667085;--rule:#e7eaf0;--ok:#12a150;--bad:#e5383b;--warn:#d97706;--okbg:#e6f7ee;--badbg:#fdecec}
+body[data-t=multi]{--tc:#0b8f7a}body[data-t=judge]{--tc:#d9822b}body[data-t=blank]{--tc:#c2255c}body[data-t=short]{--tc:#5f6b7a}
+@media(prefers-color-scheme:dark){:root{--bg:#0b0e13;--card:#151a21;--ink:#eef1f6;--mut:#98a2b3;--rule:#262d38;--ok:#4ade80;--bad:#ff7b7b;--warn:#fbbf24;--okbg:#10291d;--badbg:#351519}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;overflow:hidden;background:var(--bg);transition:background .3s;font-family:system-ui,-apple-system,"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif;line-height:1.6;color:var(--ink)}
+button,input,textarea{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+.app{height:100dvh;max-width:640px;margin:0 auto;display:flex;flex-direction:column}
+.hd{display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 12px 0;color:var(--ink)}
+.ib{flex:none;width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:50%;background:var(--card);color:var(--ink);box-shadow:0 0 0 1px var(--rule);font-size:20px;cursor:pointer}
+.ttl{flex:1;min-width:0;text-align:center;font-size:14px;font-weight:600;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta{display:flex;align-items:flex-end;justify-content:space-between;padding:14px 20px 10px}
+.tchip{border:0;background:color-mix(in srgb,var(--tc) 13%,var(--card));color:var(--tc);font-size:13px;font-weight:700;padding:5px 13px;border-radius:99px;cursor:pointer}
+.cnt{font-size:36px;line-height:1;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.cnt small{font-size:15px;font-weight:500;color:var(--mut);margin-left:4px;letter-spacing:0}
+.seg{height:4px;margin:0 20px 14px;border-radius:9px;background:var(--rule);overflow:hidden}
+.seg i{display:block;height:100%;width:0;background:var(--tc);transition:width .25s}
+.card{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:var(--card);border-radius:26px 26px 0 0;padding:24px 20px 32px;box-shadow:0 -1px 0 var(--rule),0 -10px 30px rgba(20,30,50,.05)}
+#qbox.inr{animation:inr .22s ease}#qbox.inl{animation:inl .22s ease}
+@keyframes inr{from{opacity:0;transform:translateX(28px)}}@keyframes inl{from{opacity:0;transform:translateX(-28px)}}
+@media(prefers-reduced-motion:reduce){#qbox{animation:none!important}}
+.nav{display:flex;gap:10px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:var(--card)}
+.nb{min-height:50px;border-radius:15px;border:1.5px solid var(--rule);background:transparent;font-size:15px;font-weight:700;cursor:pointer}
+.nb:disabled{opacity:.35}
+#btnPrev{flex:1}#btnCard{flex:1.2;font-variant-numeric:tabular-nums}
+#btnNext{flex:1.5;background:var(--tc);border-color:var(--tc);color:#fff}
+.stem{font-size:18px;line-height:1.85;font-weight:500;white-space:pre-wrap;word-break:break-word}
+.stem.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.65;background:var(--rule);border-radius:12px;padding:12px}
+.hint{margin-top:8px;font-size:13px;color:var(--tc);font-weight:600}
+.qi,.ai{margin-top:12px;display:grid;gap:10px}
+.qi figure,.ai figure{margin:0}
+.qi img,.ai img{display:block;max-width:100%;height:auto;border-radius:12px;border:1px solid var(--rule)}
+figcaption{margin-top:4px;color:var(--mut);font-size:12px}
+.opts{display:grid;gap:10px;margin-top:20px}
+.opt{display:flex;gap:12px;align-items:flex-start;min-height:58px;padding:14px;border:1.5px solid var(--rule);border-radius:16px;cursor:pointer;user-select:none;transition:border-color .12s,background .12s}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt .lt{flex:none;width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--rule);color:var(--mut);font-weight:800;font-size:14px}
+.opt .tx{flex:1;padding-top:2px;font-size:16px;white-space:pre-wrap;word-break:break-word}
+.opt:active{transform:scale(.99)}
+.opt:has(input:checked){border-color:var(--tc);background:color-mix(in srgb,var(--tc) 10%,var(--card))}
+.opt:has(input:checked) .lt{background:var(--tc);color:#fff}
+.opts .opt.ok{border-color:var(--ok);background:var(--okbg)}.opts .opt.ok .lt{background:var(--ok);color:#fff}
+.opts .opt.no{border-color:var(--bad);background:var(--badbg)}.opts .opt.no .lt{background:var(--bad);color:#fff}
+.opt.lock{pointer-events:none}
+.bi{display:inline-block;min-width:130px;max-width:100%;margin:2px 4px;padding:5px 10px;border:0;border-bottom:2.5px solid var(--tc);border-radius:8px 8px 0 0;background:color-mix(in srgb,var(--tc) 9%,var(--card));outline:none;font-size:16px;text-align:center}
+.bi.ok{border-color:var(--ok);color:var(--ok)}.bi.no{border-color:var(--bad);color:var(--bad)}
+.ta{width:100%;min-height:150px;margin-top:18px;padding:14px;border:1.5px solid var(--rule);border-radius:16px;background:transparent;outline:none;resize:vertical;font-size:16px;line-height:1.7}
+.ta:focus{border-color:var(--tc)}
+.act{display:block;width:100%;min-height:50px;margin-top:18px;border:0;border-radius:15px;background:var(--tc);color:#fff;font-weight:700;font-size:16px;cursor:pointer}
+.act:disabled{opacity:.35}
+.act.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--rule)}
+.act.bad{background:transparent;color:var(--bad);border:1.5px solid var(--bad)}
+.redo{display:block;margin:14px auto 0;border:0;background:none;color:var(--mut);font-size:13px;text-decoration:underline;cursor:pointer}
+.res{margin-top:18px;padding:14px 16px;border-radius:16px;background:var(--rule);font-size:15px;line-height:1.75;white-space:pre-wrap;word-break:break-word}
+.res.ok{background:var(--okbg)}.res.no{background:var(--badbg)}
+.rt{font-weight:800}.res.ok .rt{color:var(--ok)}.res.no .rt{color:var(--bad)}
+.rx{margin-top:8px;padding-top:8px;border-top:1px dashed var(--rule)}.rx b{display:block;font-size:12px;color:var(--mut)}
+.empty{text-align:center;padding:60px 0;color:var(--mut)}
+.error{padding:16px;border-radius:16px;background:var(--badbg);color:var(--bad)}
+code{background:var(--rule);padding:1px 5px;border-radius:5px}
+.mask{position:fixed;inset:0;z-index:40;background:rgba(5,10,20,.5);opacity:0;pointer-events:none;transition:opacity .2s}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:50;max-width:640px;margin:0 auto;max-height:82dvh;overflow:auto;background:var(--card);border-radius:26px 26px 0 0;padding:8px 18px calc(20px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .24s ease;box-shadow:0 -12px 40px rgba(0,0,0,.28)}
+body.sh .mask{opacity:1;pointer-events:auto}body.sh .sheet{transform:none}
+.grab{width:38px;height:4px;border-radius:9px;background:var(--rule);margin:2px auto 14px}
+.sheet h3{margin:18px 0 8px;font-size:13px;color:var(--mut);font-weight:700}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1.5px solid var(--rule);background:transparent;border-radius:99px;padding:7px 14px;font-size:14px;font-weight:700;cursor:pointer}
+.chip i{font-style:normal;font-weight:400;color:var(--mut);margin-left:4px;font-size:12px}
+.chip.on{background:var(--ink);border-color:var(--ink);color:var(--card)}.chip.on i{color:inherit;opacity:.7}
+.sum{font-size:15px;margin:14px 0 2px}.sum b{font-size:28px;font-variant-numeric:tabular-nums}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.n{min-height:44px;border-radius:12px;border:1.5px solid var(--rule);background:transparent;color:var(--mut);font-weight:700;font-size:14px;cursor:pointer;font-variant-numeric:tabular-nums}
+.n.done{background:color-mix(in srgb,var(--tc) 16%,var(--card));border-color:transparent;color:var(--ink)}
+.n.ok{background:var(--okbg);border-color:var(--ok);color:var(--ok)}.n.bad{background:var(--badbg);border-color:var(--bad);color:var(--bad)}
+.n.warn{border-style:dashed;border-color:var(--warn);color:var(--warn)}
+.n.cur{outline:2.5px solid var(--ink);outline-offset:1px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sb{min-height:46px;border-radius:13px;border:1.5px solid var(--rule);background:transparent;font-size:14px;font-weight:700;cursor:pointer}
+.sb.on{border-color:var(--tc);background:color-mix(in srgb,var(--tc) 12%,var(--card));color:var(--tc)}
+.sb.dg{border-color:var(--bad);color:var(--bad)}
+.tip{font-size:12px;color:var(--mut);margin:6px 0 0}
+.toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--card);border-radius:99px;padding:9px 18px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;white-space:nowrap}
+.toast.show{opacity:1}
+@media(min-width:700px){.grid{grid-template-columns:repeat(10,1fr)}}
+
+/* Claude V2: iOS visual language adapted from the live V5 quiz. */
+:root{color-scheme:light dark;--font-ios:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","PingFang SC","Helvetica Neue",Arial,sans-serif;
+ --bg:#f2f2f7;--card:#fff;--ink:#1c1c1e;--mut:#8e8e93;--rule:rgba(60,60,67,.12);--rule-strong:rgba(60,60,67,.22);
+ --option:#f8f8fa;--option-hover:#f0f0f4;--tc:#007aff;--selected:rgba(0,122,255,.08);
+ --selected-border:rgba(0,122,255,.35);--ok:#34c759;--bad:#ff3b30;--warn:#ff9500;
+ --okbg:rgba(52,199,89,.1);--badbg:rgba(255,59,48,.09);
+ --shadow-card:0 2px 8px -1px rgba(0,0,0,.04),0 12px 24px -4px rgba(0,0,0,.03)}
+body[data-t]{--tc:#007aff;--type-color:#007aff;--type-bg:rgba(0,122,255,.10)}
+body[data-t=multi]{--type-color:#30b0c7;--type-bg:rgba(48,176,199,.12)}
+body[data-t=judge]{--type-color:#ff9500;--type-bg:rgba(255,149,0,.12)}
+body[data-t=blank]{--type-color:#af52de;--type-bg:rgba(175,82,222,.12)}
+body[data-t=short]{--type-color:#5856d6;--type-bg:rgba(88,86,214,.12)}
+@media(prefers-color-scheme:dark){
+ :root{--bg:#000;--card:#1c1c1e;--ink:#f2f2f7;--mut:#8e8e93;
+ --rule:rgba(255,255,255,.12);--rule-strong:rgba(255,255,255,.22);
+ --option:#242426;--option-hover:#2c2c2e;--tc:#0a84ff;--selected:rgba(10,132,255,.16);
+ --selected-border:rgba(10,132,255,.45);--ok:#30d158;--bad:#ff453a;--warn:#ff9f0a;
+ --okbg:rgba(48,209,88,.14);--badbg:rgba(255,69,58,.14);
+ --shadow-card:0 2px 8px rgba(0,0,0,.3),0 12px 28px rgba(0,0,0,.25)}
+ body[data-t]{--tc:#0a84ff;--type-color:#0a84ff}
+}
+body{font-family:var(--font-ios);font-weight:450;letter-spacing:-.012em;-webkit-font-smoothing:antialiased}
+button{transition:transform .18s cubic-bezier(.25,1,.5,1),background-color .2s,border-color .2s,color .2s}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--tc);outline-offset:2px}
+.ib{background:transparent;box-shadow:none;color:var(--tc);border-radius:50%}
+.ib:hover{background:var(--selected)}.ib:active{transform:scale(.92)}
+.ttl{color:var(--ink);font-size:16px;font-weight:600}
+.tchip{background:var(--type-bg);color:var(--type-color);font-size:12px;font-weight:650}
+.cnt{font-size:34px;font-weight:700}
+.seg{height:3.5px;background:rgba(120,120,128,.16)}
+.seg i{background:linear-gradient(90deg,var(--tc),#5856d6);transition:width .3s cubic-bezier(.25,1,.5,1)}
+.card{box-shadow:var(--shadow-card);border:1px solid var(--rule);border-bottom:0}
+.stem{font-size:17px;line-height:1.75;font-weight:550;overflow-wrap:anywhere}
+.stem.code{background:var(--option);border:.5px solid var(--rule)}
+.opt{align-items:center;min-height:50px;padding:11px 14px;border:.5px solid var(--rule);border-radius:14px;background:var(--option);
+ transition:transform .18s cubic-bezier(.25,1,.5,1),background-color .2s,border-color .2s}
+.opt:hover{background:var(--option-hover);border-color:var(--rule-strong)}
+.opt:active{transform:scale(.985)}
+.opt .lt{background:var(--card);border:.5px solid var(--rule);color:var(--mut);font-size:13px;font-weight:650}
+.opt .tx{font-size:15px;line-height:1.55;padding-top:0}
+.opt:has(input:checked){border-color:var(--selected-border);background:var(--selected)}
+.opt:has(input:checked) .lt{background:var(--tc);border-color:transparent;color:#fff}
+.opts .opt.ok,.opts .opt.ok:has(input:checked){border-color:rgba(52,199,89,.45);background:var(--okbg)}
+.opts .opt.ok .lt{background:var(--ok);border-color:transparent;color:#fff}
+.opts .opt.no,.opts .opt.no:has(input:checked){border-color:rgba(255,59,48,.43);background:var(--badbg)}
+.opts .opt.no .lt{background:var(--bad);border-color:transparent;color:#fff}
+.bi{background:var(--selected);min-height:38px}
+.ta{background:var(--option);border:.5px solid var(--rule)}
+.ta:focus{border-color:var(--tc)}
+.act{background:var(--tc);border-radius:14px;font-size:15px;font-weight:600;box-shadow:0 2px 8px rgba(0,122,255,.16)}
+.act:hover:not(:disabled){filter:brightness(1.05)}
+.act:active:not(:disabled){transform:scale(.985)}
+.act.ghost{background:var(--option);color:var(--tc);border:.5px solid var(--rule);box-shadow:none}
+.res{background:var(--option);border:.5px solid var(--rule);border-radius:14px;font-size:14px;line-height:1.65}
+.res.ok{background:var(--okbg);border-color:rgba(52,199,89,.4)}
+.res.no{background:var(--badbg);border-color:rgba(255,59,48,.4)}
+.rx{border-color:var(--rule)}
+.nav{background:var(--card)}
+.nb{min-height:46px;font-weight:600;border:.5px solid var(--rule);border-radius:14px}
+.nb:hover:not(:disabled){background:var(--selected)}
+.nb:active:not(:disabled){transform:scale(.97)}
+#btnNext{color:#fff;box-shadow:0 2px 8px rgba(0,122,255,.24)}
+#btnNext:hover:not(:disabled){background:var(--tc);filter:brightness(1.07)}
+.chip{border:.5px solid var(--rule);background:var(--option);color:var(--mut);font-size:12px;padding:7px 11px;border-radius:99px;font-weight:600}
+.chip:hover{background:var(--selected);color:var(--ink)}
+.chip.on{background:var(--selected);border-color:var(--selected-border);color:var(--tc)}
+.chip.on i{opacity:1}
+.n{border:.5px solid var(--rule);background:var(--option);color:var(--mut);border-radius:11px;min-width:0}
+.n:hover{background:var(--selected);color:var(--ink)}
+.n.done{background:var(--selected);border-color:var(--selected-border);color:var(--tc)}
+.n.ok{background:var(--okbg);border-color:rgba(52,199,89,.45);color:var(--ok)}
+.n.bad{background:var(--badbg);border-color:rgba(255,59,48,.45);color:var(--bad)}
+.n.warn{background:var(--option);border:1px dashed var(--warn);color:var(--warn)}
+.n.cur{outline:2px solid var(--tc);outline-offset:2px;position:relative;z-index:1}
+.sheet{box-shadow:0 -12px 42px rgba(0,0,0,.18);border:1px solid var(--rule);border-bottom:0}
+.sb{border:.5px solid var(--rule);background:var(--option);font-weight:600}
+.sb:hover{background:var(--selected)}
+.sb.on{border-color:var(--selected-border);background:var(--selected)}
+.mask{background:rgba(0,0,0,.42);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+@media(max-width:959px), (max-height:559px){.sheet{padding-bottom:calc(22px + env(safe-area-inset-bottom))}}
+@media(max-height:490px) and (max-width:959px){
+ .hd{padding-top:calc(4px + env(safe-area-inset-top))}
+ .meta{padding-top:5px;padding-bottom:4px}
+ .cnt{font-size:27px}.seg{margin-bottom:7px}
+ .nav{padding-top:6px;padding-bottom:calc(6px + env(safe-area-inset-bottom))}
+ .nb{min-height:40px}
+}
+@media(hover:none) and (pointer:coarse){
+ .opt:hover{background:var(--option);border-color:var(--rule)}
+ .opt:has(input:checked):hover{background:var(--selected);border-color:var(--selected-border)}
+}
+.workspace{height:100dvh}
+.sidebar,.side-toggle{display:none}
+@media(min-width:960px) and (min-height:560px){
+ .workspace{--side-width:320px;--side-gap:20px;display:grid;
+  grid-template-columns:minmax(0,1fr) var(--side-width);gap:var(--side-gap);
+  align-items:stretch;width:calc(100% - 44px);max-width:1240px;margin:0 auto;min-width:0}
+ .workspace.side-left{grid-template-columns:var(--side-width) minmax(0,1fr)}
+ .workspace.side-closed{grid-template-columns:minmax(0,1fr) 0px;gap:0}
+ .workspace.side-left.side-closed{grid-template-columns:0px minmax(0,1fr)}
+ .workspace .app{max-width:840px;width:100%;min-width:0;grid-column:1;grid-row:1;justify-self:end}
+ .workspace.side-left .app{grid-column:2;justify-self:start}
+ .workspace.side-closed .app{justify-self:center}
+ .workspace .hd{padding:calc(12px + env(safe-area-inset-top)) 12px 2px;min-height:60px}
+ .workspace .ttl{font-size:17px}
+ .workspace .meta{padding:17px 22px 12px}
+ .workspace .cnt{font-size:36px}
+ .workspace .seg{margin-left:22px;margin-right:22px}
+ .workspace .card{border:1px solid var(--rule);border-radius:22px;padding:30px clamp(22px,3vw,34px);margin-bottom:12px;min-height:0}
+ .workspace .stem{font-size:17px}
+ .workspace .nav{background:transparent;padding:0 4px calc(18px + env(safe-area-inset-bottom));gap:12px}
+ .workspace .nb{min-height:46px}
+ .workspace:not(.side-closed) #btnCard{display:none}
+ .side-toggle{display:grid}
+ .sidebar{position:relative;display:flex;flex-direction:column;min-width:0;min-height:0;grid-column:2;grid-row:1;
+  margin:14px 0 calc(18px + env(safe-area-inset-bottom));
+  border:1px solid var(--rule);border-radius:22px;background:var(--card);box-shadow:var(--shadow-card)}
+ .workspace.side-left .sidebar{grid-column:1}
+ .workspace.side-closed .sidebar{opacity:0;visibility:hidden;pointer-events:none;overflow:hidden;margin:0;border:0}
+ .sidebar-head{padding:18px 17px 14px;border-bottom:.5px solid var(--rule);flex:none}
+ .sidebar-head-title{display:flex;align-items:center;gap:10px;justify-content:space-between}
+ .sidebar-head-title strong{font-size:16px;font-weight:650;white-space:nowrap}
+ .side-controls{display:flex;gap:4px;align-items:center}
+ .side-mini{background:transparent;border:0;color:var(--mut);min-width:30px;min-height:30px;border-radius:9px;
+  font-size:12px;font-weight:600;padding:4px 8px;cursor:pointer}
+ .side-mini:hover{background:var(--option-hover);color:var(--ink)}
+ .side-mini.active{background:var(--selected);color:var(--tc)}
+ .side-mini:active{transform:scale(.94)}
+ .side-stats{display:flex;flex-wrap:wrap;gap:6px 10px;font-size:12px;color:var(--mut);margin-top:11px;font-variant-numeric:tabular-nums}
+ .side-stats strong{color:var(--ink);font-weight:650}
+ .side-legend{display:flex;gap:8px 12px;flex-wrap:wrap;margin-top:11px;font-size:11px;color:var(--mut)}
+ .side-legend span{display:inline-flex;align-items:center;gap:5px}
+ .side-legend i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--rule-strong)}
+ .side-legend .done{background:var(--tc)}.side-legend .ok{background:var(--ok)}
+ .side-legend .bad{background:var(--bad)}.side-legend .cur{background:transparent;border:2px solid var(--tc)}
+ .sidebar-scroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;
+  padding:14px 16px 22px;scroll-padding-top:12px}
+ .sidebar-scroll .chips{flex-wrap:wrap;overflow:visible;gap:6px;padding:2px 0}
+ .sidebar-scroll .chip{font-size:12px;padding:6px 10px}
+ .sidebar-scroll h3{margin:22px 0 10px;font-size:12px;color:var(--mut);font-weight:650}
+ .sidebar-scroll .sum{margin:14px 0 6px;font-size:13px;color:var(--mut)}
+ .sidebar-scroll .sum b{font-size:22px;color:var(--ink)}
+ .sidebar-scroll .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:8px}
+ .sidebar-scroll .n{min-height:42px;aspect-ratio:1/1;padding:0}
+ .sidebar-scroll .act{min-height:42px;font-size:13px;margin-top:22px}
+ .side-grip{position:absolute;z-index:4;top:3px;bottom:3px;left:-10px;width:20px;cursor:col-resize;
+  touch-action:none;user-select:none;-webkit-user-select:none}
+ .side-grip:before{content:"";position:absolute;top:50%;left:8px;width:4px;height:54px;transform:translateY(-50%);
+  border-radius:99px;background:var(--rule-strong);opacity:.55;transition:opacity .15s,background .15s}
+ .side-grip:hover:before,.side-grip:focus-visible:before,body.side-resizing .side-grip:before{opacity:1;background:var(--tc)}
+ .workspace.side-left .side-grip{left:auto;right:-10px}
+ .workspace.side-left .side-grip:before{left:8px}
+ body.side-resizing,body.side-resizing *{cursor:col-resize!important;user-select:none!important;-webkit-user-select:none!important}
+ .sheet{top:50%;bottom:auto;left:50%;right:auto;max-width:min(500px,calc(100vw - 40px));width:100%;
+  max-height:min(82dvh,760px);border-radius:22px;padding:14px 20px 22px;border:1px solid var(--rule);
+  transform:translate(-50%,-45%) scale(.97);opacity:0;pointer-events:none;transition:transform .24s cubic-bezier(.25,1,.5,1),opacity .2s;
+  box-shadow:0 24px 64px rgba(0,0,0,.24)}
+ body.sh .sheet{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto}
+ .sheet .grab{display:none}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;scroll-behavior:auto!important}}
+
+</style>
+</head>
+<body data-t="single">
+<div class="workspace side-right" id="workspace">
+<div class="app">
+  <header class="hd">
+    <a class="ib" href="/" aria-label="返回主页">‹</a>
+    <div class="ttl" id="title">答题页</div>
+    <button class="ib side-toggle" id="btnSidebar" aria-label="收起答题导航" aria-expanded="true" title="展开或收起侧栏">▣</button>
+    <button class="ib" id="btnMenu" aria-label="设置">⋯</button>
+  </header>
+  <div class="meta"><button class="tchip" id="tchip">单选</button><div class="cnt" id="cnt">0<small>/ 0</small></div></div>
+  <div class="seg"><i id="fill"></i></div>
+  <main class="card" id="card"><div class="empty">正在加载题库...</div></main>
+  <footer class="nav">
+    <button class="nb" id="btnPrev">上一题</button>
+    <button class="nb" id="btnCard">答题卡 <span id="cardCnt"></span></button>
+    <button class="nb" id="btnNext">下一题</button>
+  </footer>
+</div>
+<aside class="sidebar" id="sidebar" aria-label="答题导航侧栏">
+ <div class="side-grip" id="sideGrip" role="separator" tabindex="0" aria-label="拖动调整答题导航宽度，双击恢复默认宽度" aria-orientation="vertical" aria-valuemin="260" aria-valuemax="440" aria-valuenow="320" title="拖动调整宽度，双击恢复默认宽度"></div>
+ <div class="sidebar-head">
+  <div class="sidebar-head-title"><strong>答题导航</strong>
+   <div class="side-controls" aria-label="侧栏布局">
+    <button class="side-mini" data-side-position="left" type="button" aria-label="侧栏在左侧">左侧</button>
+    <button class="side-mini" data-side-position="right" type="button" aria-label="侧栏在右侧">右侧</button>
+    <button class="side-mini" data-side-action="toggle" type="button" aria-label="收起侧栏">收起</button>
+   </div>
+  </div>
+  <div class="side-stats" id="sideStats">正在加载题库...</div>
+  <div class="side-legend" aria-label="题目状态说明">
+   <span><i class="cur"></i>当前</span><span><i></i>未答</span><span><i class="done"></i>已答</span>
+   <span><i class="ok"></i>正确</span><span><i class="bad"></i>错误</span>
+  </div>
+ </div>
+ <div class="sidebar-scroll" id="sidebarScroll"><div id="sidebarContent"></div></div>
+</aside>
+</div>
+<div class="mask" id="mask"></div>
+<section class="sheet" id="sheet"><div class="grab"></div><div id="sb"></div></section>
+<div class="toast" id="toast"></div>
+<script>
+const LETTERS="ABCDEFGHIJKLMNOPQRSTUVWXYZ",LIST_URL="./data/list.json",ORDER=["single","multi","judge","blank","short"];
+const NAMES={single:"单选题",multi:"多选题",judge:"判断题",blank:"填空题",short:"简答题"},SHORT={single:"单选",multi:"多选",judge:"判断",blank:"填空",short:"简答"};
+let setId="",setInfo=null,questions=[],answers={},checked={},graded=false,showAnswers=false,mode="practice",auto=true,filterMode="all",typeFilter="all",seed="",groups={},noMap={},list=[],cur="";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[m]));
+const answerKey=()=>`quiz_answers_${setId}`,seedKey=()=>`quiz_seed_${setId}`,stateKey=()=>`quiz_state_${setId}`,posKey=()=>`quiz_pos_${setId}`;
+const readJSON=(k,f)=>{try{return JSON.parse(localStorage.getItem(k)||"")}catch{return f}};
+const saveAnswers=()=>{localStorage.setItem(answerKey(),JSON.stringify(answers));updateChrome()};
+const saveState=()=>localStorage.setItem(stateKey(),JSON.stringify({graded,showAnswers,filterMode,typeFilter,mode,auto,checked}));
+const normalizeText=s=>String(s??"").trim().replace(/\s+/g," ").toLowerCase();
+const normChoice=a=>String(a??"").toUpperCase().replace(/[^A-Z]/g,"").split("");
+const sameSet=(a,b)=>[...new Set(a)].sort().join("")===[...new Set(b)].sort().join("");
+function hashString(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function mulberry32(a){return()=>{let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+function shuffleDet(arr,key){const o=[...arr],r=mulberry32(hashString(`${seed}|${key}`));for(let i=o.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[o[i],o[j]]=[o[j],o[i]]}return o}
+let toastT;function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),2000)}
+
+
+/* Sidebar controls are isolated from quiz data and preserve mobile drawer behavior. */
+const SIDEBAR_KEY="dashabi_claude_sidebar_v1";
+const SIDE_QUERY="(min-width:960px) and (min-height:560px)";
+const SIDE_DEFAULT_WIDTH=320;
+const sidePrefs=(()=>{
+ const v=readJSON(SIDEBAR_KEY,{});
+ return {
+  position:v?.position==="left"?"left":"right",
+  expanded:v?.expanded!==false,
+  width:Number.isFinite(Number(v?.width))?Math.max(260,Math.min(440,Number(v.width))):SIDE_DEFAULT_WIDTH
+ };
+})();
+const desktopSide=()=>window.matchMedia(SIDE_QUERY).matches;
+let sideFrame=0,sideLastCurrent=null,sideDragging=null;
+function maxSideWidth(){
+ const workspace=$("workspace");
+ return Math.max(260,Math.min(440,(workspace.clientWidth||window.innerWidth-44)-20-470));
+}
+function shownSideWidth(){return Math.min(sidePrefs.width,maxSideWidth())}
+function saveSidePrefs(){try{localStorage.setItem(SIDEBAR_KEY,JSON.stringify(sidePrefs))}catch(e){console.warn("侧栏偏好保存失败",e)}}
+function applySidePrefs(){
+ const workspace=$("workspace"),side=$("sidebar"),width=shownSideWidth();
+ workspace.classList.toggle("side-left",sidePrefs.position==="left");
+ workspace.classList.toggle("side-right",sidePrefs.position==="right");
+ workspace.classList.toggle("side-closed",!sidePrefs.expanded);
+ workspace.style.setProperty("--side-width",width+"px");
+ $("btnSidebar").setAttribute("aria-expanded",String(sidePrefs.expanded));
+ $("btnSidebar").setAttribute("aria-label",sidePrefs.expanded?"收起答题导航":"展开答题导航");
+ side.setAttribute("aria-hidden",String(!desktopSide()||!sidePrefs.expanded));
+ $("sideGrip").setAttribute("aria-valuenow",String(Math.round(width)));
+ $("sideGrip").setAttribute("aria-valuemax",String(Math.round(maxSideWidth())));
+ $("sideGrip").tabIndex=desktopSide()&&sidePrefs.expanded?0:-1;
+ document.querySelectorAll("[data-side-position]").forEach(button=>{
+  const active=button.dataset.sidePosition===sidePrefs.position;
+  button.classList.toggle("active",active);
+  button.setAttribute("aria-pressed",String(active));
+ });
+}
+function setSidePosition(position){
+ if(position!=="left"&&position!=="right")return;
+ sidePrefs.position=position;applySidePrefs();saveSidePrefs();
+}
+function setSideExpanded(expanded){
+ sidePrefs.expanded=!!expanded;applySidePrefs();saveSidePrefs();
+ if(sidePrefs.expanded)refreshSidebar();
+}
+const toggleSide=()=>setSideExpanded(!sidePrefs.expanded);
+function resetSideWidth(){sidePrefs.width=SIDE_DEFAULT_WIDTH;applySidePrefs();saveSidePrefs()}
+function revealCurrentInSide(){
+ if(!desktopSide()||!sidePrefs.expanded)return;
+ const area=$("sidebarScroll"),active=area.querySelector('.n[aria-current="step"]');
+ if(!active)return;
+ const host=area.getBoundingClientRect(),rect=active.getBoundingClientRect();
+ if(rect.top<host.top+12)area.scrollTop-=host.top+12-rect.top;
+ else if(rect.bottom>host.bottom-12)area.scrollTop+=rect.bottom-host.bottom+12;
+}
+function refreshSidebar(){
+ if(!desktopSide()||sideFrame)return;
+ sideFrame=requestAnimationFrame(()=>{
+  sideFrame=0;
+  const area=$("sidebarScroll"),previous=area.scrollTop;
+  $("sidebarContent").innerHTML=cardHTML();
+  area.scrollTop=previous;
+  const s=stat(),number=list.length?idx()+1:0;
+  $("sideStats").innerHTML='当前 <strong>'+number+' / '+list.length+
+    '</strong> · 已答 <strong>'+s.answered+' / '+s.total+'</strong>';
+  if(cur!==sideLastCurrent){sideLastCurrent=cur;revealCurrentInSide()}
+ });
+}
+$("btnSidebar").addEventListener("click",toggleSide);
+document.querySelectorAll("[data-side-position]").forEach(button=>{
+ button.addEventListener("click",()=>setSidePosition(button.dataset.sidePosition));
+});
+document.querySelectorAll('[data-side-action="toggle"]').forEach(button=>{
+ button.addEventListener("click",toggleSide);
+});
+const sideGrip=$("sideGrip");
+sideGrip.addEventListener("pointerdown",event=>{
+ if(event.button!==0||!desktopSide()||!sidePrefs.expanded)return;
+ event.preventDefault();
+ sideDragging={pointerId:event.pointerId,rect:$("sidebar").getBoundingClientRect()};
+ sideGrip.setPointerCapture(event.pointerId);
+ document.body.classList.add("side-resizing");
+});
+sideGrip.addEventListener("pointermove",event=>{
+ if(!sideDragging||sideDragging.pointerId!==event.pointerId)return;
+ const rect=sideDragging.rect;
+ const desired=sidePrefs.position==="right"?rect.right-event.clientX:event.clientX-rect.left;
+ sidePrefs.width=Math.min(440,Math.max(260,Math.round(desired)));
+ applySidePrefs();
+});
+function finishSideDrag(event){
+ if(!sideDragging||sideDragging.pointerId!==event.pointerId)return;
+ sideDragging=null;document.body.classList.remove("side-resizing");
+ if(sideGrip.hasPointerCapture(event.pointerId))sideGrip.releasePointerCapture(event.pointerId);
+ saveSidePrefs();
+}
+sideGrip.addEventListener("pointerup",finishSideDrag);
+sideGrip.addEventListener("pointercancel",finishSideDrag);
+sideGrip.addEventListener("lostpointercapture",()=>{
+ if(sideDragging){sideDragging=null;document.body.classList.remove("side-resizing");saveSidePrefs()}
+});
+sideGrip.addEventListener("dblclick",event=>{event.preventDefault();resetSideWidth()});
+sideGrip.addEventListener("keydown",event=>{
+ if(event.key==="Home"){event.preventDefault();resetSideWidth();return}
+ if(event.key!=="ArrowLeft"&&event.key!=="ArrowRight")return;
+ event.preventDefault();
+ const dx=event.key==="ArrowRight"?16:-16;
+ sidePrefs.width=Math.max(260,Math.min(440,sidePrefs.width+(sidePrefs.position==="right"?-dx:dx)));
+ applySidePrefs();saveSidePrefs();
+});
+window.addEventListener("resize",()=>{applySidePrefs();refreshSidebar()},{passive:true});
+applySidePrefs();
+
+/* ---------- 数据（格式与旧版一致）---------- */
+function normalizeQuestion(q,type,idx){const num=q.num??q.id??idx+1;let options=q.options;if(type==="judge"&&!options)options={A:"对",B:"错"};return{...q,type,num,key:`${type}:${num}`,options}}
+function normalizeData(d){
+  if(Array.isArray(d.questions))return d.questions.map((q,i)=>normalizeQuestion(q,q.type||"single",i));
+  const l=[];ORDER.forEach(t=>(t==="blank"?(d.blank||d.fill||[]):(d[t]||[])).forEach((q,i)=>l.push(normalizeQuestion(q,t,i))));return l;
+}
+function getOptions(q){
+  const e=Object.entries(q.options||{}),sh=setInfo?.shuffleOptions!==false&&!(q.type==="judge"&&setInfo?.shuffleJudge!==true);
+  return(sh?shuffleDet(e,q.key):e).map(([k,t],i)=>({origKey:String(k).toUpperCase(),text:t,display:LETTERS[i]}));
+}
+function blankExpected(q){const s=q.answers??q.answer??[];return Array.isArray(s)?s.map(x=>Array.isArray(x)?x.map(String):[String(x)]):[[String(s)]]}
+const formatBlank=q=>blankExpected(q).map(x=>x.join(" / ")).join("；");
+function correctDisplay(q,o){if(q.type==="short")return String(q.answer??q.reference??"");if(q.type==="blank")return formatBlank(q);const a=normChoice(q.answer);return o.filter(x=>a.includes(x.origKey)).map(x=>x.display).join("")}
+function isAnswered(q){const v=answers[q.key];if(q.type==="multi")return Array.isArray(v)&&v.length>0;if(q.type==="blank")return Array.isArray(v)&&v.some(x=>String(x||"").trim());return String(v||"").trim()!==""}
+function isCorrect(q){
+  if(q.type==="short"||!isAnswered(q))return false;
+  if(q.type==="multi")return sameSet(answers[q.key]||[],normChoice(q.answer));
+  if(q.type==="blank"){const g=Array.isArray(answers[q.key])?answers[q.key]:[answers[q.key]],e=blankExpected(q);return g.length>=e.length&&e.every((a,i)=>a.map(normalizeText).includes(normalizeText(g[i])))}
+  return sameSet([answers[q.key]],normChoice(q.answer));
+}
+const locked=q=>graded||(mode==="practice"&&!!checked[q.key]);
+const revealed=q=>graded||(mode==="practice"&&(!!checked[q.key]||showAnswers));
+const judged=q=>q.type!=="short"&&isAnswered(q)&&locked(q);
+function switchMode(nextMode){
+  if(nextMode===mode)return;
+  // Keep the user's existing answers, but do not carry confirmed answers or
+  // submitted/revealed state into a different mode.
+  mode=nextMode;checked={};graded=false;showAnswers=false;
+  filterMode="all";saveState();buildList();renderCard(true);refreshSheet();
+}
+const byKey=k=>questions.find(q=>q.key===k);
+function imgBlock(l,c,alt){return l.length?`<div class="${c}">${l.map(i=>`<figure><img src="${esc(i.src)}" alt="${esc(i.caption||alt)}" loading="lazy"/>${i.caption?`<figcaption>${esc(i.caption)}</figcaption>`:""}</figure>`).join("")}</div>`:""}
+function mediaList(q,sk,mk){const l=[];sk.forEach(k=>{if(q[k])l.push({src:q[k],caption:q[`${k}Caption`]||q.imageCaption&&k==="image"&&q.imageCaption||""})});mk.forEach(k=>{if(Array.isArray(q[k]))q[k].forEach(i=>{if(typeof i==="string")l.push({src:i,caption:""});else if(i&&i.src)l.push({src:i.src,caption:i.caption||i.title||""})})});return l}
+const qImgs=q=>imgBlock(mediaList(q,["image"],["images"]),"qi","题目图片");
+const aImgs=q=>imgBlock(mediaList(q,["answerImage","solutionImage","explanationImage"],["answerImages","solutionImages","explanationImages"]),"ai","答案图片");
+
+/* ---------- 列表与筛选 ---------- */
+const typeVisible=q=>typeFilter==="all"||q.type===typeFilter;
+function passFilter(q){return filterMode==="unanswered"?!isAnswered(q):filterMode==="wrong"?(judged(q)&&!isCorrect(q)):true}
+function groupQuestions(){let l=[...questions];if(setInfo?.shuffleQuestions)l=shuffleDet(l,"question-order");const g={};ORDER.forEach(t=>g[t]=l.filter(q=>q.type===t));return g}
+function buildList(){
+  groups=groupQuestions();list=[];
+  ORDER.forEach(t=>groups[t].forEach((q,i)=>{noMap[q.key]=i+1;if(typeVisible(q)&&passFilter(q))list.push(q)}));
+  if(!list.some(q=>q.key===cur))cur=list[0]?.key||"";
+}
+const idx=()=>Math.max(0,list.findIndex(q=>q.key===cur));
+function stat(){
+  const s=questions.filter(typeVisible),o=s.filter(q=>q.type!=="short");
+  return{total:s.length,answered:s.filter(isAnswered).length,correct:o.filter(q=>judged(q)&&isCorrect(q)).length,wrong:o.filter(q=>judged(q)&&!isCorrect(q)).length,obj:o.length};
+}
+
+/* ---------- 渲染一道题 ---------- */
+function blankInput(q,i,lk){
+  const v=Array.isArray(answers[q.key])?answers[q.key]:[];let c="bi";
+  if(judged(q))c+=(blankExpected(q)[i]||[]).map(normalizeText).includes(normalizeText(v[i]))?" ok":" no";
+  return`<input class="${c}" data-k="${esc(q.key)}" data-bi="${i}" value="${esc(v[i]||"")}" placeholder="填空 ${i+1}" ${lk?"readonly":""}/>`;
+}
+function stemBlanks(q,lk){
+  let used=0;const s=esc(q.stem||"").replace(/\{\{blank\}\}|_{3,}/g,()=>blankInput(q,used++,lk));
+  return used?s:s+`<div style="margin-top:12px">${blankExpected(q).map((_,i)=>blankInput(q,i,lk)).join(" ")}</div>`;
+}
+function optsHTML(q,opts,rev,lk){
+  const v=answers[q.key],sel=Array.isArray(v)?v:normChoice(v),cor=normChoice(q.answer),j=judged(q);
+  return`<div class="opts">${opts.map(o=>{
+    let c="opt";if(lk)c+=" lock";
+    if(rev&&cor.includes(o.origKey))c+=" ok";else if(j&&sel.includes(o.origKey))c+=" no";
+    return`<label class="${c}"><input type="${q.type==="multi"?"checkbox":"radio"}" name="o" data-k="${esc(q.key)}" value="${esc(o.origKey)}" ${sel.includes(o.origKey)?"checked":""} ${lk?"disabled":""}/><span class="lt">${o.display}</span><span class="tx">${esc(o.text)}</span></label>`}).join("")}</div>`;
+}
+function resHTML(q,opts){
+  const j=judged(q);let cls="res",t;
+  if(q.type==="short")t="参考答案";
+  else if(j){cls+=isCorrect(q)?" ok":" no";t=isCorrect(q)?"✓ 回答正确":"✗ 回答错误"}
+  else t=isAnswered(q)?"正确答案":"未作答";
+  const body=(j&&isCorrect(q))?"":(q.type==="short"?"":"正确答案：")+esc(correctDisplay(q,opts)||"暂无");
+  return`<div class="${cls}"><div class="rt">${t}</div>${body?`<div>${body}</div>`:""}${q.explanation?`<div class="rx"><b>解析</b>${esc(q.explanation)}</div>`:""}${aImgs(q)}</div>`;
+}
+function renderQ(q){
+  const lk=locked(q),rev=revealed(q),opts=q.options?getOptions(q):[];
+  let h=`<div class="stem${q.code?" code":""}">${q.type==="blank"?stemBlanks(q,lk):esc(q.stem||"")}</div>${qImgs(q)}`;
+  if(q.type==="multi")h+=`<div class="hint">可选多项，选好后点「确认答案」</div>`;
+  if(q.type==="short")h+=`<textarea class="ta" data-k="${esc(q.key)}" placeholder="写下你的答案，会自动保存" ${lk?"readonly":""}>${esc(answers[q.key]||"")}</textarea>`;
+  else if(q.type!=="blank")h+=optsHTML(q,opts,rev,lk);
+  if(mode==="practice"&&!lk){
+    if(q.type==="multi"||q.type==="blank")h+=`<button class="act" data-act="check" ${isAnswered(q)?"":"disabled"}>确认答案</button>`;
+    if(q.type==="short")h+=`<button class="act ghost" data-act="check">查看参考答案</button>`;
+  }
+  if(rev)h+=resHTML(q,opts);
+  if(mode==="practice"&&checked[q.key]&&!graded)h+=`<button class="redo" data-act="redo">重做本题</button>`;
+  return h;
+}
+function typesetMath(el){if(window.MathJax&&MathJax.typesetPromise){MathJax.typesetClear&&MathJax.typesetClear();MathJax.typesetPromise([el]).catch(()=>{})}}
+function renderCard(keep){
+  const c=$("card"),top=c.scrollTop;
+  if(!list.length){c.innerHTML=`<div class="empty">当前筛选条件下没有题目<button class="act ghost" data-act="allf">显示全部题目</button></div>`;updateChrome();return}
+  const q=byKey(cur)||list[0];
+  document.body.dataset.t=q.type;
+  c.innerHTML=`<div id="qbox">${renderQ(q)}</div>`;
+  c.scrollTop=keep?top:0;
+  localStorage.setItem(posKey(),cur);
+  updateChrome();typesetMath(c);
+}
+function updateChrome(){
+  const s=stat(),i=idx(),q=list[i],last=list.length&&i===list.length-1;
+  $("cnt").innerHTML=`${list.length?i+1:0}<small>/ ${list.length}</small>`;
+  $("tchip").textContent=q?SHORT[q.type]+(filterMode==="wrong"?" · 错题":filterMode==="unanswered"?" · 未答":""):"—";
+  $("fill").style.width=(s.total?s.answered/s.total*100:0)+"%";
+  $("cardCnt").textContent=`${s.answered}/${s.total}`;
+  $("btnPrev").disabled=i<=0;
+  const canSubmit=last&&!graded&&mode==="exam"&&filterMode==="all"&&typeFilter==="all";
+  $("btnNext").textContent=last?(canSubmit?"交卷":"答题卡"):"下一题";
+  $("btnNext").disabled=!list.length;
+  refreshSidebar();
+}
+function go(i,dir){
+  if(i<0||i>=list.length)return;
+  cur=list[i].key;renderCard(false);
+  const b=$("qbox");if(b&&dir)b.classList.add(dir>0?"inr":"inl");
+}
+const next=()=>{const i=idx();if(i<list.length-1)go(i+1,1);else if(!graded&&mode==="exam"&&filterMode==="all"&&typeFilter==="all")submit();else if(desktopSide()){if(!sidePrefs.expanded)setSideExpanded(true);else revealCurrentInSide()}else openSheet("card")};
+const prev=()=>go(idx()-1,-1);
+
+/* ---------- 底部面板 ---------- */
+function nCls(q){
+  let c=judged(q)?(isCorrect(q)?"ok":"bad"):(graded&&q.type!=="short"&&!isAnswered(q))?"warn":isAnswered(q)?"done":"";
+  return c+(q.key===cur?" cur":"");
+}
+function cardHTML(){
+  const s=stat(),cnt={};questions.forEach(q=>cnt[q.type]=(cnt[q.type]||0)+1);
+  let h=`<div class="chips">${["all",...ORDER.filter(t=>cnt[t])].map(t=>`<button class="chip${typeFilter===t?" on":""}" data-tf="${t}">${t==="all"?"全部":SHORT[t]}<i>${t==="all"?questions.length:cnt[t]}</i></button>`).join("")}</div>`;
+  h+=graded?`<div class="sum">已交卷 · 客观题正确率 <b>${s.obj?Math.round(s.correct/s.obj*100):0}%</b>（对 ${s.correct} · 错 ${s.wrong} · 未答 ${s.obj-s.correct-s.wrong}）</div>`:`<div class="sum">已答 <b>${s.answered}</b> / ${s.total}</div>`;
+  h+=`<h3>筛选</h3><div class="chips">${[["all","全部"],["unanswered","只看未答"],["wrong","只看错题"]].map(([k,n])=>`<button class="chip${filterMode===k?" on":""}" data-ff="${k}">${n}</button>`).join("")}</div>`;
+  ORDER.forEach(t=>{
+    if(typeFilter!=="all"&&typeFilter!==t)return;
+    if(!groups[t]?.length)return;
+    h+=`<h3>${NAMES[t]}</h3><div class="grid">${groups[t].map((q,i)=>`<button class="n ${nCls(q)}" data-g="${esc(q.key)}" title="${esc(NAMES[t]+" "+(i+1)+" · 原题 "+q.num)}" aria-label="${esc(NAMES[t]+" "+(i+1))}" ${q.key===cur?'aria-current="step"':""}>${i+1}</button>`).join("")}</div>`;
+  });
+  h+=graded?`<button class="act ghost" data-act="clear">重新作答</button>`:`<button class="act" data-act="submit">交卷判分</button>`;
+  return h;
+}
+function menuHTML(){
+  const on=b=>b?" on":"";
+  return`<h3>练习方式</h3><div class="g2"><button class="sb${on(mode==="practice")}" data-mode="practice">即时对错</button><button class="sb${on(mode==="exam")}" data-mode="exam">考试模式</button></div>
+  <p class="tip">切换模式保留作答，但会清除判分、已确认和显示答案状态。即时对错：选完马上看对错和解析；考试模式：交卷后统一判分。</p>
+  <h3>选项</h3><div class="g2"><button class="sb${on(auto)}" data-act="auto" ${mode==="exam"?"disabled":""}>答对自动下一题：${auto?"开":"关"}</button><button class="sb${on(showAnswers)}" data-act="ans" ${mode==="exam"&&!graded?"disabled":""}>显示答案：${showAnswers?"开":"关"}</button></div>
+  ${mode==="exam"&&!graded?`<p class="tip">考试模式在交卷前不能查看答案。</p>`:""}
+  <h3>题序</h3><div class="g2"><button class="sb" data-act="shuffle">重新乱序</button></div>
+  <h3>清除数据</h3><div class="g2"><button class="sb" data-act="clear">清空作答</button><button class="sb dg" data-act="reset">清空本题库保存</button></div>`;
+}
+function openSheet(k){$("sb").innerHTML=k==="card"?cardHTML():menuHTML();$("sheet").dataset.k=k;document.body.classList.add("sh")}
+const closeSheet=()=>document.body.classList.remove("sh");
+function openNavigation(){if(desktopSide()){if(!sidePrefs.expanded)setSideExpanded(true);else revealCurrentInSide()}else openSheet("card")}
+function refreshSheet(){if(document.body.classList.contains("sh"))openSheet($("sheet").dataset.k)}
+function jumpTo(key){
+  const q=byKey(key);if(!q)return;closeSheet();
+  if(!list.some(x=>x.key===key)){filterMode="all";if(typeFilter!=="all")typeFilter=q.type;saveState();buildList()}
+  cur=key;renderCard(false);
+}
+function applyFilter(){saveState();buildList();renderCard(false)}
+function submit(){
+  const left=questions.filter(q=>!isAnswered(q)).length;
+  if(left>0&&!confirm(`还有 ${left} 题没做，确定交卷吗？`))return;
+  graded=true;saveState();buildList();renderCard(true);
+  if(desktopSide()){closeSheet();toast("已交卷，结果已同步到侧栏")}else openSheet("card");
+}
+const acts={
+  check(){const q=byKey(cur);if(!q||mode!=="practice"||locked(q))return;checked[q.key]=true;saveState();renderCard(true)},
+  redo(){const q=byKey(cur);if(!q||mode!=="practice"||graded)return;delete answers[q.key];delete checked[q.key];showAnswers=false;saveAnswers();saveState();renderCard(true)},
+  allf(){filterMode="all";typeFilter="all";applyFilter()},
+  submit,
+  auto(){auto=!auto;saveState();refreshSheet()},
+  ans(){if(mode==="exam"&&!graded){toast("考试模式交卷前不能查看答案");return}showAnswers=!showAnswers;saveState();renderCard(true);refreshSheet()},
+  shuffle(){if(confirm("重新生成选项和题序的乱序？已选答案会保留。")){seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed);closeSheet();buildList();renderCard(false)}},
+  clear(){if(confirm("清空本题库的所有作答？此操作不可撤销。")){answers={};checked={};graded=false;showAnswers=false;saveAnswers();saveState();closeSheet();buildList();renderCard(false);toast("已清空作答")}},
+  reset(){if(confirm("确定清空本题库的作答、判分状态和乱序种子？此操作不可撤销。")){
+    [answerKey(),stateKey(),seedKey(),posKey()].forEach(k=>localStorage.removeItem(k));
+    answers={};checked={};graded=false;showAnswers=false;mode="practice";auto=true;filterMode="all";typeFilter="all";cur="";
+    seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed);closeSheet();buildList();renderCard(false);toast("已清空本题库保存")}}
+};
+
+/* ---------- 事件 ---------- */
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-act],[data-tf],[data-ff],[data-g],[data-mode]");if(!t)return;
+  const d=t.dataset;
+  if(d.act)acts[d.act]();
+  else if(d.g)jumpTo(d.g);
+  else if(d.mode) switchMode(d.mode)
+  else if(d.tf){typeFilter=d.tf;cur="";saveState();buildList();renderCard(false);refreshSheet()}
+  else if(d.ff){
+    if(d.ff==="wrong"&&!questions.some(q=>judged(q)&&!isCorrect(q))){toast("还没有答错的题");return}
+    filterMode=d.ff;cur="";closeSheet();applyFilter();
+  }
+});
+document.addEventListener("change",e=>{
+  const i=e.target;if(!i.matches("#card input[type=radio],#card input[type=checkbox]"))return;
+  const q=byKey(i.dataset.k);if(!q)return;
+  if(q.type==="multi")answers[q.key]=[...document.querySelectorAll(`#card input[type=checkbox]:checked`)].map(x=>x.value);
+  else answers[q.key]=i.value;
+  saveAnswers();
+  const instant=mode==="practice"&&q.type!=="multi";
+  if(instant){checked[q.key]=true;saveState()}
+  renderCard(true);
+  if(instant&&auto&&isCorrect(q))setTimeout(()=>{if(cur===q.key&&!graded)next()},700);
+});
+document.addEventListener("input",e=>{
+  const i=e.target,q=byKey(i.dataset.k);if(!q)return;
+  if(i.matches(".bi")){const v=Array.isArray(answers[q.key])?[...answers[q.key]]:Array(blankExpected(q).length).fill("");v[+i.dataset.bi]=i.value;answers[q.key]=v}
+  else if(i.matches(".ta"))answers[q.key]=i.value;
+  else return;
+  saveAnswers();
+  const b=document.querySelector('[data-act="check"]');if(b&&q.type==="blank")b.disabled=!isAnswered(q);
+});
+let sx=0,sy=0;
+$("card").addEventListener("touchstart",e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+$("card").addEventListener("touchend",e=>{
+  if(e.target.closest("input,textarea"))return;
+  const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+  if(Math.abs(dx)>70&&Math.abs(dy)<45){dx<0?next():prev()}
+},{passive:true});
+document.addEventListener("keydown",e=>{
+  if(document.body.classList.contains("sh")){if(e.key==="Escape")closeSheet();return}
+  if(e.target.matches("input,textarea,[role=separator]")||e.target.closest("#sidebar"))return;
+  if(e.key==="ArrowRight")next();else if(e.key==="ArrowLeft")prev();
+});
+$("btnPrev").onclick=prev;$("btnNext").onclick=next;
+$("btnCard").onclick=openNavigation;$("tchip").onclick=openNavigation;
+$("btnMenu").onclick=()=>openSheet("menu");$("mask").onclick=closeSheet;
+
+/* ---------- 加载 ---------- */
+function getSetIdFromUrl(){
+  const p=new URLSearchParams(location.search).get("set");if(p)return p;
+  const m=location.pathname.match(/^\/q\/([^/]+)\/?$/);return m?decodeURIComponent(m[1]):"";
+}
+async function loadQuiz(){
+  setId=getSetIdFromUrl();
+  if(!setId){$("card").innerHTML=`<div class="error"><b>缺少题库参数。</b><br/>请从 <a href="/"><u>主页</u></a> 选择题库，或使用 <code>/q/题库ID</code> 打开。旧链接 <code>quiz.html?set=题库ID</code> 仍兼容。</div>`;return}
+  try{
+    const lr=await fetch(LIST_URL,{cache:"no-store"});if(!lr.ok)throw new Error(`list.json HTTP ${lr.status}`);
+    setInfo=(await lr.json()).find(x=>x.id===setId);if(!setInfo)throw new Error(`list.json 中没有找到题库 ID：${setId}`);
+    const dr=await fetch(setInfo.file,{cache:"no-store"});if(!dr.ok)throw new Error(`${setInfo.file} HTTP ${dr.status}`);
+    const raw=await dr.json();questions=normalizeData(raw);
+    answers=readJSON(answerKey(),{});
+    const st=readJSON(stateKey(),{});
+    graded=!!st.graded;showAnswers=!!st.showAnswers;filterMode=st.filterMode||"all";typeFilter=st.typeFilter||"all";
+    mode=st.mode==="exam"?"exam":"practice";auto=st.auto!==false;checked=st.checked&&typeof st.checked==="object"?st.checked:{};
+    seed=localStorage.getItem(seedKey());if(!seed){seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed)}
+    const title=raw.meta?.title||setInfo.title||"答题页";
+    $("title").textContent=title;document.title=title;
+    cur=localStorage.getItem(posKey())||"";
+    buildList();renderCard(false);
+  }catch(err){
+    $("card").innerHTML=`<div class="error"><b>题库加载失败。</b><br/>${esc(err.message)}<br/><br/>检查：1）是否通过服务器访问；2）data/list.json 的 id 和 file 是否正确；3）题库 JSON 是否合法。</div>`;
+  }
+}
+loadQuiz();
+</script>
+</body>
+</html>
