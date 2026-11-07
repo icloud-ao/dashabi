@@ -1,5 +1,31 @@
 [
   {
+    "id": "modern-cryptography-jkb-2026",
+    "title": "现代密码学期末复习题库（jkb版）",
+    "desc": "jkb版｜94题｜单选26、多选5、判断20、填空26、简答8、计算5、案例4｜附答案解析",
+    "subject": "现代密码学",
+    "semesterGroup": "current",
+    "tags": [
+      "本学期",
+      "现代密码学",
+      "jkb版",
+      "期末复习",
+      "答案解析"
+    ],
+    "shuffleOptions": false,
+    "shuffleJudge": false,
+    "shuffleQuestions": false,
+    "durationMinutes": 0,
+    "enabled": true,
+    "file": "./data/questions/modern_cryptography_jkb_2026.json",
+    "single": 26,
+    "multi": 5,
+    "judge": 20,
+    "blank": 26,
+    "short": 17,
+    "total": 94
+  },
+  {
     "id": "probability-key-points-2026",
     "title": "概率论重点题目汇编（第一至第四章）",
     "desc": "25道重点题＋9道公式与知识点附录（含六种常见分布均值表）｜答案与解析",
