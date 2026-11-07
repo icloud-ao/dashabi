@@ -122,6 +122,36 @@ html.ios-inner-scroll #quizScroll{
   scroll-padding-top:175px;overflow-anchor:none;
 }
 @media(max-width:640px){html.ios-inner-scroll #quizScroll{scroll-padding-top:195px}}
+
+/* Search stays separate from quiz state and uses the existing dialog palette. */
+#btnSearch{width:44px;height:44px}
+#btnSearch:disabled{opacity:.4;cursor:default}
+#searchDialog{width:min(580px,calc(100% - 32px))}
+.search-body{display:flex;flex-direction:column;max-height:calc(min(85dvh,760px) - 58px)}
+.search-controls{padding:14px 18px 8px}
+.search-input{width:100%;min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--option);font-size:16px}
+.search-input:focus{background:var(--card);border-color:var(--tc)}
+.search-options{display:flex;align-items:center;min-height:44px;gap:9px;font-size:14px;cursor:pointer}
+.search-options input{width:18px;height:18px;margin:0;accent-color:var(--tc)}
+.search-help{margin:0;color:var(--mut);font-size:12px;line-height:1.5}
+.search-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:35px;color:var(--mut);font-size:13px}
+.search-clear{min-height:36px;padding:0 8px;background:transparent;color:var(--tc);border-radius:8px;font-size:13px}
+.search-list{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 18px 18px}
+.search-result{display:block;width:100%;min-height:48px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--option);text-align:left;line-height:1.5;overflow-wrap:anywhere}
+.search-result+.search-result{margin-top:8px}
+.search-result>span{display:block}
+.search-result>span+span{margin-top:5px}
+.search-result:hover{background:var(--option-hover)}
+.search-result:active{transform:scale(.99)}
+.search-result-title{font-size:13px;font-weight:650;color:var(--tc)}
+.search-result-stem{font-size:14px;color:var(--ink)}
+.search-result-context{font-size:13px;color:var(--mut)}
+.search-empty{margin:8px 0 12px;color:var(--mut);font-size:14px}
+mark.search-mark{padding:0;border-radius:3px;background:#ffe09a;color:#382700}
+@media(prefers-color-scheme:dark){mark.search-mark{background:#715a22;color:#fff2bd}}
+.search-match-preview{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--option);font-size:14px;line-height:1.6;overflow-wrap:anywhere}
+.search-match-label{color:var(--mut);font-size:12px;font-weight:600}
+.search-match-line{margin-top:5px;white-space:pre-wrap}
 </style>
 </head>
 <body>
@@ -132,6 +162,7 @@ html.ios-inner-scroll #quizScroll{
       <a class="icon" href="/" aria-label="返回主页">‹</a>
       <div class="title" id="title">答题页</div>
       <div class="progress-label" id="statsTop"><b id="answeredCount">0</b> / <span id="totalCount">0</span> 已答</div>
+      <button class="icon" id="btnSearch" type="button" aria-label="搜索题目" title="搜索题目" disabled><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 4.3 4.3"/></svg></button>
       <button class="icon" id="settings" type="button" aria-label="设置">⋯</button>
     </div>
     <div class="bar" role="progressbar" aria-label="答题进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress"><span></span></div>
@@ -157,6 +188,18 @@ html.ios-inner-scroll #quizScroll{
   <div id="app"><div class="empty">正在加载题库...</div></div>
 </main>
 </div>
+<dialog id="searchDialog" class="mathjax_ignore" aria-labelledby="searchTitle">
+  <div class="dialog-head"><span id="searchTitle">搜索题目</span><button class="icon" id="closeSearch" type="button" aria-label="关闭搜索">×</button></div>
+  <div class="search-body">
+    <div class="search-controls">
+      <input class="search-input" id="searchInput" type="search" aria-label="搜索关键词" placeholder="输入关键词，如 TCP 拥塞" autocomplete="off">
+      <label class="search-options"><input id="searchIncludeAnswers" type="checkbox">包含答案和解析</label>
+      <p class="search-help">空格分隔关键词，需全部匹配。定位被筛选隐藏的题目时将显示全部题目。</p>
+      <div class="search-meta"><span id="searchStatus" role="status" aria-live="polite">输入关键词开始搜索</span><button class="search-clear" id="clearSearchHighlight" type="button" hidden>清除高亮</button></div>
+    </div>
+    <div class="search-list" id="searchResults" aria-label="搜索结果"></div>
+  </div>
+</dialog>
 <dialog id="dialog" aria-labelledby="dialogTitle">
   <div class="dialog-head"><span id="dialogTitle">设置</span><button class="icon" id="closeDialog" type="button" aria-label="关闭">×</button></div>
   <div class="dialog-body">
@@ -436,6 +479,9 @@ function typesetMath(){
 function render(){
   finishPhoneReveal();
   stopReadingAnchor();
+  clearSearchHighlight();
+  searchIndex = [];
+  searchMatches = [];
   const groups = groupQuestions();
   const titles = {single:"单选题",multi:"多选题",judge:"判断题",blank:"填空题",short:"简答题"};
   const order = ["single","multi","judge","blank","short"];
@@ -448,6 +494,7 @@ function render(){
   const orderedQuestions = order.flatMap(type => groups[type]);
   cardRecords = [...$("app").querySelectorAll(".question")].map((card,index) => ({card, question:orderedQuestions[index]}));
   sectionRecords = [...$("app").querySelectorAll(".section")].map(section => ({section, cards:[...section.querySelectorAll(".question")]}));
+  $("btnSearch").disabled = cardRecords.length === 0;
   if(usePhoneReveal()){
     document.documentElement.classList.add('phone-reveal-enabled');
     initializePhoneRevealCards(cardRecords.map(record=>record.card));
@@ -1271,6 +1318,219 @@ async function loadQuiz(){
     $("app").innerHTML = `<div class="error"><b>题库加载失败。</b><br/>${esc(err.message)}<br/><br/>检查：1）是否通过服务器访问；2）data/list.json 的 id 和 file 是否正确；3）题库 JSON 是否是合法 JSON。</div>`;
   }
 }
+
+let searchIndex = [];
+let searchMatches = [];
+let searchMarks = [];
+let searchPreview = null;
+
+function searchWords(){
+  const value = $("searchInput").value.trim().toLowerCase();
+  return value ? [...new Set(value.split(/\s+/))] : [];
+}
+function searchField(label, value){
+  const text = String(value ?? "");
+  return {label, text, folded:text.toLowerCase()};
+}
+function buildSearchIndex(){
+  searchIndex = cardRecords.map(record => {
+    const q = record.question;
+    const options = getOptions(q);
+    const basic = [searchField("题干", q.stem), ...options.map(option =>
+      searchField(`选项 ${option.display}`, option.text))];
+    const extra = [searchField("答案", correctDisplay(q, options)), searchField("解析", q.explanation)];
+    return {
+      record, basic, extra,
+      basicText:basic.map(field => field.folded).join("\n"),
+      allText:[...basic, ...extra].map(field => field.folded).join("\n"),
+      label:record.card.querySelector(".type-badge").textContent.trim()
+    };
+  });
+}
+function searchPattern(words){
+  const escaped = words.map(word => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  return new RegExp(escaped.sort((a,b) => b.length - a.length).join("|"), "gi");
+}
+function appendSearchText(parent, text, pattern, marks){
+  pattern.lastIndex = 0;
+  let previous = 0;
+  let match;
+  while((match = pattern.exec(text))){
+    parent.append(document.createTextNode(text.slice(previous, match.index)));
+    const mark = document.createElement("mark");
+    mark.className = "search-mark";
+    mark.textContent = match[0];
+    parent.append(mark);
+    if(marks) marks.push(mark);
+    previous = match.index + match[0].length;
+  }
+  parent.append(document.createTextNode(text.slice(previous)));
+}
+function searchExcerpt(field, words){
+  const positions = words.map(word => field.folded.indexOf(word)).filter(index => index >= 0);
+  const first = positions.length ? Math.min(...positions) : 0;
+  const start = Math.max(0, first - 28);
+  const end = Math.min(field.text.length, Math.max(start + 100, first + Math.max(...words.map(word => word.length)) + 12));
+  return `${start ? "…" : ""}${field.text.slice(start, end)}${end < field.text.length ? "…" : ""}`;
+}
+function renderSearchResults(){
+  const words = searchWords();
+  const includeAnswers = $("searchIncludeAnswers").checked;
+  const results = $("searchResults");
+  results.replaceChildren();
+  searchMatches = [];
+  if(!words.length){
+    $("searchStatus").textContent = "输入关键词开始搜索";
+    return;
+  }
+  searchMatches = searchIndex.filter(entry => {
+    const text = includeAnswers ? entry.allText : entry.basicText;
+    return words.every(word => text.includes(word));
+  });
+  $("searchStatus").textContent = `找到 ${searchMatches.length} 道题`;
+  if(!searchMatches.length){
+    const empty = document.createElement("p");
+    empty.className = "search-empty";
+    empty.textContent = "没有找到匹配的题目。";
+    results.append(empty);
+    return;
+  }
+  const pattern = searchPattern(words);
+  const fragment = document.createDocumentFragment();
+  searchMatches.forEach((entry, index) => {
+    const fields = includeAnswers ? [...entry.basic, ...entry.extra] : entry.basic;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "search-result";
+    button.dataset.searchIndex = String(index);
+    const title = document.createElement("span");
+    title.className = "search-result-title";
+    title.textContent = entry.label;
+    button.append(title);
+    const stem = document.createElement("span");
+    stem.className = "search-result-stem";
+    appendSearchText(stem, searchExcerpt(fields[0], words), pattern);
+    button.append(stem);
+    const contexts = new Set();
+    for(const word of words){
+      const field = fields.find(item => item.folded.includes(word));
+      if(field && field !== fields[0]) contexts.add(field);
+    }
+    for(const field of contexts){
+      const context = document.createElement("span");
+      context.className = "search-result-context";
+      context.append(document.createTextNode(`${field.label}：`));
+      appendSearchText(context, searchExcerpt(field, words), pattern);
+      button.append(context);
+    }
+    fragment.append(button);
+  });
+  results.append(fragment);
+}
+function clearSearchHighlight(){
+  const parents = new Set();
+  for(const mark of searchMarks){
+    if(!mark.isConnected) continue;
+    const parent = mark.parentNode;
+    mark.replaceWith(document.createTextNode(mark.textContent));
+    parents.add(parent);
+  }
+  for(const parent of parents) parent.normalize();
+  searchMarks = [];
+  if(searchPreview) searchPreview.remove();
+  searchPreview = null;
+  $("clearSearchHighlight").hidden = true;
+}
+function highlightSearchCard(entry, words, includeAnswers){
+  clearSearchHighlight();
+  const card = entry.record.card;
+  const pattern = searchPattern(words);
+  const nodes = [];
+  const selectors = includeAnswers && showAnswers
+    ? ".stem, .opt .text, .result-value:not(.user-answer), .result-explanation"
+    : ".stem, .opt .text";
+  for(const container of card.querySelectorAll(selectors)){
+    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+    while(walker.nextNode()){
+      const node = walker.currentNode;
+      if(node.parentElement.closest("mjx-container, math, script, style, textarea, .result-label")) continue;
+      // Leave untypeset TeX intact; its matching excerpt is shown separately.
+      if(/\$|\\[([]/.test(node.nodeValue)) continue;
+      nodes.push(node);
+    }
+  }
+  for(const node of nodes){
+    pattern.lastIndex = 0;
+    if(!pattern.test(node.nodeValue)) continue;
+    const fragment = document.createDocumentFragment();
+    appendSearchText(fragment, node.nodeValue, pattern, searchMarks);
+    node.replaceWith(fragment);
+  }
+  const markedText = searchMarks.map(mark => mark.textContent.toLowerCase());
+  const missing = words.filter(word => !markedText.some(text => text.includes(word)));
+  if(missing.length){
+    const fields = includeAnswers ? [...entry.basic, ...entry.extra] : entry.basic;
+    const matchedFields = new Set();
+    for(const word of missing){
+      const field = fields.find(item => item.folded.includes(word));
+      if(field) matchedFields.add(field);
+    }
+    if(matchedFields.size){
+      searchPreview = document.createElement("div");
+      searchPreview.className = "search-match-preview mathjax_ignore";
+      const heading = document.createElement("div");
+      heading.className = "search-match-label";
+      heading.textContent = "搜索匹配";
+      searchPreview.append(heading);
+      for(const field of matchedFields){
+        const line = document.createElement("div");
+        line.className = "search-match-line";
+        line.append(document.createTextNode(`${field.label}：`));
+        appendSearchText(line, searchExcerpt(field, missing), pattern);
+        searchPreview.append(line);
+      }
+      card.insertBefore(searchPreview, card.querySelector(".reveal"));
+    }
+  }
+  $("clearSearchHighlight").hidden = !searchMarks.length && !searchPreview;
+}
+function locateSearchResult(index){
+  const entry = searchMatches[index];
+  const words = searchWords();
+  if(!entry || !words.length || !entry.record.card.isConnected) return;
+  finishPhoneReveal();
+  stopReadingAnchor();
+  if(entry.record.card.hidden){
+    typeFilter = "all";
+    filterMode = "all";
+    saveState();
+    applyFilters(false);
+  }
+  highlightSearchCard(entry, words, $("searchIncludeAnswers").checked);
+  $("searchDialog").close();
+  requestAnimationFrame(() => entry.record.card.scrollIntoView({behavior:reducedMotion.matches ? "auto" : "smooth", block:"start"}));
+}
+$('btnSearch').addEventListener('click', () => {
+  buildSearchIndex();
+  renderSearchResults();
+  $('searchDialog').showModal();
+  $('searchInput').focus();
+});
+$('closeSearch').addEventListener('click', () => $('searchDialog').close());
+$('searchDialog').addEventListener('click', event => {if(event.target === $('searchDialog')) $('searchDialog').close();});
+$('searchInput').addEventListener('input', () => {clearSearchHighlight(); renderSearchResults();});
+$('searchIncludeAnswers').addEventListener('change', () => {clearSearchHighlight(); renderSearchResults();});
+$('clearSearchHighlight').addEventListener('click', clearSearchHighlight);
+$('searchResults').addEventListener('click', event => {
+  const button = event.target.closest('[data-search-index]');
+  if(button) locateSearchResult(Number(button.dataset.searchIndex));
+});
+$('searchInput').addEventListener('keydown', event => {
+  if(event.isComposing || event.keyCode === 229) return;
+  if(event.key === 'Escape'){event.preventDefault();$('searchDialog').close();return;}
+  if(event.key === 'Enter' && searchMatches.length){event.preventDefault();locateSearchResult(0);}
+});
+
 document.addEventListener('transitionend', event => {
   if(event.propertyName !== 'grid-template-rows' ||
      !event.target.classList?.contains('reveal') ||
