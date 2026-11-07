@@ -1,5 +1,31 @@
 [
   {
+    "id": "network-attack-defense-combined-tests-2026",
+    "title": "网络攻防_结合三次单元测试版",
+    "desc": "68道单元测试原题＋2道考试范围例题＋30项未覆盖知识点汇总",
+    "subject": "网络攻防技术与项目实战",
+    "semesterGroup": "current",
+    "tags": [
+      "本学期",
+      "网络攻防",
+      "期末复习",
+      "结合三次单元测试版",
+      "知识点汇总"
+    ],
+    "shuffleOptions": false,
+    "shuffleJudge": false,
+    "shuffleQuestions": false,
+    "durationMinutes": 0,
+    "enabled": true,
+    "file": "./data/questions/network_attack_defense_combined_tests_2026.json",
+    "single": 66,
+    "multi": 0,
+    "judge": 0,
+    "blank": 3,
+    "short": 2,
+    "total": 71
+  },
+  {
     "id": "modern-cryptography-jkb-2026",
     "title": "现代密码学期末复习题库（jkb版）",
     "desc": "jkb版｜94题｜单选26、多选5、判断20、填空26、简答8、计算5、案例4｜附答案解析",
