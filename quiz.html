@@ -445,6 +445,7 @@ function renderShortQuestion(q){
   <div class="self-note">简答 / 案例 / 计算题按自评处理，提交后查看参考答案。</div>${renderAnswerPanel(q, "参考答案", answerText)}`;
 }
 function shouldShowQuestion(q){
+  if(q.noteOnly) return typeVisible(q) && filterMode === "all";
   if(!typeVisible(q)) return false;
   if(filterMode === "unanswered" && isAnswered(q)) return false;
   if(filterMode === "wrong" && (q.type === "short" || !graded || !isAnswered(q) || isCorrect(q))) return false;
@@ -456,6 +457,7 @@ function gradeStatus(q){
     : (!graded ? "" : (!isAnswered(q) ? `<span class="status">未答</span>` : (isCorrect(q) ? `<span class="status good">正确</span>` : `<span class="status bad">错误</span>`)));
 }
 function renderQuestion(q, displayNo){
+  if(q.noteOnly) return `<article class="question q" id="q-${q.type}-${displayNo}" data-type="${esc(q.type)}" data-qkey="${esc(q.key)}"><div class="question-head"><div class="type-badge">知识点汇总 · 无需作答</div></div><div class="stem" style="white-space:pre-line">${esc(q.stem || "")}</div></article>`;
   let cls = "q";
   if(graded && q.type !== "short"){ cls += !isAnswered(q) ? " unanswered" : (isCorrect(q) ? " correct" : " wrong"); }
   let body = "";
@@ -557,7 +559,7 @@ function updateControls(){
   $("btnShowAll").classList.toggle("active", filterMode === "all");
 }
 function updateStats(){
-  const scope = activeQuestions();
+  const scope = activeQuestions().filter(q=>!q.noteOnly);
   const total = scope.length;
   const answered = scope.filter(isAnswered).length;
   const objective = scope.filter(q=>q.type !== "short");
