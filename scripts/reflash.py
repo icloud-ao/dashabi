@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 QUESTION_DIR = ROOT / "data" / "questions"
 OUTPUT_FILE = ROOT / "data" / "list.json"
 
-QUESTION_TYPES = ("single", "multi", "judge", "blank")
+QUESTION_TYPES = ("single", "multi", "judge", "blank", "short")
 
 
 def load_json(path: Path) -> Dict[str, Any]:
@@ -60,7 +60,7 @@ def count_questions(data: Dict[str, Any]) -> Dict[str, int]:
 
     if isinstance(data.get("questions"), list):
         total = len(data["questions"])
-        counts.update({"single": 0, "multi": 0, "judge": 0, "blank": 0, "total": total})
+        counts.update({"single": 0, "multi": 0, "judge": 0, "blank": 0, "short": 0, "total": total})
         return counts
 
     for t in QUESTION_TYPES:
