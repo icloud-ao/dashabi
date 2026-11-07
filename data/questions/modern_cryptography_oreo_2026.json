@@ -2,7 +2,7 @@
   "meta": {
     "id": "modern-cryptography-oreo-2026",
     "title": "现代密码学_奥利奥版",
-    "desc": "期末综合练习｜单选47、多选13、填空26、判断31、简答8、案例4、计算4｜共133题",
+    "desc": "独立完整题干版｜单选47、多选13、填空26、判断31、简答8、案例4、计算4｜共133题",
     "subject": "现代密码学",
     "semesterGroup": "current",
     "tags": [
@@ -24,1092 +24,1092 @@
       "stem": "下列属于流密码代表算法的是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第1题",
-      "explanation": "资料将祖冲之算法 ZUC 列为流密码，其余三项为分组密码。",
       "options": {
         "A": "DES",
         "B": "AES",
         "C": "ZUC",
         "D": "SM4"
       },
-      "answer": "C"
+      "answer": "C",
+      "explanation": "ZUC属于流密码；DES、AES、SM4属于分组密码。"
     },
     {
       "num": 2,
       "stem": "分组密码处理明文的基本方式是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第2题",
-      "explanation": "分组密码先把明文分成固定长度分组，再进行加密。",
       "options": {
         "A": "按固定长度分组处理",
         "B": "只按单个字符处理",
         "C": "只执行行移位",
         "D": "始终将整段消息一次性处理"
       },
-      "answer": "A"
+      "answer": "A",
+      "explanation": "分组密码先把明文分成固定长度分组，再进行加密。"
     },
     {
       "num": 3,
       "stem": "通信双方使用同一共享秘密密钥的密码体制称为（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第3题",
-      "explanation": "资料明确指出单钥密码体制也叫对称密码体制。",
       "options": {
         "A": "单钥/对称密码体制",
         "B": "双钥/非对称密码体制",
         "C": "哈希体制",
         "D": "公钥签名体制"
       },
-      "answer": "A"
+      "answer": "A",
+      "explanation": "通信双方共享同一秘密密钥的体制叫单钥密码体制，也叫对称密码体制。"
     },
     {
       "num": 4,
       "stem": "采用成对公钥和私钥的密码体制称为（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第4题",
-      "explanation": "双钥密码体制也叫非对称密码体制、公钥密码体制。",
       "options": {
         "A": "流密码体制",
         "B": "双钥/非对称密码体制",
         "C": "单钥/对称密码体制",
         "D": "消息摘要体制"
       },
-      "answer": "B"
+      "answer": "B",
+      "explanation": "双钥密码体制也叫非对称密码体制、公钥密码体制。"
     },
     {
       "num": 5,
-      "stem": "按复习资料的五元组表示，保密通信系统为（ ）。",
+      "stem": "在形式化描述中，用M、C、K、E、D分别表示明文空间、密文空间、密钥空间、加密变换和解密变换。正确的保密通信系统五元组是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第5题",
-      "explanation": "五元组依次对应明文空间、密文空间、密钥空间、加密变换、解密变换。",
       "options": {
         "A": "(M,C,K,E,D)",
         "B": "(M,C,K,E,F)",
         "C": "(M,P,K,S,D)",
         "D": "(E,D,IV,C,H)"
       },
-      "answer": "A"
+      "answer": "A",
+      "explanation": "五元组依次对应明文空间、密文空间、密钥空间、加密变换、解密变换。"
     },
     {
       "num": 6,
-      "stem": "教材所列六项写法中，K₁、K₂分别表示（ ）。",
+      "stem": "保密通信系统采用六项表示(M,C,K₁,K₂,E,D)，其中K₁、K₂分别表示（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第6题",
-      "explanation": "复习资料的六项写法是 M、C、K₁、K₂、E、D。",
       "options": {
         "A": "明文空间和密文空间",
         "B": "加密密钥空间和解密密钥空间",
         "C": "加密算法和解密算法",
         "D": "发送者和接收者"
       },
-      "answer": "B"
+      "answer": "B",
+      "explanation": "K₁表示加密密钥空间，K₂表示解密密钥空间。"
     },
     {
       "num": 7,
       "stem": "“使明文中一位的变化可能影响多个密文位”属于（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第7题",
-      "explanation": "扩散针对明文—密文统计关系；混淆针对密钥—密文关系。",
       "options": {
         "A": "混淆",
         "B": "扩散",
         "C": "密钥交换",
         "D": "电子密码本"
       },
-      "answer": "B"
+      "answer": "B",
+      "explanation": "扩散使明文统计特征分散到密文，明文某一位变化可影响多个密文位。"
     },
     {
       "num": 8,
       "stem": "“使密钥与密文之间的统计关系复杂化”属于（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第8题",
-      "explanation": "混淆使攻击者难以依据密文推断密钥。",
       "options": {
         "A": "扩散",
         "B": "置换",
         "C": "混淆",
         "D": "分组链接"
       },
-      "answer": "C"
+      "answer": "C",
+      "explanation": "混淆使密钥与密文的统计关系复杂化，难以从密文分析出密钥。"
     },
     {
       "num": 9,
       "stem": "AES轮变换中，独立对每个字节进行非线性处理的是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第9题",
-      "explanation": "字节代换是非线性字节级代换。",
       "options": {
         "A": "行移位",
         "B": "字节代换",
         "C": "轮密钥加",
         "D": "列混合"
       },
-      "answer": "B"
+      "answer": "B",
+      "explanation": "字节代换是非线性字节级代换。"
     },
     {
       "num": 10,
       "stem": "AES轮变换中，逐比特异或轮密钥的步骤是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第10题",
-      "explanation": "轮密钥加就是状态与轮密钥异或。",
       "options": {
         "A": "字节代换",
         "B": "列混合",
         "C": "行移位",
         "D": "轮密钥加"
       },
-      "answer": "D"
+      "answer": "D",
+      "explanation": "轮密钥加就是状态与轮密钥异或。"
     },
     {
       "num": 11,
       "stem": "AES轮变换中，不在最后一轮执行的是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第11题",
-      "explanation": "复习资料明确指出最后一轮省略列混合。",
       "options": {
         "A": "字节代换",
         "B": "行移位",
         "C": "列混合",
         "D": "轮密钥加"
       },
-      "answer": "C"
+      "answer": "C",
+      "explanation": "AES最后一轮仍有字节代换、行移位和轮密钥加，但省略列混合。"
     },
     {
       "num": 12,
-      "stem": "AES“列混合”按复习资料涉及的运算是（ ）。",
+      "stem": "AES列混合变换对状态的列采用的多项式运算是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第12题",
-      "explanation": "教材p61所述列混合涉及固定多项式及模 x⁴+1 的运算。",
       "options": {
         "A": "与固定多项式相乘后模 x⁴+1 处理",
         "B": "把每一列循环移位一位",
         "C": "将每个字节直接替换",
         "D": "交换公钥和私钥"
       },
-      "answer": "A"
+      "answer": "A",
+      "explanation": "列混合与固定多项式相乘，并按模x⁴+1处理。"
     },
     {
       "num": 13,
       "stem": "四种运行模式中，每组明文独立加密的是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第13题",
-      "explanation": "ECB各分组相互独立。",
       "options": {
         "A": "CBC",
         "B": "CFB",
         "C": "OFB",
         "D": "ECB"
       },
-      "answer": "D"
+      "answer": "D",
+      "explanation": "ECB各分组相互独立。"
     },
     {
       "num": 14,
       "stem": "加密时“当前明文组与前一密文组异或”对应（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第14题",
-      "explanation": "CBC的辨认点是上一密文分组参与当前分组。",
       "options": {
         "A": "CBC",
         "B": "ECB",
         "C": "OFB",
         "D": "CFB"
       },
-      "answer": "A"
+      "answer": "A",
+      "explanation": "CBC的辨认点是上一密文分组参与当前分组。"
     },
     {
       "num": 15,
       "stem": "将前一密文组反馈作为加密算法输入的是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第15题",
-      "explanation": "CFB反馈的是密文；OFB反馈的是加密算法输出。",
       "options": {
         "A": "OFB",
         "B": "CFB",
         "C": "ECB",
         "D": "CBC"
       },
-      "answer": "B"
+      "answer": "B",
+      "explanation": "CFB反馈的是密文；OFB反馈的是加密算法输出。"
     },
     {
       "num": 16,
       "stem": "将上一次加密算法的输出反馈作为下一次输入的是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第16题",
-      "explanation": "OFB与CFB的关键区别在反馈对象。",
       "options": {
         "A": "OFB",
         "B": "CBC",
         "C": "ECB",
         "D": "CFB"
       },
-      "answer": "A"
+      "answer": "A",
+      "explanation": "OFB与CFB的关键区别在反馈对象。"
     },
     {
       "num": 17,
       "stem": "ZUC上层LFSR由（ ）组成。",
       "source": "单项选择题",
       "origin": "单项选择题 第17题",
-      "explanation": "这是原资料强调的特殊数字。",
       "options": {
         "A": "16个31比特寄存器单元",
         "B": "31个16比特寄存器单元",
         "C": "4个32比特寄存器单元",
         "D": "16个32比特寄存器单元"
       },
-      "answer": "A"
+      "answer": "A",
+      "explanation": "LFSR共有16个寄存器单元，每个单元为31比特。"
     },
     {
       "num": 18,
       "stem": "ZUC比特重组BR的结果为（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第18题",
-      "explanation": "BR从内部状态抽取128比特，重组为4个32比特字。",
       "options": {
         "A": "4个32比特字",
         "B": "2个64比特字",
         "C": "16个31比特单元",
         "D": "1个96比特字"
       },
-      "answer": "A"
+      "answer": "A",
+      "explanation": "BR从内部状态抽取128比特，重组为4个32比特字。"
     },
     {
       "num": 19,
       "stem": "ZUC非线性函数F的输出长度是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第19题",
-      "explanation": "资料中F为96比特输入、32比特输出。",
       "options": {
         "A": "96比特",
         "B": "31比特",
         "C": "128比特",
         "D": "32比特"
       },
-      "answer": "D"
+      "answer": "D",
+      "explanation": "非线性函数F接收96比特并输出32比特。"
     },
     {
       "num": 20,
-      "stem": "Diffie–Hellman交换过程中，双方需要相互发送的是（ ）。",
+      "stem": "在Diffie–Hellman密钥交换中，双方公开p、α，并各自保留秘密指数。双方互相发送的是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第20题",
-      "explanation": "用户A发送Yₐ，用户B发送Yᵦ；私有指数不发送。",
       "options": {
         "A": "各自的私有指数",
         "B": "各自计算的公开值",
         "C": "各自的私钥",
         "D": "最终共享密钥的明文"
       },
-      "answer": "B"
+      "answer": "B",
+      "explanation": "用户A发送Yₐ，用户B发送Yᵦ；私有指数不发送。"
     },
     {
       "num": 21,
-      "stem": "已知Yᵦ和自己的私有指数xₐ，A计算共享密钥的方法是（ ）。",
+      "stem": "在Diffie–Hellman密钥交换中，已知模数p、A的秘密指数xₐ及B发送给A的公开值Yᵦ，A计算共享密钥K的公式是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第21题",
-      "explanation": "A用B的公开值提升到自己的私有指数次幂。",
       "options": {
         "A": "K = Yᵦˣᵃ mod p",
         "B": "K = xₐ + xᵦ",
         "C": "K = Yₐ + Yᵦ",
         "D": "K = p × α"
       },
-      "answer": "A"
+      "answer": "A",
+      "explanation": "A用B的公开值提升到自己的私有指数次幂。"
     },
     {
       "num": 22,
       "stem": "哈希函数“任意长度输入、固定长度输出”中的固定长度指（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第22题",
-      "explanation": "H(x)输出是固定长度摘要，不等于原消息长度。",
       "options": {
         "A": "原始消息长度",
         "B": "密钥长度",
         "C": "消息摘要长度",
         "D": "发送方地址长度"
       },
-      "answer": "C"
+      "answer": "C",
+      "explanation": "H(x)输出是固定长度摘要，不等于原消息长度。"
     },
     {
       "num": 23,
-      "stem": "哈希条件“给定某个x，难以找出y≠x且H(y)=H(x)”对应（ ）。",
+      "stem": "一个哈希函数满足：给定输入x，难以找出另一输入y≠x且H(y)=H(x)。这一要求是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第23题",
-      "explanation": "第五条固定原输入；第六条不固定任意一条消息。",
       "options": {
-        "A": "第二条固定输出",
-        "B": "第五条性质",
-        "C": "第六条性质",
-        "D": "第一条性质"
+        "A": "固定输出长度",
+        "B": "给定原消息时寻找相同摘要的另一消息应困难",
+        "C": "计算摘要必须很慢",
+        "D": "输出长度随输入变化"
       },
-      "answer": "B"
+      "answer": "B",
+      "explanation": "这里先固定x，要求难以找到另一条不同消息但摘要相同；区别于可以任意寻找一对碰撞消息。"
     },
     {
       "num": 24,
-      "stem": "下列最准确描述哈希第六条条件的是（ ）。",
+      "stem": "以下哪一项正确描述哈希函数“难以寻找任意一对碰撞输入”的要求（ ）？",
       "source": "单项选择题",
       "origin": "单项选择题 第24题",
-      "explanation": "第六条是难以找到任意一对碰撞输入。",
       "options": {
         "A": "对给定x求H(x)十分困难",
         "B": "不能处理任意长度消息",
         "C": "难以找到任意两个不同输入产生相同哈希值",
         "D": "输出长度必须与输入相同"
       },
-      "answer": "C"
+      "answer": "C",
+      "explanation": "第六条是难以找到任意一对碰撞输入。"
     },
     {
       "num": 25,
       "stem": "仅通过监听消息内容获取信息，不改变消息，属于（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第25题",
-      "explanation": "课本将消息内容获取列为被动攻击。",
       "options": {
         "A": "主动攻击中的篡改",
         "B": "主动攻击中的中断",
         "C": "被动攻击中的消息内容获取",
         "D": "主动攻击中的伪造"
       },
-      "answer": "C"
+      "answer": "C",
+      "explanation": "仅窃听消息内容而不修改通信，属于被动攻击中的消息内容获取。"
     },
     {
       "num": 26,
       "stem": "使目标服务暂时无法使用，更符合（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第26题",
-      "explanation": "中断是主动攻击，主要影响可用性。",
       "options": {
         "A": "业务流分析",
         "B": "中断",
         "C": "消息内容获取",
         "D": "混淆"
       },
-      "answer": "B"
+      "answer": "B",
+      "explanation": "中断是主动攻击，主要影响可用性。"
     },
     {
       "num": 27,
       "stem": "DES S盒读取6比特输入时，确定行号的位是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第27题",
-      "explanation": "首末两位拼成行号，中间四位组成列号。",
       "options": {
         "A": "中间四位",
         "B": "首位和末位",
         "C": "前两位",
         "D": "末四位"
       },
-      "answer": "B"
+      "answer": "B",
+      "explanation": "首末两位拼成行号，中间四位组成列号。"
     },
     {
       "num": 28,
       "stem": "DES中按指定表重新排列输入位次的初始置换称为（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第28题",
-      "explanation": "IP是初始置换。",
       "options": {
         "A": "IP",
         "B": "BR",
         "C": "OFB",
         "D": "ECDLP"
       },
-      "answer": "A"
+      "answer": "A",
+      "explanation": "IP是初始置换。"
     },
     {
       "num": 29,
-      "stem": "发送方为保证消息保密，应使用（ ）进行加密。",
+      "stem": "A向B发送需要保密的消息，A应使用哪一把密钥对消息加密（ ）？",
       "source": "单项选择题",
       "origin": "单项选择题 第29题",
-      "explanation": "接收方可用自己的私钥解密。",
       "options": {
         "A": "自己的公钥",
         "B": "自己的私钥",
         "C": "接收方的公钥",
         "D": "接收方的私钥"
       },
-      "answer": "C"
+      "answer": "C",
+      "explanation": "接收方可用自己的私钥解密。"
     },
     {
       "num": 30,
-      "stem": "接收方验证发送方签名，应使用（ ）。",
+      "stem": "A对消息签名，B收到消息后验证该签名，B应使用哪一把密钥（ ）？",
       "source": "单项选择题",
       "origin": "单项选择题 第30题",
-      "explanation": "签名使用发送方私钥；验证使用发送方公钥。",
       "options": {
         "A": "发送方的公钥",
         "B": "发送方的私钥",
         "C": "自己的私钥",
         "D": "自己的公钥"
       },
-      "answer": "A"
+      "answer": "A",
+      "explanation": "签名使用发送方私钥；验证使用发送方公钥。"
     },
     {
       "num": 31,
       "stem": "保持原符号不变、仅调整位置的变换是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第31题",
-      "explanation": "置换换位置；代换换符号。",
       "options": {
         "A": "代换",
         "B": "置换",
         "C": "哈希",
         "D": "扩散"
       },
-      "answer": "B"
+      "answer": "B",
+      "explanation": "置换换位置；代换换符号。"
     },
     {
       "num": 32,
-      "stem": "按老师课堂指定的本课程考试分类，Playfair应答（ ）。",
+      "stem": "按照本课程老师课堂上指定的考试分类，Playfair密码属于（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第32题",
-      "explanation": "本题限定“老师课堂指定考试分类”，按复习资料标注作答；不要用严格学术分类替代该课指定答案。",
       "options": {
         "A": "单表代换",
         "B": "多表代换",
         "C": "分组链接",
         "D": "流密码"
       },
-      "answer": "B"
+      "answer": "B",
+      "explanation": "本课程课堂指定Playfair选择“多表代换”；这是本课程考试采用的分类口径。"
     },
     {
       "num": 33,
       "stem": "仿射密码的本质是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第33题",
-      "explanation": "原课堂明确要求仿射答单表代换。",
       "options": {
         "A": "单表代换",
         "B": "多表代换",
         "C": "分组反馈",
         "D": "公钥密码"
       },
-      "answer": "A"
+      "answer": "A",
+      "explanation": "仿射密码的本质是单表代换。"
     },
     {
       "num": 34,
       "stem": "仿射变换c≡am+b(mod 26)的参数a应满足（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第34题",
-      "explanation": "a必须与26互素才能可逆。",
       "options": {
         "A": "a为偶数",
         "B": "gcd(a,26)=1",
         "C": "a=26",
         "D": "b=0"
       },
-      "answer": "B"
+      "answer": "B",
+      "explanation": "a必须与26互素才能可逆。"
     },
     {
       "num": 35,
       "stem": "5级LFSR若产生m序列，其周期为（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第35题",
-      "explanation": "T=2⁵−1=31。",
       "options": {
         "A": "5",
         "B": "16",
         "C": "31",
         "D": "32"
       },
-      "answer": "C"
+      "answer": "C",
+      "explanation": "T=2⁵−1=31。"
     },
     {
       "num": 36,
       "stem": "按“完整游程”定义，序列100011001中“0的二游程”共有（ ）个（首尾不相接）。",
       "source": "单项选择题",
       "origin": "单项选择题 第36题",
-      "explanation": "该序列0游程分别为000和00，只有一个长度恰为2。",
       "options": {
         "A": "0",
         "B": "1",
         "C": "2",
         "D": "3"
       },
-      "answer": "B"
+      "answer": "B",
+      "explanation": "该序列0游程分别为000和00，只有一个长度恰为2。"
     },
     {
       "num": 37,
       "stem": "DES的有效密钥长度为（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第37题",
-      "explanation": "资料列DES分组64比特、有效密钥56比特、16轮。",
       "options": {
         "A": "64比特",
         "B": "56比特",
         "C": "128比特",
         "D": "32比特"
       },
-      "answer": "B"
+      "answer": "B",
+      "explanation": "DES分组长度64比特、有效密钥56比特、迭代16轮。"
     },
     {
       "num": 38,
       "stem": "AES密钥长度可能是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第38题",
-      "explanation": "资料列128、192、256比特。",
       "options": {
         "A": "56比特",
         "B": "80比特",
         "C": "192比特",
         "D": "160比特"
       },
-      "answer": "C"
+      "answer": "C",
+      "explanation": "AES允许128、192、256比特密钥；选项中只有192比特符合。"
     },
     {
       "num": 39,
       "stem": "SM4的轮数为（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第39题",
-      "explanation": "资料列SM4为32轮。",
       "options": {
         "A": "10",
         "B": "16",
         "C": "32",
         "D": "64"
       },
-      "answer": "C"
+      "answer": "C",
+      "explanation": "SM4的轮数为32轮。"
     },
     {
       "num": 40,
       "stem": "三重DES的EDE结构顺序为（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第40题",
-      "explanation": "EDE按E→D→E。",
       "options": {
         "A": "加密—加密—解密",
         "B": "解密—加密—加密",
         "C": "加密—解密—加密",
         "D": "解密—解密—加密"
       },
-      "answer": "C"
+      "answer": "C",
+      "explanation": "EDE按E→D→E。"
     },
     {
       "num": 41,
       "stem": "RSA安全性所依据的困难问题是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第41题",
-      "explanation": "资料的三类安全依据为RSA整数分解、DH离散对数、ECC椭圆曲线离散对数。",
       "options": {
         "A": "椭圆曲线离散对数",
         "B": "大整数分解",
         "C": "业务流分析",
         "D": "密码反馈"
       },
-      "answer": "B"
+      "answer": "B",
+      "explanation": "RSA对应大整数分解困难；DH对应离散对数困难；ECC对应椭圆曲线离散对数困难。"
     },
     {
       "num": 42,
       "stem": "ECC安全性所依据的困难问题是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第42题",
-      "explanation": "ECC对应ECDLP。",
       "options": {
         "A": "有限域上的大整数分解",
         "B": "哈希碰撞",
         "C": "椭圆曲线离散对数",
         "D": "S盒列查找"
       },
-      "answer": "C"
+      "answer": "C",
+      "explanation": "ECC对应ECDLP。"
     },
     {
       "num": 43,
       "stem": "MD5消息摘要输出长度为（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第43题",
-      "explanation": "MD5输出128比特，处理分组512比特。",
       "options": {
         "A": "512比特",
         "B": "160比特",
         "C": "128比特",
         "D": "64比特"
       },
-      "answer": "C"
+      "answer": "C",
+      "explanation": "MD5输出128比特，处理分组512比特。"
     },
     {
       "num": 44,
       "stem": "SHA-1消息处理分组长度为（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第44题",
-      "explanation": "SHA-1摘要160比特，但分组512比特。",
       "options": {
         "A": "160比特",
         "B": "512比特",
         "C": "128比特",
         "D": "32比特"
       },
-      "answer": "B"
+      "answer": "B",
+      "explanation": "SHA-1摘要160比特，但分组512比特。"
     },
     {
       "num": 45,
-      "stem": "模7的非零二次剩余是下列哪一个数？（ ）",
+      "stem": "在模7的意义下，下列哪一个非零整数是二次剩余（ ）？",
       "source": "单项选择题",
       "origin": "单项选择题 第45题",
-      "explanation": "平方取模7可得1、2、4，因此4是模7的非零二次剩余。",
       "options": {
         "A": "3",
         "B": "5",
         "C": "6",
         "D": "4"
       },
-      "answer": "D"
+      "answer": "D",
+      "explanation": "平方取模7可得1、2、4，因此4是模7的非零二次剩余。"
     },
     {
       "num": 46,
       "stem": "提出扩散与混淆原则的密码学先驱是（ ）。",
       "source": "单项选择题",
       "origin": "单项选择题 第46题",
-      "explanation": "资料明确将扩散、混淆归于Shannon。",
       "options": {
         "A": "香农",
         "B": "Diffie",
         "C": "Hellman",
         "D": "祖冲之"
       },
-      "answer": "A"
+      "answer": "A",
+      "explanation": "香农（Shannon）提出了扩散与混淆原则。"
     },
     {
       "num": 47,
-      "stem": "理论上能够达到完全保密的密码方法是（ ）。",
+      "stem": "在符合一次一密使用条件的前提下，下列哪种密码方案能够从理论上实现完全保密（ ）？",
       "source": "单项选择题",
       "origin": "单项选择题 第47题",
-      "explanation": "按原资料：一次一密在满足条件时能够达到完全保密，但实际使用存在困难。",
       "options": {
         "A": "ECB",
         "B": "一次一密",
         "C": "3DES",
         "D": "MD5"
       },
-      "answer": "B"
+      "answer": "B",
+      "explanation": "一次一密在满足安全条件时可达到理论上的完全保密，但实际应用不易。"
     }
   ],
   "multi": [
     {
       "num": 1,
-      "stem": "下列属于资料中所列分组密码的有（ ）。",
+      "stem": "下列哪些算法属于分组密码（ ）？",
       "source": "多项选择题",
       "origin": "多项选择题 第1题",
-      "explanation": "DES、AES、SM4是分组密码；ZUC是流密码。",
       "options": {
         "A": "DES",
         "B": "AES",
         "C": "SM4",
         "D": "ZUC"
       },
-      "answer": "ABC"
+      "answer": "ABC",
+      "explanation": "DES、AES、SM4是分组密码；ZUC是流密码。"
     },
     {
       "num": 2,
-      "stem": "按课堂复习资料给出的分类，下列列在“多表代换”一栏的算法有（ ）。",
+      "stem": "按照本课程老师课堂上指定的分类，哪些密码属于“多表代换”一栏（ ）？",
       "source": "多项选择题",
       "origin": "多项选择题 第2题",
-      "explanation": "依老师课堂指定的分类，维吉尼亚、Playfair、重矩阵列在多表代换栏；仿射在单表代换栏。",
       "options": {
         "A": "维吉尼亚",
         "B": "Playfair",
         "C": "重矩阵",
         "D": "仿射"
       },
-      "answer": "ABC"
+      "answer": "ABC",
+      "explanation": "按本课程课堂指定分类，维吉尼亚、Playfair、重矩阵列为多表代换，仿射属于单表代换。"
     },
     {
       "num": 3,
       "stem": "关于保密通信系统，哪些说法正确？（ ）",
       "source": "多项选择题",
       "origin": "多项选择题 第3题",
-      "explanation": "五元组(M,C,K,E,D)的相应含义。",
       "options": {
         "A": "M是明文空间",
         "B": "C是密文空间",
         "C": "E是加密变换",
         "D": "D是解密变换"
       },
-      "answer": "ABCD"
+      "answer": "ABCD",
+      "explanation": "五元组(M,C,K,E,D)的相应含义。"
     },
     {
       "num": 4,
       "stem": "关于扩散与混淆，下列正确的有（ ）。",
       "source": "多项选择题",
       "origin": "多项选择题 第4题",
-      "explanation": "两者的对应关系不同，但目标均是提高安全性。",
       "options": {
         "A": "扩散侧重明文—密文关系",
         "B": "混淆侧重密钥—密文关系",
         "C": "二者用于抵抗统计分析",
         "D": "二者概念完全相同"
       },
-      "answer": "ABC"
+      "answer": "ABC",
+      "explanation": "两者的对应关系不同，但目标均是提高安全性。"
     },
     {
       "num": 5,
       "stem": "关于AES轮变换，下列正确的有（ ）。",
       "source": "多项选择题",
       "origin": "多项选择题 第5题",
-      "explanation": "最后一轮不进行列混合。",
       "options": {
         "A": "字节代换属于非线性代换",
         "B": "行移位是对状态阵列各行循环移位",
         "C": "轮密钥加执行异或",
         "D": "最后一轮仍必须列混合"
       },
-      "answer": "ABC"
+      "answer": "ABC",
+      "explanation": "最后一轮不进行列混合。"
     },
     {
       "num": 6,
       "stem": "下列运行模式与反馈特点匹配正确的有（ ）。",
       "source": "多项选择题",
       "origin": "多项选择题 第6题",
-      "explanation": "四组匹配均符合资料表格。",
       "options": {
         "A": "ECB—各分组独立",
         "B": "CBC—前一密文分组参与",
         "C": "CFB—密文反馈",
         "D": "OFB—加密算法输出反馈"
       },
-      "answer": "ABCD"
+      "answer": "ABCD",
+      "explanation": "ECB各组独立；CBC前一密文组参与；CFB反馈密文；OFB反馈加密输出。"
     },
     {
       "num": 7,
       "stem": "下列关于ZUC三层结构的叙述正确的有（ ）。",
       "source": "多项选择题",
       "origin": "多项选择题 第7题",
-      "explanation": "ZUC由LFSR、BR和F组成，不涉及公钥模块。",
       "options": {
         "A": "LFSR为16个31比特单元",
         "B": "BR将128比特重组为4个32比特字",
         "C": "F接受96比特并输出32比特",
         "D": "F是祖冲之算法的公钥模块"
       },
-      "answer": "ABC"
+      "answer": "ABC",
+      "explanation": "ZUC由LFSR、BR和F组成，不涉及公钥模块。"
     },
     {
       "num": 8,
       "stem": "关于Diffie–Hellman，正确的有（ ）。",
       "source": "多项选择题",
       "origin": "多项选择题 第8题",
-      "explanation": "私有指数不发送；公式使两端共享密钥一致。",
       "options": {
         "A": "双方公开p、α",
         "B": "双方交换各自计算的Y值",
         "C": "双方都公开自己的秘密指数",
         "D": "双方最终得到相同共享密钥"
       },
-      "answer": "ABD"
+      "answer": "ABD",
+      "explanation": "私有指数不发送；公式使两端共享密钥一致。"
     },
     {
       "num": 9,
-      "stem": "按教材所列哈希函数条件，正确的有（ ）。",
+      "stem": "下列哪些表述符合用于数据认证的哈希函数应满足的条件（ ）？",
       "source": "多项选择题",
       "origin": "多项选择题 第9题",
-      "explanation": "第六条要求难以找到任意一对碰撞输入。",
       "options": {
         "A": "输入可为任意长度",
         "B": "输出是固定长度",
         "C": "由x计算H(x)应容易",
         "D": "允许轻易找到任意两条不同消息哈希相同"
       },
-      "answer": "ABC"
+      "answer": "ABC",
+      "explanation": "第六条要求难以找到任意一对碰撞输入。"
     },
     {
       "num": 10,
       "stem": "下列属于主动攻击的有（ ）。",
       "source": "多项选择题",
       "origin": "多项选择题 第10题",
-      "explanation": "业务流分析属于被动攻击。",
       "options": {
         "A": "中断",
         "B": "篡改",
         "C": "伪造",
         "D": "业务流分析"
       },
-      "answer": "ABC"
+      "answer": "ABC",
+      "explanation": "业务流分析属于被动攻击。"
     },
     {
       "num": 11,
       "stem": "对签名与保密处理，下列匹配正确的有（ ）。",
       "source": "多项选择题",
       "origin": "多项选择题 第11题",
-      "explanation": "四项正好对应资料中的发送—接收流程。",
       "options": {
         "A": "发送方私钥—签名",
         "B": "接收方公钥—加密",
         "C": "接收方私钥—解密",
         "D": "发送方公钥—验签"
       },
-      "answer": "ABCD"
+      "answer": "ABCD",
+      "explanation": "发送方私钥签名，接收方公钥加密；接收方私钥解密，发送方公钥验签。"
     },
     {
       "num": 12,
-      "stem": "按复习资料，关于相关算法参数正确的有（ ）。",
+      "stem": "下列关于DES、SM4、MD5及SHA-1参数的表述正确的有（ ）？",
       "source": "多项选择题",
       "origin": "多项选择题 第12题",
-      "explanation": "SHA-1摘要160比特，其分组才是512比特。",
       "options": {
         "A": "DES有效密钥56比特",
         "B": "SM4分组输入输出128比特",
         "C": "MD5摘要128比特",
         "D": "SHA-1摘要512比特"
       },
-      "answer": "ABC"
+      "answer": "ABC",
+      "explanation": "SHA-1摘要160比特，其分组才是512比特。"
     },
     {
       "num": 13,
       "stem": "下列密码算法与安全困难问题匹配正确的有（ ）。",
       "source": "多项选择题",
       "origin": "多项选择题 第13题",
-      "explanation": "RSA对应整数分解，而非S盒行列查表。",
       "options": {
         "A": "RSA—大整数分解",
         "B": "Diffie–Hellman—离散对数",
         "C": "ECC—椭圆曲线离散对数",
         "D": "RSA—S盒行列查表"
       },
-      "answer": "ABC"
+      "answer": "ABC",
+      "explanation": "RSA对应整数分解，而非S盒行列查表。"
     }
   ],
   "judge": [
     {
       "num": 1,
-      "stem": "流密码和分组密码在资料中均作为对称加密方式讨论。  （　）",
+      "stem": "流密码和分组密码都是对称密码按明文处理方式进行划分得到的类别。  （　）",
       "source": "判断题",
       "origin": "判断题 第1题",
-      "explanation": "资料两种类别均属于对称密码。",
-      "answer": "A"
+      "answer": "A",
+      "explanation": "流密码和分组密码都属于对称密码体系中按明文处理方式区分的类别。"
     },
     {
       "num": 2,
-      "stem": "按课堂所列分类，恺撒、移位与仿射密码均属于单表代换。  （　）",
+      "stem": "按照本课程老师课堂指定的分类，恺撒、移位与仿射密码均属于单表代换。  （　）",
       "source": "判断题",
       "origin": "判断题 第2题",
-      "explanation": "原笔记在单表代换一栏依次列恺撒、移位、仿射。",
-      "answer": "A"
+      "answer": "A",
+      "explanation": "恺撒、移位、仿射均按本课程课堂要求归为单表代换。"
     },
     {
       "num": 3,
       "stem": "ZUC与AES都被列为分组密码算法。  （　）",
       "source": "判断题",
       "origin": "判断题 第3题",
-      "explanation": "ZUC是流密码，AES是分组密码。",
-      "answer": "B"
+      "answer": "B",
+      "explanation": "ZUC是流密码，AES是分组密码。"
     },
     {
       "num": 4,
       "stem": "保密通信系统五元组中的E表示解密变换。  （　）",
       "source": "判断题",
       "origin": "判断题 第4题",
-      "explanation": "E是加密变换，D是解密变换。",
-      "answer": "B"
+      "answer": "B",
+      "explanation": "E是加密变换，D是解密变换。"
     },
     {
       "num": 5,
       "stem": "扩散强调明文与密文间的统计联系，混淆强调密钥与密文间的关系。  （　）",
       "source": "判断题",
       "origin": "判断题 第5题",
-      "explanation": "这是资料列出的关键词区分。",
-      "answer": "A"
+      "answer": "A",
+      "explanation": "扩散侧重明文—密文之间的统计关系，混淆侧重密钥—密文关系。"
     },
     {
       "num": 6,
       "stem": "AES最后一轮省略轮密钥加。  （　）",
       "source": "判断题",
       "origin": "判断题 第6题",
-      "explanation": "省略的是列混合，不是轮密钥加。",
-      "answer": "B"
+      "answer": "B",
+      "explanation": "省略的是列混合，不是轮密钥加。"
     },
     {
       "num": 7,
       "stem": "ECB模式下各明文分组独立加密。  （　）",
       "source": "判断题",
       "origin": "判断题 第7题",
-      "explanation": "ECB分组相互独立。",
-      "answer": "A"
+      "answer": "A",
+      "explanation": "ECB分组相互独立。"
     },
     {
       "num": 8,
       "stem": "CFB反馈加密算法输出，而OFB反馈前一密文。  （　）",
       "source": "判断题",
       "origin": "判断题 第8题",
-      "explanation": "两者恰好相反。",
-      "answer": "B"
+      "answer": "B",
+      "explanation": "两者恰好相反。"
     },
     {
       "num": 9,
       "stem": "ZUC中BR将128比特重组为4个32比特字。  （　）",
       "source": "判断题",
       "origin": "判断题 第9题",
-      "explanation": "128=4×32。",
-      "answer": "A"
+      "answer": "A",
+      "explanation": "128=4×32。"
     },
     {
       "num": 10,
       "stem": "Diffie–Hellman密钥交换需要公开双方私有指数。  （　）",
       "source": "判断题",
       "origin": "判断题 第10题",
-      "explanation": "双方只公开约定参数和各自公开值。",
-      "answer": "B"
+      "answer": "B",
+      "explanation": "双方只公开约定参数和各自公开值。"
     },
     {
       "num": 11,
       "stem": "在Diffie–Hellman中，两端能够算得相同的共享密钥。  （　）",
       "source": "判断题",
       "origin": "判断题 第11题",
-      "explanation": "两端都等于αˣᵃˣᵇ mod p。",
-      "answer": "A"
+      "answer": "A",
+      "explanation": "两端都等于αˣᵃˣᵇ mod p。"
     },
     {
       "num": 12,
       "stem": "哈希函数的输入必须是固定长度。  （　）",
       "source": "判断题",
       "origin": "判断题 第12题",
-      "explanation": "输入可为任意长度，输出固定长度。",
-      "answer": "B"
+      "answer": "B",
+      "explanation": "输入可为任意长度，输出固定长度。"
     },
     {
       "num": 13,
       "stem": "哈希第5项与第6项都涉及不同输入产生相同哈希值，但第5项固定原输入。  （　）",
       "source": "判断题",
       "origin": "判断题 第13题",
-      "explanation": "第5项给定x；第6项可自行寻找任意一对。",
-      "answer": "A"
+      "answer": "A",
+      "explanation": "第5项给定x；第6项可自行寻找任意一对。"
     },
     {
       "num": 14,
       "stem": "业务流分析被归类为主动攻击。  （　）",
       "source": "判断题",
       "origin": "判断题 第14题",
-      "explanation": "业务流分析是被动攻击。",
-      "answer": "B"
+      "answer": "B",
+      "explanation": "业务流分析是被动攻击。"
     },
     {
       "num": 15,
       "stem": "消息中断与未授权篡改均属于主动攻击。  （　）",
       "source": "判断题",
       "origin": "判断题 第15题",
-      "explanation": "课本的主动攻击分类包含中断、篡改、伪造。",
-      "answer": "A"
+      "answer": "A",
+      "explanation": "中断、篡改、伪造均属于主动攻击。"
     },
     {
       "num": 16,
       "stem": "在DES S盒中，输入的中间四位决定行号。  （　）",
       "source": "判断题",
       "origin": "判断题 第16题",
-      "explanation": "中间四位决定列号。",
-      "answer": "B"
+      "answer": "B",
+      "explanation": "中间四位决定列号。"
     },
     {
       "num": 17,
-      "stem": "资料所说的DES S盒每一行0～15各出现一次。  （　）",
+      "stem": "DES S盒表中，每一行包含0至15且每个数字恰好出现一次。  （　）",
       "source": "判断题",
       "origin": "判断题 第17题",
-      "explanation": "每行16个数字互不重复，是缺数题依据。",
-      "answer": "A"
+      "answer": "A",
+      "explanation": "每行16个数字互不重复，是缺数题依据。"
     },
     {
       "num": 18,
       "stem": "为了保密，发送方应使用接收方的私钥加密。  （　）",
       "source": "判断题",
       "origin": "判断题 第18题",
-      "explanation": "使用接收方公钥加密，接收方私钥解密。",
-      "answer": "B"
+      "answer": "B",
+      "explanation": "使用接收方公钥加密，接收方私钥解密。"
     },
     {
       "num": 19,
       "stem": "置换改变字符位置，代换改变符号取值。  （　）",
       "source": "判断题",
       "origin": "判断题 第19题",
-      "explanation": "二者是不同的变换方式。",
-      "answer": "A"
+      "answer": "A",
+      "explanation": "二者是不同的变换方式。"
     },
     {
       "num": 20,
-      "stem": "按老师课堂指定的考试分类，Playfair可答“多表代换算法”。  （　）",
+      "stem": "按照本课程老师课堂指定的考试分类，Playfair可回答为“多表代换算法”。  （　）",
       "source": "判断题",
       "origin": "判断题 第20题",
-      "explanation": "限本课程老师指定的答题口径；并非通用严格分类判断。",
-      "answer": "A"
+      "answer": "A",
+      "explanation": "限本课程老师指定的答题口径；并非通用严格分类判断。"
     },
     {
       "num": 21,
       "stem": "仿射密码中的a=2满足可逆条件gcd(a,26)=1。  （　）",
       "source": "判断题",
       "origin": "判断题 第21题",
-      "explanation": "gcd(2,26)=2，不满足。",
-      "answer": "B"
+      "answer": "B",
+      "explanation": "gcd(2,26)=2，不满足。"
     },
     {
       "num": 22,
       "stem": "4级LFSR的m序列周期是16。  （　）",
       "source": "判断题",
       "origin": "判断题 第22题",
-      "explanation": "周期为2⁴−1=15。",
-      "answer": "B"
+      "answer": "B",
+      "explanation": "周期为2⁴−1=15。"
     },
     {
       "num": 23,
       "stem": "一个长度为4的零游程可以拆成3个相互重叠的“0的二游程”来计数。  （　）",
       "source": "判断题",
       "origin": "判断题 第23题",
-      "explanation": "游程必须是完整的极大连续段，不允许拆分重叠计数。",
-      "answer": "B"
+      "answer": "B",
+      "explanation": "游程必须是完整的极大连续段，不允许拆分重叠计数。"
     },
     {
       "num": 24,
       "stem": "DES分组长度为64比特，轮数为16。  （　）",
       "source": "判断题",
       "origin": "判断题 第24题",
-      "explanation": "资料列出的DES参数。",
-      "answer": "A"
+      "answer": "A",
+      "explanation": "DES的分组长度为64比特，共16轮。"
     },
     {
       "num": 25,
       "stem": "SM4循环左移时，被移出的最高位回到最右边。  （　）",
       "source": "判断题",
       "origin": "判断题 第25题",
-      "explanation": "与一般丢弃高位的左移不同，这是循环左移。",
-      "answer": "A"
+      "answer": "A",
+      "explanation": "与一般丢弃高位的左移不同，这是循环左移。"
     },
     {
       "num": 26,
       "stem": "MD5与SHA-1的摘要长度不同，但消息处理分组长度相同。  （　）",
       "source": "判断题",
       "origin": "判断题 第26题",
-      "explanation": "分别输出128/160比特，分组均为512比特。",
-      "answer": "A"
+      "answer": "A",
+      "explanation": "分别输出128/160比特，分组均为512比特。"
     },
     {
       "num": 27,
       "stem": "RSA与ECC基于同一类椭圆曲线离散对数困难问题。  （　）",
       "source": "判断题",
       "origin": "判断题 第27题",
-      "explanation": "RSA基于大整数分解，ECC基于ECDLP。",
-      "answer": "B"
+      "answer": "B",
+      "explanation": "RSA基于大整数分解，ECC基于ECDLP。"
     },
     {
       "num": 28,
       "stem": "三重DES的EDE结构依次为加密、解密、加密。  （　）",
       "source": "判断题",
       "origin": "判断题 第28题",
-      "explanation": "E→D→E。",
-      "answer": "A"
+      "answer": "A",
+      "explanation": "E→D→E。"
     },
     {
       "num": 29,
       "stem": "一次一密在满足相应条件下理论上可以达到完全保密。  （　）",
       "source": "判断题",
       "origin": "判断题 第29题",
-      "explanation": "来源同时强调实践困难。",
-      "answer": "A"
+      "answer": "A",
+      "explanation": "来源同时强调实践困难。"
     },
     {
       "num": 30,
       "stem": "对所有奇素数p，任意非零二次剩余的两个平方根中必有一个仍是二次剩余。  （　）",
       "source": "判断题",
       "origin": "判断题 第30题",
-      "explanation": "此为课本被单独标注的非普遍成立原句；模5时4的根2、3都不是二次剩余。",
-      "answer": "B"
+      "answer": "B",
+      "explanation": "该断言不是对所有奇素数都成立：模5时4的两个平方根为2、3，它们都不是模5的非零二次剩余。"
     },
     {
       "num": 31,
       "stem": "若p是奇素数，模p非零二次剩余的数量为(p−1)/2。  （　）",
       "source": "判断题",
       "origin": "判断题 第31题",
-      "explanation": "教材对应结论，前提为奇素数p。",
-      "answer": "A"
+      "answer": "A",
+      "explanation": "当p为奇素数时，模p的非零二次剩余数目为(p−1)/2。"
     }
   ],
   "blank": [
@@ -1118,430 +1118,430 @@
       "stem": "保密通信系统五元组依次为{{blank}}、{{blank}}、{{blank}}、{{blank}}、{{blank}}。",
       "source": "填空题",
       "origin": "填空题 第1题",
-      "explanation": "分别表示明文空间、密文空间、密钥空间、加密变换、解密变换。",
       "answer": [
         "M",
         "C",
         "K",
         "E",
         "D"
-      ]
+      ],
+      "explanation": "分别表示明文空间、密文空间、密钥空间、加密变换、解密变换。"
     },
     {
       "num": 2,
-      "stem": "教材六项写法中的两个密钥空间分别记为{{blank}}和{{blank}}。",
+      "stem": "保密通信系统若写成六项(M,C,K₁,K₂,E,D)，则K₁表示{{blank}}，K₂表示{{blank}}。",
       "source": "填空题",
       "origin": "填空题 第2题",
-      "explanation": "分别为加密密钥空间、解密密钥空间。",
       "answer": [
-        "K₁",
-        "K₂"
-      ]
+        "加密密钥空间",
+        "解密密钥空间"
+      ],
+      "explanation": "六项写法将加密密钥空间与解密密钥空间区分开。"
     },
     {
       "num": 3,
       "stem": "从明文统计特征向密文扩散称为{{blank}}；使密钥与密文统计关系复杂化称为{{blank}}。",
       "source": "填空题",
       "origin": "填空题 第3题",
-      "explanation": "两者针对不同统计关系。",
       "answer": [
         "扩散",
         "混淆"
-      ]
+      ],
+      "explanation": "两者针对不同统计关系。"
     },
     {
       "num": 4,
       "stem": "AES一轮四个变换依次为{{blank}}→{{blank}}→{{blank}}→{{blank}}。",
       "source": "填空题",
       "origin": "填空题 第4题",
-      "explanation": "最后一轮不进行列混合。",
       "answer": [
         "字节代换",
         "行移位",
         "列混合",
         "轮密钥加"
-      ]
+      ],
+      "explanation": "最后一轮不进行列混合。"
     },
     {
       "num": 5,
       "stem": "ECB、CBC、CFB、OFB分别叫{{blank}}、{{blank}}、{{blank}}、{{blank}}。",
       "source": "填空题",
       "origin": "填空题 第5题",
-      "explanation": "按教材的四种模式名称填写。",
       "answer": [
         "电子密码本",
         "密码分组链接",
         "密码反馈",
         "输出反馈"
-      ]
+      ],
+      "explanation": "ECB为电子密码本，CBC为密码分组链接，CFB为密码反馈，OFB为输出反馈。"
     },
     {
       "num": 6,
       "stem": "ZUC上层LFSR由{{blank}}个{{blank}}比特寄存器单元组成。",
       "source": "填空题",
       "origin": "填空题 第6题",
-      "explanation": "上层结构的特殊数字。",
       "answer": [
         "16",
         "31"
-      ]
+      ],
+      "explanation": "上层结构的特殊数字。"
     },
     {
       "num": 7,
       "stem": "ZUC中层BR抽取{{blank}}比特，重组为{{blank}}个{{blank}}比特字。",
       "source": "填空题",
       "origin": "填空题 第7题",
-      "explanation": "128=4×32。",
       "answer": [
         "128",
         "4",
         "32"
-      ]
+      ],
+      "explanation": "128=4×32。"
     },
     {
       "num": 8,
       "stem": "ZUC下层非线性函数F的输入和输出分别为{{blank}}比特、{{blank}}比特。",
       "source": "填空题",
       "origin": "填空题 第8题",
-      "explanation": "非线性F的输入输出长度。",
       "answer": [
         "96",
         "32"
-      ]
+      ],
+      "explanation": "非线性F的输入输出长度。"
     },
     {
       "num": 9,
-      "stem": "Diffie–Hellman中A发给B的公开值可记为Yₐ={{blank}}；A最终算出的K={{blank}}。",
+      "stem": "Diffie–Hellman协商中，双方已公开模数p与底数α。A保留秘密指数xₐ并收到B的公开值Yᵦ，则A发出的公开值Yₐ={{blank}}；A得到的共享密钥K={{blank}}。",
       "source": "填空题",
       "origin": "填空题 第9题",
-      "explanation": "A的秘密指数是xₐ；接收B的公开值Yᵦ后求共享密钥。",
       "answer": [
         "αˣᵃ mod p",
         "Yᵦˣᵃ mod p"
-      ]
+      ],
+      "explanation": "A的秘密指数是xₐ；接收B的公开值Yᵦ后求共享密钥。"
     },
     {
       "num": 10,
-      "stem": "哈希函数第5项性质固定{{blank}}，寻找另一条不同消息；第6项性质要求难以找到任意两个不同输入使其{{blank}}。",
+      "stem": "设哈希函数为H，第5项安全条件固定一条输入x，要求难以找到另一条输入y≠x使{{blank}}；第6项则不预先固定{{blank}}，要求难以找到任意两条不同输入具有相同哈希值。",
       "source": "填空题",
       "origin": "填空题 第10题",
-      "explanation": "第5项给定x；第6项是任意两条输入。",
       "answer": [
-        "原输入x",
-        "哈希值相同"
-      ]
+        "H(y)=H(x)",
+        "原输入x"
+      ],
+      "explanation": "第5项固定原消息；第6项允许从任意消息中寻找一对相同摘要。"
     },
     {
       "num": 11,
       "stem": "被动攻击的两种子类型是{{blank}}和{{blank}}。",
       "source": "填空题",
       "origin": "填空题 第11题",
-      "explanation": "依据课本攻击分类图。",
       "answer": [
         "消息内容获取",
         "业务流分析"
-      ]
+      ],
+      "explanation": "被动攻击包括消息内容获取和业务流分析。"
     },
     {
       "num": 12,
       "stem": "主动攻击的三种子类型是{{blank}}、{{blank}}、{{blank}}。",
       "source": "填空题",
       "origin": "填空题 第12题",
-      "explanation": "依据课本攻击分类图。",
       "answer": [
         "中断",
         "篡改",
         "伪造"
-      ]
+      ],
+      "explanation": "主动攻击包括中断、篡改、伪造。"
     },
     {
       "num": 13,
       "stem": "DES S盒的输入为{{blank}}比特，输出为{{blank}}比特；输入首末位确定{{blank}}，中间四位确定{{blank}}。",
       "source": "填空题",
       "origin": "填空题 第13题",
-      "explanation": "首末两位成行，中间四位成列。",
       "answer": [
         "6",
         "4",
         "行",
         "列"
-      ]
+      ],
+      "explanation": "首末两位成行，中间四位成列。"
     },
     {
       "num": 14,
       "stem": "保密使用{{blank}}公钥加密、{{blank}}私钥解密；签名使用{{blank}}私钥，验证用{{blank}}公钥。",
       "source": "填空题",
       "origin": "填空题 第14题",
-      "explanation": "签名和加密的两组对应关系。",
       "answer": [
         "接收方",
         "接收方",
         "发送方",
         "发送方"
-      ]
+      ],
+      "explanation": "签名和加密的两组对应关系。"
     },
     {
       "num": 15,
       "stem": "仿射密码公式为c≡{{blank}}(mod 26)，要求{{blank}}。",
       "source": "填空题",
       "origin": "填空题 第15题",
-      "explanation": "仿射是单表代换，且乘数a要与26互素。",
       "answer": [
         "am+b",
         "gcd(a,26)=1"
-      ]
+      ],
+      "explanation": "仿射是单表代换，且乘数a要与26互素。"
     },
     {
       "num": 16,
-      "stem": "循环置换(132)(45)的逆置换为{{blank}}。",
+      "stem": "采用循环置换记号(132)(45)，求其逆置换{{blank}}。",
       "source": "填空题",
       "origin": "填空题 第16题",
-      "explanation": "每个循环取逆可反向写；长度为2的循环自逆。",
       "answer": [
         "(123)(45)"
-      ]
+      ],
+      "explanation": "每个循环取逆可反向写；长度为2的循环自逆。"
     },
     {
       "num": 17,
       "stem": "n级LFSR产生m序列时，最大周期T={{blank}}；n=6时T={{blank}}。",
       "source": "填空题",
       "origin": "填空题 第17题",
-      "explanation": "T=2⁶−1=63。",
       "answer": [
         "2ⁿ−1",
         "63"
-      ]
+      ],
+      "explanation": "T=2⁶−1=63。"
     },
     {
       "num": 18,
       "stem": "DES分组长度{{blank}}比特、有效密钥{{blank}}比特、轮数{{blank}}。",
       "source": "填空题",
       "origin": "填空题 第18题",
-      "explanation": "三个DES常考数字。",
       "answer": [
         "64",
         "56",
         "16"
-      ]
+      ],
+      "explanation": "三个DES常考数字。"
     },
     {
       "num": 19,
       "stem": "AES的三种密钥长度为{{blank}}、{{blank}}、{{blank}}比特。",
       "source": "填空题",
       "origin": "填空题 第19题",
-      "explanation": "本题只考原资料列出的密钥长度，不延伸AES其他参数。",
       "answer": [
         "128",
         "192",
         "256"
-      ]
+      ],
+      "explanation": "AES允许128、192、256比特三种密钥长度。"
     },
     {
       "num": 20,
       "stem": "SM4的输入、输出分组长度均为{{blank}}比特，迭代{{blank}}轮。",
       "source": "填空题",
       "origin": "填空题 第20题",
-      "explanation": "来自复习资料的参数表。",
       "answer": [
         "128",
         "32"
-      ]
+      ],
+      "explanation": "SM4输入、输出分组均为128比特，迭代32轮。"
     },
     {
       "num": 21,
       "stem": "MD5摘要{{blank}}比特，SHA-1摘要{{blank}}比特；二者处理分组均为{{blank}}比特。",
       "source": "填空题",
       "origin": "填空题 第21题",
-      "explanation": "摘要长度与分组长度要分清。",
       "answer": [
         "128",
         "160",
         "512"
-      ]
+      ],
+      "explanation": "摘要长度与分组长度要分清。"
     },
     {
       "num": 22,
       "stem": "模奇素数p的非零二次剩余共有{{blank}}个；一个非零二次剩余对应{{blank}}个不同平方根。",
       "source": "填空题",
       "origin": "填空题 第22题",
-      "explanation": "教材对应段落；平方根个数指模奇素数p的非零二次剩余。",
       "answer": [
         "(p−1)/2",
         "2"
-      ]
+      ],
+      "explanation": "当p为奇素数时，模p非零二次剩余有(p−1)/2个；每个非零二次剩余有两个不同平方根。"
     },
     {
       "num": 23,
       "stem": "三重DES中EDE的运算顺序是{{blank}}→{{blank}}→{{blank}}。",
       "source": "填空题",
       "origin": "填空题 第23题",
-      "explanation": "EDE逐项展开。",
       "answer": [
         "加密",
         "解密",
         "加密"
-      ]
+      ],
+      "explanation": "EDE逐项展开。"
     },
     {
       "num": 24,
-      "stem": "在模n下，且gcd(a,n)=1的前提下，若同余方程{{blank}}有解，则a称为模n的二次剩余。",
+      "stem": "设gcd(a,n)=1。若存在整数x，使同余方程{{blank}}成立，则称a为模n的二次剩余。",
       "source": "填空题",
       "origin": "填空题 第24题",
-      "explanation": "此为教材的二次剩余判定方式。",
       "answer": [
         "x²≡a(mod n)"
-      ]
+      ],
+      "explanation": "若x²≡a(mod n)有解，且gcd(a,n)=1，则a是模n的二次剩余。"
     },
     {
       "num": 25,
       "stem": "按“移出的最高位接到最右端”的定义，6比特串101101循环左移1位的结果为{{blank}}。",
       "source": "填空题",
       "origin": "填空题 第25题",
-      "explanation": "101101循环左移1位应为011011。复习资料中101101→110110的示例实际上是循环右移1位，与其文字所说的左移不一致；此题按题干给出的严格左移定义作答。",
       "answer": [
         "011011"
-      ]
+      ],
+      "explanation": "6比特101101按“最高位循环移到最低位”左移1位得到011011；110110是右移1位的结果。"
     },
     {
       "num": 26,
-      "stem": "提出扩散与混淆原则的是{{blank}}；Diffie与Hellman是{{blank}}密码学的先驱。",
+      "stem": "提出扩散与混淆原则的密码学家是{{blank}}；提出Diffie–Hellman密钥交换的两位先驱所属领域是{{blank}}密码学。",
       "source": "填空题",
       "origin": "填空题 第26题",
-      "explanation": "原资料对密码学人物的要求。",
       "answer": [
         "香农（Shannon）",
         "公钥"
-      ]
+      ],
+      "explanation": "香农提出扩散与混淆；Diffie与Hellman是公钥密码学的先驱。"
     }
   ],
   "short": [
     {
       "num": 1,
-      "stem": "按明文加密方式说明流密码与分组密码的异同，并各列举资料中的代表算法。",
+      "stem": "根据加密时处理明文的方式，比较流密码和分组密码的异同，并各举出代表算法。",
       "source": "简答题",
       "origin": "简答题 第1题",
-      "explanation": "",
-      "answer": "相同：二者都是对称加密方式。不同：流密码按数据流逐位、逐字节等较小单位连续处理；分组密码先将明文按固定长度分组后加密。流密码代表ZUC；分组密码代表DES、AES、SM4。"
+      "answer": "相同：二者都是对称加密方式。不同：流密码按数据流逐位、逐字节等较小单位连续处理；分组密码先将明文按固定长度分组后加密。流密码代表ZUC；分组密码代表DES、AES、SM4。",
+      "explanation": ""
     },
     {
       "num": 2,
-      "stem": "写出保密通信系统的五元组及各符号含义；说明教材六项写法。",
+      "stem": "写出保密通信系统的五元组、各符号含义，以及加密密钥空间与解密密钥空间分开表示时的六项写法。",
       "source": "简答题",
       "origin": "简答题 第2题",
-      "explanation": "",
-      "answer": "五元组(M,C,K,E,D)：M明文空间，C密文空间，K密钥空间，E加密变换，D解密变换。六项写法M、C、K₁、K₂、E、D，其中K₁为加密密钥空间，K₂为解密密钥空间。关系c=Eₖ₁(m)、m=Dₖ₂(c)。"
+      "answer": "五元组(M,C,K,E,D)：M明文空间，C密文空间，K密钥空间，E加密变换，D解密变换。六项写法M、C、K₁、K₂、E、D，其中K₁为加密密钥空间，K₂为解密密钥空间。关系c=Eₖ₁(m)、m=Dₖ₂(c)。",
+      "explanation": ""
     },
     {
       "num": 3,
       "stem": "简述扩散和混淆的概念、主要区别及共同作用。",
       "source": "简答题",
       "origin": "简答题 第3题",
-      "explanation": "",
-      "answer": "扩散：把明文的统计特征分散到密文中，使明文某位变化可影响多个密文位；混淆：使密钥与密文间的统计关系复杂化。区别是扩散侧重明文—密文，混淆侧重密钥—密文；共同作用是抵抗统计分析、提高安全性。"
+      "answer": "扩散：把明文的统计特征分散到密文中，使明文某位变化可影响多个密文位；混淆：使密钥与密文间的统计关系复杂化。区别是扩散侧重明文—密文，混淆侧重密钥—密文；共同作用是抵抗统计分析、提高安全性。",
+      "explanation": ""
     },
     {
       "num": 4,
       "stem": "写出AES一轮的四项变换、各自作用，并说明最后一轮的特殊之处。",
       "source": "简答题",
       "origin": "简答题 第4题",
-      "explanation": "",
-      "answer": "字节代换：独立对状态各字节进行非线性代换；行移位：对状态阵列各行循环移位；列混合：与固定多项式c(x)运算并模x⁴+1约简；轮密钥加：状态与轮密钥逐比特异或。步骤依次为字节代换→行移位→列混合→轮密钥加；最后一轮没有列混合。"
+      "answer": "字节代换：独立对状态各字节进行非线性代换；行移位：对状态阵列各行循环移位；列混合：与固定多项式c(x)运算并模x⁴+1约简；轮密钥加：状态与轮密钥逐比特异或。步骤依次为字节代换→行移位→列混合→轮密钥加；最后一轮没有列混合。",
+      "explanation": ""
     },
     {
       "num": 5,
       "stem": "说明ECB、CBC、CFB、OFB四种分组密码运行模式的基本过程与区别。",
       "source": "简答题",
       "origin": "简答题 第5题",
-      "explanation": "",
-      "answer": "ECB：每个明文组独立加密；CBC：当前明文组与前一密文组异或后加密；CFB：将前一密文组反馈作加密输入，得到输出后与当前明文处理；OFB：将前次加密输出反馈作下次加密输入。关键区别：ECB独立、CBC前密文参与、CFB密文反馈、OFB加密输出反馈。"
+      "answer": "ECB：每个明文组独立加密；CBC：当前明文组与前一密文组异或后加密；CFB：将前一密文组反馈作加密输入，得到输出后与当前明文处理；OFB：将前次加密输出反馈作下次加密输入。关键区别：ECB独立、CBC前密文参与、CFB密文反馈、OFB加密输出反馈。",
+      "explanation": ""
     },
     {
       "num": 6,
       "stem": "按上、中、下三层说明ZUC算法的结构、各层名称、数据位数和主要作用。",
       "source": "简答题",
       "origin": "简答题 第6题",
-      "explanation": "",
-      "answer": "上层LFSR：16个31比特寄存器单元，更新内部状态；中层BR：从内部状态抽取128比特并重组为4个32比特字；下层非线性函数F：96比特输入、32比特输出，进行非线性处理（源笔记指出混淆和扩散）。"
+      "answer": "上层LFSR：16个31比特寄存器单元，更新内部状态；中层BR：从内部状态抽取128比特并重组为4个32比特字；下层非线性函数F：96比特输入、32比特输出，进行非线性处理（源笔记指出混淆和扩散）。",
+      "explanation": ""
     },
     {
       "num": 7,
-      "stem": "用符号p、α、xₐ、xᵦ、Yₐ、Yᵦ、K说明Diffie–Hellman密钥交换过程。",
+      "stem": "设双方公开模数p与参数α，A、B的秘密指数分别为xₐ和xᵦ。用公开值Yₐ、Yᵦ及共享密钥K说明Diffie–Hellman密钥交换的完整过程。",
       "source": "简答题",
       "origin": "简答题 第7题",
-      "explanation": "",
-      "answer": "双方公开p、α；A保留私有指数xₐ并发送Yₐ=αˣᵃ mod p；B保留xᵦ并发送Yᵦ=αˣᵇ mod p；A求K=Yᵦˣᵃ mod p；B求K=Yₐˣᵇ mod p。两边均等于αˣᵃˣᵇ mod p，故得到相同共享密钥。私有指数不传输；依据有限域离散对数困难。"
+      "answer": "双方公开p、α；A保留私有指数xₐ并发送Yₐ=αˣᵃ mod p；B保留xᵦ并发送Yᵦ=αˣᵇ mod p；A求K=Yᵦˣᵃ mod p；B求K=Yₐˣᵇ mod p。两边均等于αˣᵃˣᵇ mod p，故得到相同共享密钥。私有指数不传输；依据有限域离散对数困难。",
+      "explanation": ""
     },
     {
       "num": 8,
-      "stem": "按教材列出哈希函数应满足的六项条件，并说明第5项与第6项的区别。",
+      "stem": "列出用于数据认证的哈希函数通常应满足的六项条件，解释“给定原消息寻找另一消息”与“寻找任意一对消息”两项安全条件的区别。",
       "source": "简答题",
       "origin": "简答题 第8题",
-      "explanation": "",
-      "answer": "①任意长度输入；②固定长度输出；③给定x容易计算H(x)；④给定h难以求x使H(x)=h；⑤给定x难以找y≠x使H(y)=H(x)；⑥难以找任意两个不同输入x、y使H(x)=H(y)。第5项固定原输入x，第6项不固定。原笔记说明至少答五点。"
+      "answer": "①任意长度输入；②固定长度输出；③给定x容易计算H(x)；④给定h难以求x使H(x)=h；⑤给定x难以找y≠x使H(y)=H(x)；⑥难以找任意两个不同输入x、y使H(x)=H(y)。第5项固定原输入x，第6项不固定。原笔记说明至少答五点。",
+      "explanation": ""
     },
     {
       "num": 9,
-      "stem": "案例一｜攻击类型分类。某单位发生以下事件，依教材分类作答。\n（1）①攻击者只监听并读取通信内容；②只统计双方通信频率和流量；③人为阻断网络服务；④擅自改写消息内容；⑤冒用合法人员发送伪造通知。\n（2）分别判断五个事件属于被动还是主动攻击，并写出对应子类型。\n（3）指出③、④、⑤分别更直接影响可用性、完整性、真实性中的哪一项。",
+      "stem": "攻击类型判断\n某单位出现以下五个事件：①攻击者只监听并读取通信内容；②只统计双方通信频率和流量；③人为阻断网络服务；④擅自改写消息内容；⑤冒用合法人员发送伪造通知。\n（1）根据给出的五个事件，逐个判断属于被动攻击还是主动攻击，并写出子类型。\n（2）事件③、④、⑤分别主要损害可用性、完整性、真实性中的哪一项？",
       "source": "案例分析",
       "origin": "案例分析 第1题",
-      "explanation": "",
-      "answer": "①被动—消息内容获取；②被动—业务流分析；③主动—中断—可用性；④主动—篡改—完整性；⑤主动—伪造—真实性。判据：监听/分析且不修改为被动；中断、改写、伪造为主动。"
+      "answer": "（1）①被动攻击—消息内容获取；②被动攻击—业务流分析；③主动攻击—中断；④主动攻击—篡改；⑤主动攻击—伪造。\n（2）③可用性；④完整性；⑤真实性。",
+      "explanation": "（1）①②没有改变消息或服务，只获取内容或分析流量；③④⑤直接干扰、修改或伪造通信。\n（2）服务被阻断对应可用性，内容被改写对应完整性，冒用身份伪造通知对应真实性。"
     },
     {
       "num": 10,
-      "stem": "案例二｜DES S盒查表。本题给出一张完整的4×16 S盒表，行、列均从0编号。\nDES S盒表（列号从0至15依次排列）：\n列号：0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15\n第0行：14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, ？, 7\n第1行：0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8\n第2行：4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0\n第3行：15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13\n\n（1）输入6位二进制011011，求4位输出（写出行列）。\n（2）若输出为0110，列出所有可能的6位输入。\n（3）将第0行第14列的数遮住，依据每行0～15恰出现一次，求缺失数字。",
+      "stem": "DES S盒查表与缺数\n下表给出一张DES S盒，行号为0～3，列号为0～15。输入6比特时，首位和末位组成行号，中间四位组成列号；表内十进制数转换为4比特输出。表中仅一个格子以“？”遮住。\nDES S盒表（行/列从0开始；每行依次对应列0～15）：\n第0行：14、4、13、1、2、15、11、8、3、10、6、12、5、9、？、7\n第1行：0、15、7、4、14、2、13、1、10、6、12、11、9、5、3、8\n第2行：4、1、14、8、13、6、2、11、15、12、9、7、3、10、5、0\n第3行：15、12、8、2、4、9、1、7、5、11、3、14、10、0、6、13\n（1）DES S盒输入为六位011011，按首末两位确定行、中间四位确定列，求行号、列号及四位二进制输出。\n（2）若该S盒的四位输出为0110，列出所有可能的六位输入。\n（3）表中第0行第14列用“？”遮住。利用每行0～15各出现一次的性质，求缺失数字。",
       "source": "案例分析",
       "origin": "案例分析 第2题",
-      "explanation": "",
-      "answer": "①输入011011：首末位01₂=1行，中间1101₂=13列；第1行13列为5，输出0101。②输出0110₂=6：各行中的6分别位于第0行10列、第1行9列、第2行5列、第3行14列；对应输入010100、010011、101010、111101。③第0行第14列缺0。"
+      "answer": "（1）行号01₂=1；列号1101₂=13；表中数值5，输出0101。\n（2）010100、010011、101010、111101。\n（3）0。",
+      "explanation": "（1）读取表中第1行、第13列的数值5，并转换为四位二进制。\n（2）输出0110表示十进制6，逐行查6所在列；四行对应列10、9、5、14，行列位拼接后得到四种输入。\n（3）第0行其他15个数包含1～15，缺少0。"
     },
     {
       "num": 11,
-      "stem": "案例三｜DES E扩展与IP置换。以下为题目所给位置映射（只考所列位置，不需要记忆其他表格）。\n（1）IP输出前8位依次取输入第58、50、42、34、26、18、10、2位。若64位输入中仅第58位、第2位为1，其余均为0，求IP输出前8位。\n（2）E扩展输出前6位依次取32位右半部分的第32、1、2、3、4、5位。设右半部分这些位依次为1、0、1、1、0、1，求E输出前6位。\n（3）简述E扩展与IP初始置换的辨认区别。",
+      "stem": "DES E扩展与IP置换\n只使用各小问题干中给出的位号对应关系；未给出的置换表不需要补充，也不得自行套用其他表格。\n（1）IP输出前8位依次取输入第58、50、42、34、26、18、10、2位。64位输入中仅第58位、第2位为1，其余为0，求IP输出前8位。\n（2）E扩展输出前6位依次取32位输入的第32、1、2、3、4、5位。若这6个输入位置上的位依次为1、0、1、1、0、1，求输出前6位。\n（3）说明E扩展与IP初始置换各自的区别。",
       "source": "案例分析",
       "origin": "案例分析 第3题",
-      "explanation": "",
-      "answer": "①IP前8位为10000001（来自第58、2位的1分别落在输出第1、8位）。②E前6位为101101。③E按表扩展并重排位；IP按表变换输入比特位置。具体输出必须依本题给出的映射，不可擅用其他置换表。"
+      "answer": "（1）10000001。\n（2）101101。\n（3）E扩展对输入比特进行扩展、重排；IP初始置换只按位置对输入比特重排。",
+      "explanation": "（1）输入第58位落在输出第1位，第2位落在输出第8位，其余六位为0。\n（2）按照题干指定的输出位置顺序抄取比特，不能自行使用其他置换表。\n（3）辨认重点：E存在扩展映射，IP属于位置置换。"
     },
     {
       "num": 12,
-      "stem": "案例四｜公钥加密与数字签名。A向B发送一条需要保密且能验证A身份的消息。\n（1）写出A进行签名和加密分别应使用的密钥。\n（2）写出B进行解密和验签分别应使用的密钥。\n（3）解释哪些操作满足保密性，哪些操作支持身份确认和消息未被篡改的验证。",
+      "stem": "公钥加密与数字签名\nA向B发送一条既需要保密、又需要验证发送者身份的消息。A与B各有自己的公钥和私钥，公钥可供对方使用，私钥由各自持有。\n（1）A需要向B发送消息，既要保密，又要让B验证发送方为A。A签名时、加密时各使用谁的什么密钥？\n（2）B收到加密且带签名的消息后，解密时与验签时分别使用谁的什么密钥？\n（3）在上述操作中，哪些用于保密性，哪些用于验证发送者身份和消息未被篡改？",
       "source": "案例分析",
       "origin": "案例分析 第4题",
-      "explanation": "",
-      "answer": "A用A自己的私钥签名，再用B的公钥加密；B用自己的私钥解密，再用A的公钥验签。B公钥加密/B私钥解密保证保密；A私钥签名/A公钥验签用于确认来源和消息未被篡改。"
+      "answer": "（1）签名用A自己的私钥；加密用B的公钥。\n（2）解密用B自己的私钥；验签用A的公钥。\n（3）B公钥加密/B私钥解密用于保密；A私钥签名/A公钥验签用于验证身份及消息完整性。",
+      "explanation": "（1）A的私钥对应签名身份，B的公钥用于让只有持有B私钥的一方解密。\n（2）解密操作对应B的密钥对；验证A身份对应A的密钥对。\n（3）加密与签名的目标不同，不要混淆密钥的所属方。"
     },
     {
       "num": 13,
-      "stem": "计算一｜古典密码：维吉尼亚与Playfair（10分）。\n（1）维吉尼亚（4分）：约定A=0，…，Z=25，按cᵢ=(mᵢ+kᵢ) mod 26，加密明文SECURITY，密钥KEY循环使用。求密文。\n（2）维吉尼亚（2分）：按mᵢ=(cᵢ−kᵢ) mod 26，密钥CAT循环使用，解密PEMYOKM。求明文。\nPlayfair 5×5密钥方阵（每行从左至右）：\n第1行：M  O  N  A  R\n第2行：C  H  Y  B  D\n第3行：E  F  G  I  K\n第4行：L  P  Q  S  T\n第5行：U  V  W  X  Z\n\n（3）Playfair（4分）：使用下表5×5密钥方阵（I/J合并）。两字母相同则在第一字母后插入X；末尾剩单字母补X；同一行取右侧、同一列取下侧，否则取矩形同行另一列。加密BALLOON，写出分组及密文。",
+      "stem": "古典密码：维吉尼亚与Playfair（10分）\n按各小题给定的字母编号、密钥和加解密规则计算。\n（1）维吉尼亚（4分）。约定A=0，…，Z=25，按cᵢ≡mᵢ+kᵢ(mod 26)，用循环密钥KEY加密明文SECURITY，求密文。\n（2）维吉尼亚（2分）。约定A=0，…，Z=25，按mᵢ≡cᵢ−kᵢ(mod 26)，用循环密钥CAT解密PEMYOKM，求明文。\n第（3）问专用密钥方阵（每行从左至右排列，I/J合并）：\nPlayfair 5×5密钥方阵：\n第1行：M  O  N  A  R\n第2行：C  H  Y  B  D\n第3行：E  F  G  I  K\n第4行：L  P  Q  S  T\n第5行：U  V  W  X  Z\n（3）Playfair（4分）。使用下方给定的5×5密钥方阵，I/J合并；相同字母拆对时在第一个后插入X，末尾单字母补X；同行取右、同列取下、其他取矩形同行另一列（必要时循环）。加密BALLOON，写出分组与密文。",
       "source": "计算题",
       "origin": "计算题 第1题",
-      "explanation": "",
-      "answer": "（1）SECURITY配KEYKEYKE：S+K→C，E+E→I，C+Y→A，U+K→E，R+E→V，I+Y→G，T+K→D，Y+E→C；密文CIAEVGDC。（2）PEMYOKM用CATCATC逐位相减，得到NETWORK。（3）分组BA / LX / LO / ON；分别加密IB / SU / PM / NA，密文IBSUPMNA。"
+      "answer": "（1）CIAEVGDC。\n（2）NETWORK。\n（3）分组BA / LX / LO / ON；密文IBSUPMNA。",
+      "explanation": "（1）明文SECURITY，密钥扩展为KEYKEYKE；逐字符求和模26依次得到C、I、A、E、V、G、D、C。\n（2）循环密钥为CATCATC，逐字符相减模26，得到N、E、T、W、O、R、K。\n（3）BA→IB（同列）；LX→SU（矩形）；LO→PM（矩形）；ON→NA（同行）。"
     },
     {
       "num": 14,
-      "stem": "计算二｜仿射密码与LFSR（10分）。\n（1）仿射加密（5分）：约定A=0，…，Z=25，采用c≡5m+8(mod 26)。先验证密钥a=5是否可逆，再加密CODE。\n（2）仿射解密（2分）：已知5在模26下的乘法逆元为21，解密密文SAXC，写出变换式。\n（3）LFSR与游程（3分）：若4级LFSR产生m序列，求周期T。另有线性序列100110001001（首尾不相接），问“0的二游程”和“0的三游程”各有几个。",
+      "stem": "仿射密码与LFSR（10分）\n第（1）、（2）问采用仿射密码；第（3）问分别计算m序列周期与完整零游程。\n（1）仿射加密（5分）。采用A=0，…，Z=25，c≡5m+8(mod26)。先检验a=5是否满足可逆条件，再加密CODE。\n（2）仿射解密（2分）。已知a=5、b=8，且5在模26下的逆元为21，按m≡21(c−8)(mod26)解密SAXC，写出明文。\n（3）LFSR与游程（3分）。若4级LFSR产生m序列，求周期T。另给线性比特串100110001001，统计“0的二游程”与“0的三游程”，约定首尾不相接、只数极大连续段。",
       "source": "计算题",
       "origin": "计算题 第2题",
-      "explanation": "",
-      "answer": "（1）gcd(5,26)=1，可逆；C(2)→(5×2+8) mod26=18=S，O(14)→0=A，D(3)→23=X，E(4)→2=C，密文SAXC。（2）m≡21(c−8)(mod26)，逐字得CODE。（3）T=2⁴−1=15；零游程为00、000、00，所以0的二游程2个，0的三游程1个。"
+      "answer": "（1）gcd(5,26)=1，可逆；密文SAXC。\n（2）CODE。\n（3）T=2⁴−1=15；0的二游程2个，0的三游程1个。",
+      "explanation": "（1）C=2→18=S；O=14→0=A；D=3→23=X；E=4→2=C。\n（2）逐字符按m≡21(c−8)(mod26)计算，S→C、A→O、X→D、C→E。\n（3）比特串中完整0游程依次为00、000、00；000不拆成二游程。"
     },
     {
       "num": 15,
-      "stem": "计算三｜RSA（10分）。本题所用RSA参数和运算公式均在题干给出。\n取p=5、q=11，规定n=pq、φ(n)=(p−1)(q−1)；公钥指数e=3，求n、φ(n)。\n求私钥指数d，使ed≡1(mod φ(n))，可取1≤d<φ(n)。\n明文数m=7，按c≡mᵉ(mod n)求密文c。\n按m≡cᵈ(mod n)验证解密结果（允许写出逐次平方或同余计算过程）。",
+      "stem": "RSA计算（10分）\n下列各问共用p=5、q=11、e=3及n=pq、φ(n)=(p−1)(q−1)，随后按题目指定的模幂公式计算。\n（1）取两个素数p=5、q=11，规定n=pq，φ(n)=(p−1)(q−1)，公钥指数e=3，求n与φ(n)。\n（2）求满足ed≡1(modφ(n))的私钥指数d，取1≤d<φ(n)。\n（3）明文数m=7，按照c≡mᵉ(modn)计算密文c。\n（4）按m≡cᵈ(modn)验证密文13是否可解回明文7，写出主要同余运算。",
       "source": "计算题",
       "origin": "计算题 第3题",
-      "explanation": "",
-      "answer": "n=5×11=55，φ(n)=4×10=40。3d≡1(mod40)取d=27（3×27=81≡1）。c=7³ mod55=343 mod55=13。解密m=13²⁷ mod55=7；可用13²≡4、13⁴≡16、13⁸≡36、13¹⁶≡31 (mod55)，从而13²⁷=13¹⁶·13⁸·13²·13≡31·36·4·13≡7(mod55)。"
+      "answer": "（1）n=55；φ(n)=40。\n（2）d=27。\n（3）c=13。\n（4）13²⁷ mod55=7，解密结果为7。",
+      "explanation": "（1）n=5×11=55；φ(n)=4×10=40。\n（2）3×27=81≡1(mod40)。\n（3）c=7³ mod55=343 mod55=13。\n（4）13²≡4，13⁴≡16，13⁸≡36，13¹⁶≡31(mod55)；13²⁷=13¹⁶·13⁸·13²·13≡7(mod55)。"
     },
     {
       "num": 16,
-      "stem": "计算四｜ECC椭圆曲线点加法（10分）。本题给出所需全部计算条件。\n曲线E：y²≡x³+2x+2(mod17)。已知P=(5,1)，Q=(6,3)，且两点都在曲线上。计算R=P+Q。\n已知P≠Q，使用λ≡(y_Q−y_P)·(x_Q−x_P)⁻¹(mod17)，x_R≡λ²−x_P−x_Q(mod17)，y_R≡λ(x_P−x_R)−y_P(mod17)。求λ、x_R、y_R，写出R。\n由Q=2P已给定，求3P，并指出ECC在复习资料中对应的安全性困难问题。",
+      "stem": "ECC椭圆曲线点加法（10分）\n下列各问共用曲线E：y²≡x³+2x+2(mod17)，P=(5,1)，Q=(6,3)。两点均在曲线上且P≠Q；必要公式直接列在小问中。\n（1）在模17上给定椭圆曲线E：y²≡x³+2x+2(mod17)，已知P=(5,1)、Q=(6,3)为曲线上不同的点。按下式计算斜率λ：λ≡(y_Q−y_P)(x_Q−x_P)⁻¹(mod17)。\n（2）利用给定公式x_R≡λ²−x_P−x_Q(mod17)，y_R≡λ(x_P−x_R)−y_P(mod17)，并使用上题求得的λ，计算R=P+Q。\n（3）另给定Q=2P，求3P，并指出ECC密码系统安全性对应的困难问题。",
       "source": "计算题",
       "origin": "计算题 第4题",
-      "explanation": "",
-      "answer": "x_Q−x_P=1，逆元仍为1；λ=(3−1)×1=2(mod17)。x_R=2²−5−6=−7≡10(mod17)，y_R=2(5−10)−1=−11≡6(mod17)，故R=(10,6)。Q=2P，所以P+Q=3P=(10,6)。ECC的安全性依据是椭圆曲线离散对数困难问题ECDLP。\n核对范围：简答8项、案例4类、计算4题；客观题覆盖原文列出的算法分类、流程、公式、参数、人物、运行模式、游程和二次剩余等考点。"
+      "answer": "（1）λ=2。\n（2）R=(10,6)。\n（3）3P=(10,6)；安全性依据为椭圆曲线离散对数困难问题（ECDLP）。",
+      "explanation": "（1）(x_Q−x_P)=1，其模17逆元仍为1；λ≡(3−1)×1≡2(mod17)。\n（2）x_R≡2²−5−6≡10(mod17)；y_R≡2(5−10)−1≡6(mod17)。\n（3）P+Q=P+2P=3P，前问算得P+Q=(10,6)。"
     }
   ]
 }
