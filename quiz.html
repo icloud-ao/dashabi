@@ -123,20 +123,24 @@ html.ios-inner-scroll #quizScroll{
 }
 @media(max-width:640px){html.ios-inner-scroll #quizScroll{scroll-padding-top:195px}}
 
-/* The original jump field also opens keyword search results. */
-.top-inner{position:relative}
-.search-box{flex:none;min-width:0}
-.search-box .jump{width:150px}
-.search-panel{position:absolute;z-index:25;top:calc(100% + 4px);right:16px;width:min(580px,calc(100vw - 32px));max-height:min(65dvh,600px);display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--line-strong);border-radius:16px;background:var(--card);box-shadow:var(--shadow-dialog)}
-.search-controls{flex:none;padding:12px 16px 6px}
-.search-options{display:flex;align-items:center;min-height:44px;gap:9px;font-size:14px;cursor:pointer}
+/* The jump field expands into one compact search surface. */
+.search-box{position:relative;z-index:25;flex:none;width:150px;height:32px;min-width:0;--search-width:min(380px,calc(100vw - 32px))}
+.search-box .jump{position:absolute;z-index:2;top:0;right:0;width:100%;height:100%;transition:width .16s cubic-bezier(.2,.7,.2,1) .08s,background-color .2s,border-color .2s,border-radius .2s,box-shadow .2s}
+.search-box.search-open .jump{width:var(--search-width);border-color:var(--line-strong);border-bottom-color:transparent;border-radius:14px 14px 0 0;background:var(--card);box-shadow:none;transition:width .22s cubic-bezier(.2,.7,.2,1),background-color .2s,border-color .2s,border-radius .2s,box-shadow .2s}
+.search-box.search-open .jump:focus-visible{outline:none}
+.search-panel{position:absolute;z-index:1;top:calc(100% - 1px);right:0;width:var(--search-width);max-height:min(55dvh,480px);display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--line-strong);border-top:0;border-radius:0 0 14px 14px;background:var(--card);box-shadow:var(--shadow-dialog);opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-5px) scale(.985);transform-origin:top right;transition:opacity .14s ease-in,transform .14s ease-in,visibility 0s linear .14s}
+.search-box.search-open .search-panel{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0) scale(1);transition:opacity .18s ease-out .06s,transform .18s cubic-bezier(.2,.7,.2,1) .06s,visibility 0s}
+.search-box.search-open:focus-within .jump{border-color:var(--tc);border-bottom-color:transparent}
+.search-box.search-open:focus-within .search-panel{border-color:var(--tc)}
+.search-controls{flex:none;padding:7px 12px 4px}
+.search-options{display:flex;align-items:center;min-height:40px;gap:9px;font-size:14px;cursor:pointer}
 .search-options input{width:18px;height:18px;margin:0;accent-color:var(--tc)}
 .search-help{margin:0;color:var(--mut);font-size:12px;line-height:1.5}
-.search-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:35px;color:var(--mut);font-size:13px}
+.search-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:30px;color:var(--mut);font-size:13px}
 .search-clear{min-height:36px;padding:0 8px;background:transparent;color:var(--tc);border-radius:8px;font-size:13px}
-.search-list{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 16px 16px}
-.search-result{display:block;width:100%;min-height:48px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--option);text-align:left;line-height:1.5;overflow-wrap:anywhere}
-.search-result+.search-result{margin-top:8px}
+.search-list{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 12px 12px}
+.search-result{display:block;width:100%;min-height:48px;padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:var(--option);text-align:left;line-height:1.5;overflow-wrap:anywhere}
+.search-result+.search-result{margin-top:6px}
 .search-result>span{display:block}
 .search-result>span+span{margin-top:5px}
 .search-result:hover{background:var(--option-hover)}
@@ -151,9 +155,12 @@ mark.search-mark{padding:0;border-radius:3px;background:#ffe09a;color:#382700}
 .search-match-label{color:var(--mut);font-size:12px;font-weight:600}
 .search-match-line{margin-top:5px;white-space:pre-wrap}
 @media(max-width:640px){
-  .search-box{flex:1 1 0}
-  .search-box .jump{width:100%}
-  .search-panel{right:12px;width:calc(100vw - 24px)}
+  .search-box{flex:1 1 0;width:auto;height:30px;--search-width:min(320px,calc(100vw - 108px))}
+  .search-box .jump,.search-panel{right:auto;left:0}
+  .search-panel{transform-origin:top left}
+}
+@media(prefers-reduced-motion:reduce){
+  .search-box .jump,.search-box.search-open .jump,.search-panel,.search-box.search-open .search-panel{transition:none!important}
 }
 </style>
 </head>
@@ -181,10 +188,10 @@ mark.search-mark{padding:0;border-radius:3px;background:#ffe09a;color:#382700}
       </div>
       <div class="search-box" id="searchBox">
         <input class="jump" id="jumpInput" type="search" aria-label="搜索题目或输入题号跳转" aria-controls="searchPanel" aria-expanded="false" title="数字或 S=单选，M=多选，J=判断，F=填空，Q=简答；输入题号按回车，关键词用空格分隔" placeholder="搜题 / 跳题" autocomplete="off">
-        <div id="searchPanel" class="search-panel mathjax_ignore" role="region" aria-label="题目搜索结果" hidden>
+        <div id="searchPanel" class="search-panel mathjax_ignore" role="region" aria-label="题目搜索结果" aria-hidden="true" inert>
           <div class="search-controls">
             <label class="search-options"><input id="searchIncludeAnswers" type="checkbox">包含答案和解析</label>
-            <p class="search-help">关键词用空格分隔。跳题：数字为单选，M 多选、J 判断、F 填空、Q 简答，加题号按回车。定位隐藏题目时显示全部。</p>
+            <p class="search-help">空格分词；回车跳题：数字单选、M多选、J判断、F填空、Q简答。隐藏题显示全部。</p>
             <div class="search-meta"><span id="searchStatus" role="status" aria-live="polite">输入关键词开始搜索</span><button class="search-clear" id="clearSearchHighlight" type="button" hidden>清除高亮</button></div>
           </div>
           <div class="search-list" id="searchResults" aria-label="搜索结果"></div>
@@ -500,7 +507,7 @@ function render(){
   }
   applyFilters(false);
   observeCards();
-  if(!$('searchPanel').hidden){buildSearchIndex();renderSearchResults();fitSearchPanel();}
+  if(searchPanelOpen()){buildSearchIndex();renderSearchResults();fitSearchPanel();}
   return typesetMath();
 }
 function applyFilters(preservePosition = true){
@@ -1324,6 +1331,7 @@ let searchMatches = [];
 let searchMarks = [];
 let searchPreview = null;
 
+function searchPanelOpen(){return $('searchBox').classList.contains('search-open');}
 function searchWords(){
   const value = $("jumpInput").value.trim().toLowerCase();
   return value ? [...new Set(value.split(/\s+/))] : [];
@@ -1518,26 +1526,30 @@ function locateSearchResult(index){
 }
 function fitSearchPanel(){
   const panel = $('searchPanel');
-  if(panel.hidden) return;
+  if(!searchPanelOpen()) return;
   const viewport = window.visualViewport;
   const bottom = viewport ? viewport.offsetTop + viewport.height : window.innerHeight;
-  const available = Math.max(130, bottom - panel.getBoundingClientRect().top - 10);
-  panel.style.maxHeight = `${Math.min(600, available)}px`;
+  const available = Math.max(130, bottom - panel.getBoundingClientRect().top - 16);
+  panel.style.maxHeight = `${Math.min(480, available)}px`;
 }
 function openSearchPanel(){
   if(!searchIndex.length && cardRecords.length) buildSearchIndex();
-  const wasHidden = $('searchPanel').hidden;
-  $('searchPanel').hidden = false;
+  const wasOpen = searchPanelOpen();
+  $('searchPanel').removeAttribute('inert');
+  $('searchPanel').setAttribute('aria-hidden', 'false');
+  $('searchBox').classList.add('search-open');
   $('jumpInput').setAttribute('aria-expanded', 'true');
   renderSearchResults();
-  if(wasHidden) fitSearchPanel();
+  if(!wasOpen) fitSearchPanel();
 }
 function closeSearchPanel(){
-  $('searchPanel').hidden = true;
+  $('searchBox').classList.remove('search-open');
+  $('searchPanel').setAttribute('inert', '');
+  $('searchPanel').setAttribute('aria-hidden', 'true');
   $('jumpInput').setAttribute('aria-expanded', 'false');
 }
 $('jumpInput').addEventListener('focus', openSearchPanel);
-$('jumpInput').addEventListener('click', () => {if($('searchPanel').hidden) openSearchPanel();});
+$('jumpInput').addEventListener('click', () => {if(!searchPanelOpen()) openSearchPanel();});
 $('jumpInput').addEventListener('input', () => {clearSearchHighlight(); openSearchPanel();});
 $('searchIncludeAnswers').addEventListener('change', () => {clearSearchHighlight(); renderSearchResults();});
 $('clearSearchHighlight').addEventListener('click', clearSearchHighlight);
