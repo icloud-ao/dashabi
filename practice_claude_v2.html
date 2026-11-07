@@ -656,7 +656,7 @@ $("card").addEventListener("touchend",e=>{
 },{passive:true});
 document.addEventListener("keydown",e=>{
   if(document.body.classList.contains("sh")){if(e.key==="Escape")closeSheet();return}
-  if(e.target.matches("input,textarea,button,[role=separator]"))return;
+  if(e.target.matches("input,textarea,[role=separator]")||e.target.closest("#sidebar"))return;
   if(e.key==="ArrowRight")next();else if(e.key==="ArrowLeft")prev();
 });
 $("btnPrev").onclick=prev;$("btnNext").onclick=next;
