@@ -209,17 +209,17 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
  .app{width:calc(100% - 32px);max-width:840px}
 }
 @media(min-width:960px) and (min-height:560px){
- .workspace{--side-width:320px;--side-gap:20px;--reading-inset:26px;display:grid;
+ .workspace{--side-width:320px;--side-gap:20px;--reading-inset:calc(clamp(80px,8vw,128px) - 22px);display:grid;
   grid-template-columns:minmax(0,1fr) var(--side-width);gap:var(--side-gap);
   align-items:stretch;width:calc(100% - 44px);margin:0 auto;min-width:0;
   transition:grid-template-columns .22s cubic-bezier(.25,1,.5,1),gap .22s cubic-bezier(.25,1,.5,1)}
  .workspace.side-left{grid-template-columns:var(--side-width) minmax(0,1fr)}
  .workspace.side-closed{grid-template-columns:minmax(0,1fr) 0px;gap:0}
  .workspace.side-left.side-closed{grid-template-columns:0px minmax(0,1fr)}
- .workspace .app{max-width:920px;width:calc(100% - var(--reading-inset));min-width:0;grid-column:1;grid-row:1;
-  justify-self:start;margin:0 0 0 var(--reading-inset)}
+ .workspace .app{max-width:calc(1340px - var(--side-width));width:calc(100% - var(--reading-inset));min-width:0;grid-column:1;grid-row:1;
+  justify-self:start;margin:0 0 0 var(--reading-inset);transition:max-width .22s cubic-bezier(.25,1,.5,1)}
  .workspace.side-left .app{grid-column:2;justify-self:end;margin:0 var(--reading-inset) 0 0}
- .workspace.side-closed .app{justify-self:center;width:100%;margin:0}
+ .workspace.side-closed .app{max-width:920px;justify-self:center;width:100%;margin:0}
  .workspace .hd{padding:calc(12px + env(safe-area-inset-top)) 12px 2px;min-height:60px}
  .workspace .ttl{font-size:17px}
  .workspace .meta{padding:17px 22px 12px}
@@ -277,6 +277,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
  .workspace.side-left .side-grip:before{left:8px}
  body.side-resizing,body.side-resizing *{cursor:col-resize!important;user-select:none!important;-webkit-user-select:none!important}
  body.side-resizing .workspace,.workspace.side-switching{transition:none}
+ body.side-resizing .workspace .app,.workspace.side-switching .app{transition:none}
  .sheet{top:50%;bottom:auto;left:50%;right:auto;max-width:min(500px,calc(100vw - 40px));width:100%;
   max-height:min(82dvh,760px);border-radius:22px;padding:14px 20px 22px;border:1px solid var(--rule);
   transform:translate(-50%,-45%) scale(.97);opacity:0;pointer-events:none;transition:transform .24s cubic-bezier(.25,1,.5,1),opacity .2s;
