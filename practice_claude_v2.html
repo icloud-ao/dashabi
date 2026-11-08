@@ -136,9 +136,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
 .opt{align-items:center;min-height:50px;padding:11px 14px;border:.5px solid var(--rule);border-radius:14px;background:var(--option);
  transition:transform .18s cubic-bezier(.25,1,.5,1),background-color .2s,border-color .2s}
 .opt:hover{background:var(--option-hover);border-color:var(--rule-strong)}
-.opt:active{transform:scale(.985)}
-.opt .lt{background:var(--card);border:.5px solid var(--rule);color:var(--mut);font-size:13px;font-weight:650}
+.opt:active{transform:scale(.99);transition-duration:.09s,.2s,.2s}
+.opt:has(input:focus-visible){outline:2px solid var(--tc);outline-offset:2px}
+.opt .lt{background:var(--card);border:.5px solid var(--rule);color:var(--mut);font-size:13px;font-weight:650;
+ transition:background-color .2s,border-color .2s,color .2s}
 .opt .tx{font-size:15px;line-height:1.55;padding-top:0}
+.opt-feedback{display:grid;place-items:center;flex:0 0 22px;width:22px;height:22px;border-radius:50%;
+ background:var(--ok);color:#fff;font-size:13px;font-weight:700;opacity:0;transform:scale(.7);
+ transition:opacity .22s,transform .24s cubic-bezier(.25,1,.5,1),background-color .2s}
+.opt-feedback::before{content:"✓"}
+.opt.ok .opt-feedback,.opt.no .opt-feedback{opacity:1;transform:scale(1)}
+.opt.no .opt-feedback{background:var(--bad)}
+.opt.no .opt-feedback::before{content:"✕"}
 .opt:has(input:checked){border-color:var(--selected-border);background:var(--selected)}
 .opt:has(input:checked) .lt{background:var(--tc);border-color:transparent;color:#fff}
 .opts .opt.ok,.opts .opt.ok:has(input:checked){border-color:rgba(52,199,89,.45);background:var(--okbg)}
@@ -156,6 +165,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
 .res.ok{background:var(--okbg);border-color:rgba(52,199,89,.4)}
 .res.no{background:var(--badbg);border-color:rgba(255,59,48,.4)}
 .rx{border-color:var(--rule)}
+.reveal{display:grid;grid-template-rows:0fr;opacity:0;
+ transition:grid-template-rows .28s cubic-bezier(.25,1,.5,1),opacity .23s ease-out}
+.reveal.open{grid-template-rows:1fr;opacity:1}
+.reveal-inner{min-height:0;overflow:hidden}
 .nav{background:var(--card)}
 .nb{min-height:46px;font-weight:600;border:.5px solid var(--rule);border-radius:14px}
 .nb:hover:not(:disabled){background:var(--selected)}
@@ -192,14 +205,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
 }
 .workspace{height:100dvh}
 .sidebar,.side-toggle{display:none}
+@media(min-width:700px) and (max-width:959px), (min-width:700px) and (max-height:559px){
+ .app{width:calc(100% - 32px);max-width:840px}
+}
 @media(min-width:960px) and (min-height:560px){
  .workspace{--side-width:320px;--side-gap:20px;display:grid;
   grid-template-columns:minmax(0,1fr) var(--side-width);gap:var(--side-gap);
-  align-items:stretch;width:calc(100% - 44px);max-width:1240px;margin:0 auto;min-width:0}
+  align-items:stretch;width:calc(100% - 44px);margin:0 auto;min-width:0;
+  transition:grid-template-columns .22s cubic-bezier(.25,1,.5,1),gap .22s cubic-bezier(.25,1,.5,1)}
  .workspace.side-left{grid-template-columns:var(--side-width) minmax(0,1fr)}
  .workspace.side-closed{grid-template-columns:minmax(0,1fr) 0px;gap:0}
  .workspace.side-left.side-closed{grid-template-columns:0px minmax(0,1fr)}
- .workspace .app{max-width:840px;width:100%;min-width:0;grid-column:1;grid-row:1;justify-self:end}
+ .workspace .app{max-width:1200px;width:100%;min-width:0;grid-column:1;grid-row:1;justify-self:end}
  .workspace.side-left .app{grid-column:2;justify-self:start}
  .workspace.side-closed .app{justify-self:center}
  .workspace .hd{padding:calc(12px + env(safe-area-inset-top)) 12px 2px;min-height:60px}
@@ -213,11 +230,17 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
  .workspace .nb{min-height:46px}
  .workspace:not(.side-closed) #btnCard{display:none}
  .side-toggle{display:grid}
+ .side-toggle svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+ .side-toggle .side-icon-panel{fill:currentColor;stroke:none;opacity:.2;transition:opacity .2s}
+ .side-toggle[aria-expanded="false"] .side-icon-panel{opacity:.06}
+ .workspace.side-right .side-toggle svg{transform:scaleX(-1)}
  .sidebar{position:relative;display:flex;flex-direction:column;min-width:0;min-height:0;grid-column:2;grid-row:1;
   margin:14px 0 calc(18px + env(safe-area-inset-bottom));
-  border:1px solid var(--rule);border-radius:22px;background:var(--card);box-shadow:var(--shadow-card)}
+  border:1px solid var(--rule);border-radius:22px;background:var(--card);box-shadow:var(--shadow-card);
+  transition:opacity .18s ease,visibility 0s}
  .workspace.side-left .sidebar{grid-column:1}
- .workspace.side-closed .sidebar{opacity:0;visibility:hidden;pointer-events:none;overflow:hidden;margin:0;border:0}
+ .workspace.side-closed .sidebar{opacity:0;visibility:hidden;pointer-events:none;overflow:hidden;
+  transition:opacity .18s ease,visibility 0s linear .18s}
  .sidebar-head{padding:18px 17px 14px;border-bottom:.5px solid var(--rule);flex:none}
  .sidebar-head-title{display:flex;align-items:center;gap:10px;justify-content:space-between}
  .sidebar-head-title strong{font-size:16px;font-weight:650;white-space:nowrap}
@@ -252,6 +275,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
  .workspace.side-left .side-grip{left:auto;right:-10px}
  .workspace.side-left .side-grip:before{left:8px}
  body.side-resizing,body.side-resizing *{cursor:col-resize!important;user-select:none!important;-webkit-user-select:none!important}
+ body.side-resizing .workspace,.workspace.side-switching{transition:none}
  .sheet{top:50%;bottom:auto;left:50%;right:auto;max-width:min(500px,calc(100vw - 40px));width:100%;
   max-height:min(82dvh,760px);border-radius:22px;padding:14px 20px 22px;border:1px solid var(--rule);
   transform:translate(-50%,-45%) scale(.97);opacity:0;pointer-events:none;transition:transform .24s cubic-bezier(.25,1,.5,1),opacity .2s;
@@ -269,7 +293,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
   <header class="hd">
     <a class="ib" href="/" aria-label="返回主页">‹</a>
     <div class="ttl" id="title">答题页</div>
-    <button class="ib side-toggle" id="btnSidebar" aria-label="收起答题导航" aria-expanded="true" title="展开或收起侧栏">▣</button>
+    <button class="ib side-toggle" id="btnSidebar" type="button" aria-label="收起答题导航" aria-controls="sidebar" aria-expanded="true" title="展开或收起侧栏"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path class="side-icon-panel" d="M5.5 5.4H9v13.2H5.5a1.6 1.6 0 0 1-1.6-1.6V7a1.6 1.6 0 0 1 1.6-1.6Z"/><path d="M9 4.5v15"/></svg></button>
     <button class="ib" id="btnMenu" aria-label="设置">⋯</button>
   </header>
   <div class="meta"><button class="tchip" id="tchip">单选</button><div class="cnt" id="cnt">0<small>/ 0</small></div></div>
@@ -335,7 +359,7 @@ const sidePrefs=(()=>{
  };
 })();
 const desktopSide=()=>window.matchMedia(SIDE_QUERY).matches;
-let sideFrame=0,sideLastCurrent=null,sideDragging=null;
+let sideFrame=0,sideLastCurrent=null,sideDragging=null,sideSwitchFrame=0;
 function maxSideWidth(){
  const workspace=$("workspace");
  return Math.max(260,Math.min(440,(workspace.clientWidth||window.innerWidth-44)-20-470));
@@ -361,8 +385,12 @@ function applySidePrefs(){
  });
 }
 function setSidePosition(position){
- if(position!=="left"&&position!=="right")return;
+ if((position!=="left"&&position!=="right")||position===sidePrefs.position)return;
+ const workspace=$("workspace");
+ workspace.classList.add("side-switching");
+ cancelAnimationFrame(sideSwitchFrame);
  sidePrefs.position=position;applySidePrefs();saveSidePrefs();
+ sideSwitchFrame=requestAnimationFrame(()=>{sideSwitchFrame=requestAnimationFrame(()=>workspace.classList.remove("side-switching"))});
 }
 function setSideExpanded(expanded){
  sidePrefs.expanded=!!expanded;applySidePrefs();saveSidePrefs();
@@ -502,7 +530,7 @@ function optsHTML(q,opts,rev,lk){
   return`<div class="opts">${opts.map(o=>{
     let c="opt";if(lk)c+=" lock";
     if(rev&&cor.includes(o.origKey))c+=" ok";else if(j&&sel.includes(o.origKey))c+=" no";
-    return`<label class="${c}"><input type="${q.type==="multi"?"checkbox":"radio"}" name="o" data-k="${esc(q.key)}" value="${esc(o.origKey)}" ${sel.includes(o.origKey)?"checked":""} ${lk?"disabled":""}/><span class="lt">${o.display}</span><span class="tx">${esc(o.text)}</span></label>`}).join("")}</div>`;
+    return`<label class="${c}"><input type="${q.type==="multi"?"checkbox":"radio"}" name="o" data-k="${esc(q.key)}" value="${esc(o.origKey)}" ${sel.includes(o.origKey)?"checked":""} ${lk?"disabled":""}/><span class="lt">${o.display}</span><span class="tx">${esc(o.text)}</span><span class="opt-feedback" aria-hidden="true"></span></label>`}).join("")}</div>`;
 }
 function resHTML(q,opts){
   const j=judged(q);let cls="res",t;
@@ -512,27 +540,82 @@ function resHTML(q,opts){
   const body=(j&&isCorrect(q))?"":(q.type==="short"?"":"正确答案：")+esc(correctDisplay(q,opts)||"暂无");
   return`<div class="${cls}"><div class="rt">${t}</div>${body?`<div>${body}</div>`:""}${q.explanation?`<div class="rx"><b>解析</b>${esc(q.explanation)}</div>`:""}${aImgs(q)}</div>`;
 }
+function questionActionHTML(q){
+  if(mode!=="practice"||locked(q))return "";
+  if(q.type==="multi"||q.type==="blank")return `<button class="act" data-act="check" ${isAnswered(q)?"":"disabled"}>确认答案</button>`;
+  if(q.type==="short")return `<button class="act ghost" data-act="check">查看参考答案</button>`;
+  return "";
+}
+function questionRedoHTML(q){
+  return mode==="practice"&&checked[q.key]&&!graded?`<button class="redo" data-act="redo">重做本题</button>`:"";
+}
+function resultSignature(q){return [isAnswered(q),judged(q),isCorrect(q)].join(":")}
 function renderQ(q){
   const lk=locked(q),rev=revealed(q),opts=q.options?getOptions(q):[];
   let h=`<div class="stem${q.code?" code":""}">${q.type==="blank"?stemBlanks(q,lk):esc(q.stem||"")}</div>${qImgs(q)}`;
   if(q.type==="multi")h+=`<div class="hint">可选多项，选好后点「确认答案」</div>`;
   if(q.type==="short")h+=`<textarea class="ta" data-k="${esc(q.key)}" placeholder="写下你的答案，会自动保存" ${lk?"readonly":""}>${esc(answers[q.key]||"")}</textarea>`;
   else if(q.type!=="blank")h+=optsHTML(q,opts,rev,lk);
-  if(mode==="practice"&&!lk){
-    if(q.type==="multi"||q.type==="blank")h+=`<button class="act" data-act="check" ${isAnswered(q)?"":"disabled"}>确认答案</button>`;
-    if(q.type==="short")h+=`<button class="act ghost" data-act="check">查看参考答案</button>`;
-  }
-  if(rev)h+=resHTML(q,opts);
-  if(mode==="practice"&&checked[q.key]&&!graded)h+=`<button class="redo" data-act="redo">重做本题</button>`;
+  h+=`<div class="answer-actions">${questionActionHTML(q)}</div>`;
+  h+=`<div class="reveal${rev?" open":""}" aria-hidden="${!rev}"><div class="reveal-inner">${rev?resHTML(q,opts):""}</div></div>`;
+  h+=`<div class="redo-actions">${questionRedoHTML(q)}</div>`;
   return h;
 }
 function typesetMath(el){if(window.MathJax&&MathJax.typesetPromise){MathJax.typesetClear&&MathJax.typesetClear();MathJax.typesetPromise([el]).catch(()=>{})}}
+const reducedMotion=window.matchMedia("(prefers-reduced-motion: reduce)");
+const optionShakes=new WeakMap();
+function syncCurrentCard(animate=false){
+  const q=byKey(cur),box=$("qbox");if(!q||!box)return;
+  const lk=locked(q),rev=revealed(q),j=judged(q);
+  const value=answers[q.key],selected=Array.isArray(value)?value:normChoice(value),correct=normChoice(q.answer);
+  for(const option of box.querySelectorAll(".opt")){
+    const input=option.querySelector("input"),wasWrong=option.classList.contains("no");
+    input.checked=selected.includes(input.value);input.disabled=lk;
+    option.classList.toggle("lock",lk);
+    option.classList.toggle("ok",rev&&correct.includes(input.value));
+    const wrong=j&&selected.includes(input.value)&&!correct.includes(input.value);
+    option.classList.toggle("no",wrong);
+    if(!wrong){optionShakes.get(option)?.cancel();optionShakes.delete(option)}
+    else if(!wasWrong&&animate&&!reducedMotion.matches&&option.animate){
+      optionShakes.get(option)?.cancel();
+      const animation=option.animate([{transform:"translateX(0)"},{transform:"translateX(-4px)"},{transform:"translateX(3px)"},{transform:"translateX(0)"}],
+        {duration:260,easing:"cubic-bezier(.25,1,.5,1)"});
+      optionShakes.set(option,animation);
+      animation.onfinish=()=>{if(optionShakes.get(option)===animation)optionShakes.delete(option)};
+    }
+  }
+  if(q.type==="blank"){
+    const expected=blankExpected(q),values=Array.isArray(value)?value:[];
+    for(const input of box.querySelectorAll(".bi")){
+      const i=Number(input.dataset.bi),text=String(values[i]||"");
+      if(input.value!==text)input.value=text;
+      input.readOnly=lk;
+      const matches=(expected[i]||[]).map(normalizeText).includes(normalizeText(values[i]));
+      input.classList.toggle("ok",j&&matches);input.classList.toggle("no",j&&!matches);
+    }
+  }
+  const textarea=box.querySelector(".ta");
+  if(textarea){const text=String(value||"");if(textarea.value!==text)textarea.value=text;textarea.readOnly=lk}
+  const actions=box.querySelector(".answer-actions"),actionHTML=questionActionHTML(q);
+  if(actions.innerHTML!==actionHTML)actions.innerHTML=actionHTML;
+  const redo=box.querySelector(".redo-actions"),redoHTML=questionRedoHTML(q);
+  if(redo.innerHTML!==redoHTML)redo.innerHTML=redoHTML;
+  const panel=box.querySelector(".reveal"),inner=panel.firstElementChild,signature=resultSignature(q);
+  if(rev&&panel.dataset.resultSignature!==signature){
+    window.MathJax?.typesetClear?.([inner]);
+    inner.innerHTML=resHTML(q,q.options?getOptions(q):[]);
+    panel.dataset.resultSignature=signature;
+    window.MathJax?.typesetPromise?.([inner])?.catch(()=>{});
+  }
+  panel.classList.toggle("open",rev);panel.setAttribute("aria-hidden",String(!rev));
+}
 function renderCard(keep){
   const c=$("card"),top=c.scrollTop;
   if(!list.length){c.innerHTML=`<div class="empty">当前筛选条件下没有题目<button class="act ghost" data-act="allf">显示全部题目</button></div>`;updateChrome();return}
   const q=byKey(cur)||list[0];
   document.body.dataset.t=q.type;
   c.innerHTML=`<div id="qbox">${renderQ(q)}</div>`;
+  if(revealed(q))c.querySelector(".reveal").dataset.resultSignature=resultSignature(q);
   c.scrollTop=keep?top:0;
   localStorage.setItem(posKey(),cur);
   updateChrome();typesetMath(c);
@@ -597,16 +680,17 @@ function applyFilter(){saveState();buildList();renderCard(false)}
 function submit(){
   const left=questions.filter(q=>!isAnswered(q)).length;
   if(left>0&&!confirm(`还有 ${left} 题没做，确定交卷吗？`))return;
-  graded=true;saveState();buildList();renderCard(true);
+  const previous=cur;graded=true;saveState();buildList();
+  if(cur===previous&&$("qbox")){syncCurrentCard(true);updateChrome()}else renderCard(true);
   if(desktopSide()){closeSheet();toast("已交卷，结果已同步到侧栏")}else openSheet("card");
 }
 const acts={
-  check(){const q=byKey(cur);if(!q||mode!=="practice"||locked(q))return;checked[q.key]=true;saveState();renderCard(true)},
-  redo(){const q=byKey(cur);if(!q||mode!=="practice"||graded)return;delete answers[q.key];delete checked[q.key];showAnswers=false;saveAnswers();saveState();renderCard(true)},
+  check(){const q=byKey(cur);if(!q||mode!=="practice"||locked(q))return;checked[q.key]=true;saveState();syncCurrentCard(true);updateChrome()},
+  redo(){const q=byKey(cur);if(!q||mode!=="practice"||graded)return;delete answers[q.key];delete checked[q.key];showAnswers=false;saveAnswers();saveState();syncCurrentCard()},
   allf(){filterMode="all";typeFilter="all";applyFilter()},
   submit,
   auto(){auto=!auto;saveState();refreshSheet()},
-  ans(){if(mode==="exam"&&!graded){toast("考试模式交卷前不能查看答案");return}showAnswers=!showAnswers;saveState();renderCard(true);refreshSheet()},
+  ans(){if(mode==="exam"&&!graded){toast("考试模式交卷前不能查看答案");return}showAnswers=!showAnswers;saveState();syncCurrentCard();refreshSheet()},
   shuffle(){if(confirm("重新生成选项和题序的乱序？已选答案会保留。")){seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed);closeSheet();buildList();renderCard(false)}},
   clear(){if(confirm("清空本题库的所有作答？此操作不可撤销。")){answers={};checked={};graded=false;showAnswers=false;saveAnswers();saveState();closeSheet();buildList();renderCard(false);toast("已清空作答")}},
   reset(){if(confirm("确定清空本题库的作答、判分状态和乱序种子？此操作不可撤销。")){
@@ -636,7 +720,7 @@ document.addEventListener("change",e=>{
   saveAnswers();
   const instant=mode==="practice"&&q.type!=="multi";
   if(instant){checked[q.key]=true;saveState()}
-  renderCard(true);
+  syncCurrentCard(instant);if(instant)updateChrome();
   if(instant&&auto&&isCorrect(q))setTimeout(()=>{if(cur===q.key&&!graded)next()},700);
 });
 document.addEventListener("input",e=>{
