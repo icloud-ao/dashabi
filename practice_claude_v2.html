@@ -209,16 +209,17 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
  .app{width:calc(100% - 32px);max-width:840px}
 }
 @media(min-width:960px) and (min-height:560px){
- .workspace{--side-width:320px;--side-gap:20px;display:grid;
+ .workspace{--side-width:320px;--side-gap:20px;--reading-inset:26px;display:grid;
   grid-template-columns:minmax(0,1fr) var(--side-width);gap:var(--side-gap);
   align-items:stretch;width:calc(100% - 44px);margin:0 auto;min-width:0;
   transition:grid-template-columns .22s cubic-bezier(.25,1,.5,1),gap .22s cubic-bezier(.25,1,.5,1)}
  .workspace.side-left{grid-template-columns:var(--side-width) minmax(0,1fr)}
  .workspace.side-closed{grid-template-columns:minmax(0,1fr) 0px;gap:0}
  .workspace.side-left.side-closed{grid-template-columns:0px minmax(0,1fr)}
- .workspace .app{max-width:1200px;width:100%;min-width:0;grid-column:1;grid-row:1;justify-self:end}
- .workspace.side-left .app{grid-column:2;justify-self:start}
- .workspace.side-closed .app{justify-self:center}
+ .workspace .app{max-width:920px;width:calc(100% - var(--reading-inset));min-width:0;grid-column:1;grid-row:1;
+  justify-self:start;margin:0 0 0 var(--reading-inset)}
+ .workspace.side-left .app{grid-column:2;justify-self:end;margin:0 var(--reading-inset) 0 0}
+ .workspace.side-closed .app{justify-self:center;width:100%;margin:0}
  .workspace .hd{padding:calc(12px + env(safe-area-inset-top)) 12px 2px;min-height:60px}
  .workspace .ttl{font-size:17px}
  .workspace .meta{padding:17px 22px 12px}
@@ -563,6 +564,7 @@ function renderQ(q){
 }
 function typesetMath(el){if(window.MathJax&&MathJax.typesetPromise){MathJax.typesetClear&&MathJax.typesetClear();MathJax.typesetPromise([el]).catch(()=>{})}}
 const reducedMotion=window.matchMedia("(prefers-reduced-motion: reduce)");
+const independentTranslate=!!window.CSS?.supports?.("translate","1px");
 const optionShakes=new WeakMap();
 function syncCurrentCard(animate=false){
   const q=byKey(cur),box=$("qbox");if(!q||!box)return;
@@ -578,8 +580,10 @@ function syncCurrentCard(animate=false){
     if(!wrong){optionShakes.get(option)?.cancel();optionShakes.delete(option)}
     else if(!wasWrong&&animate&&!reducedMotion.matches&&option.animate){
       optionShakes.get(option)?.cancel();
-      const animation=option.animate([{transform:"translateX(0)"},{transform:"translateX(-4px)"},{transform:"translateX(3px)"},{transform:"translateX(0)"}],
-        {duration:260,easing:"cubic-bezier(.25,1,.5,1)"});
+      const target=independentTranslate?option:option.querySelector(".lt");
+      const animation=target.animate([0,-3,2,0].map(x=>independentTranslate
+        ?{translate:`${x}px 0`,easing:"ease-in-out"}
+        :{transform:`translateX(${x}px)`,easing:"ease-in-out"}),{duration:240});
       optionShakes.set(option,animation);
       animation.onfinish=()=>{if(optionShakes.get(option)===animation)optionShakes.delete(option)};
     }
