@@ -325,12 +325,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
 .workspace.free-layout .sidebar-scroll .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:8px}
 .workspace.free-layout .sidebar-scroll .n{min-height:42px;aspect-ratio:1/1;padding:0}
 .workspace.free-layout .sidebar-scroll .act{min-height:42px;font-size:13px;margin-top:22px}
-.workspace.free-layout .free-move{display:flex;align-items:center;justify-content:center;gap:6px;flex:none;width:100%;min-height:30px;
- padding:3px 22px;border:0;border-bottom:1px solid var(--rule);background:var(--card);color:var(--mut);font-size:12px;font-weight:600;
- cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
-.workspace.free-layout .free-move:hover{color:var(--tc);background:var(--option-hover)}
+.workspace.free-layout .free-move{display:grid;place-items:center;position:relative;z-index:6;flex:none;align-self:center;width:44px;height:20px;min-height:20px;
+ padding:0;border:0;background:transparent;color:var(--mut);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.workspace.free-layout .free-move::after{content:"";position:absolute;inset:-6px 0 -10px}
+.workspace.free-layout .free-move:hover{color:var(--tc);background:transparent}
 .workspace.free-layout .free-move:active{cursor:grabbing;transform:none}
-.workspace.free-layout .free-move span{font-size:16px;line-height:1}
+.workspace.free-layout .free-move svg{display:block;width:16px;height:6px;fill:currentColor;opacity:.8}
 .workspace.free-layout .free-resize{display:block;position:absolute;z-index:5;border:0;padding:0;background:transparent;touch-action:none;border-radius:0}
 .workspace.free-layout .free-resize[data-edge=n],.workspace.free-layout .free-resize[data-edge=s]{height:10px;left:20px;right:20px;cursor:ns-resize}
 .workspace.free-layout .free-resize[data-edge=n]{top:0}.workspace.free-layout .free-resize[data-edge=s]{bottom:0}
@@ -344,7 +344,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
 .workspace.free-layout .free-resize[data-edge=se]::after{content:"";position:absolute;right:5px;bottom:5px;width:8px;height:8px;border-right:2px solid var(--mut);border-bottom:2px solid var(--mut);border-radius:0 0 3px 0;opacity:.7}
 body.free-dragging,body.free-dragging *{user-select:none!important;-webkit-user-select:none!important}
 @media(hover:none) and (pointer:coarse){
- .workspace.free-layout .free-move{min-height:38px}
+ .workspace.free-layout .free-move{height:28px;min-height:28px}
  .workspace.free-layout .free-resize[data-edge=n],.workspace.free-layout .free-resize[data-edge=s]{height:16px}
  .workspace.free-layout .free-resize[data-edge=e],.workspace.free-layout .free-resize[data-edge=w]{width:16px}
  .workspace.free-layout .free-resize[data-edge=ne],.workspace.free-layout .free-resize[data-edge=nw],.workspace.free-layout .free-resize[data-edge=se],.workspace.free-layout .free-resize[data-edge=sw]{width:30px;height:30px}
@@ -658,7 +658,7 @@ function setupFreeHandles(){
   const panel=freePanel(id),move=document.createElement("button");
   move.type="button";move.className="free-move";move.dataset.layoutMove="";move.dataset.panel=id;
   move.setAttribute("aria-label",`移动${name}，可用方向键调整`);move.title="拖动移动，方向键微调";
-  move.innerHTML=`<span aria-hidden="true">⠿</span>拖动${name}`;panel.prepend(move);
+  move.innerHTML='<svg viewBox="0 0 18 6" aria-hidden="true" focusable="false"><circle cx="3" cy="3" r="1.2"/><circle cx="9" cy="3" r="1.2"/><circle cx="15" cy="3" r="1.2"/></svg>';panel.prepend(move);
   for(const [edge,label] of Object.entries(edges)){
    const handle=document.createElement("button");handle.type="button";handle.className="free-resize";
    handle.dataset.layoutEdge=edge;handle.dataset.edge=edge;handle.dataset.panel=id;
@@ -900,7 +900,7 @@ function menuHTML(){
   ${mode==="exam"&&!graded?`<p class="tip">考试模式在交卷前不能查看答案。</p>`:""}
   <h3>题序</h3><div class="g2"><button class="sb" data-act="shuffle">重新乱序</button></div>
   <h3>页面布局</h3><div class="g2"><button class="sb${on(freeLayout.enabled)}" data-act="freeLayout">自由布局：${freeLayout.enabled?"开":"关"}</button><button class="sb" data-act="resetLayout">恢复默认布局</button></div>
-  <p class="tip">开启后拖动顶部移动、拖动边缘或角落调整大小；布局保存在当前浏览器。恢复默认会退出自由布局，不影响作答。</p>
+  <p class="tip">开启后拖动顶部的三个小点移动、拖动边缘或角落调整大小；布局保存在当前浏览器。恢复默认会退出自由布局，不影响作答。</p>
   <h3>清除数据</h3><div class="g2"><button class="sb" data-act="clear">清空作答</button><button class="sb dg" data-act="reset">清空本题库保存</button></div>`;
 }
 function openSheet(k){$("sb").innerHTML=k==="card"?cardHTML():menuHTML();$("sheet").dataset.k=k;document.body.classList.add("sh")}
