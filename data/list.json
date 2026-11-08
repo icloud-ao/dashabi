@@ -28,7 +28,7 @@
   {
     "id": "modern-cryptography-oreo-2026",
     "title": "现代密码学_奥利奥版",
-    "desc": "期末综合练习｜单选47、多选13、填空26、判断31、简答8、案例4、计算4｜共133题",
+    "desc": "v2.2 严格期末范围·案例分析增强版｜单选47、多选13、填空26、判断31、简答8、案例10、计算4、专项2｜共141题",
     "subject": "现代密码学",
     "semesterGroup": "current",
     "tags": [
@@ -48,8 +48,8 @@
     "multi": 13,
     "judge": 31,
     "blank": 26,
-    "short": 16,
-    "total": 133
+    "short": 24,
+    "total": 141
   },
   {
     "id": "network-attack-defense-selfmade-2026",
