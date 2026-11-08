@@ -426,10 +426,11 @@ body.free-dragging,body.free-dragging *{user-select:none!important;-webkit-user-
 <script>
 const LETTERS="ABCDEFGHIJKLMNOPQRSTUVWXYZ",LIST_URL="./data/list.json",ORDER=["single","multi","judge","blank","short"];
 const NAMES={single:"单选题",multi:"多选题",judge:"判断题",blank:"填空题",short:"简答题"},SHORT={single:"单选",multi:"多选",judge:"判断",blank:"填空",short:"简答"};
-let setId="",setInfo=null,questions=[],answers={},checked={},graded=false,showAnswers=false,mode="practice",auto=true,filterMode="all",typeFilter="all",seed="",groups={},noMap={},list=[],cur="";
+let setId="",setInfo=null,questions=[],answers={},checked={},graded=false,showAnswers=false,mode="practice",auto=true,filterMode="all",typeFilter="all",seed="",groups={},noMap={},list=[],cur="",manualShuffle=false;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[m]));
 const answerKey=()=>`quiz_answers_${setId}`,seedKey=()=>`quiz_seed_${setId}`,stateKey=()=>`quiz_state_${setId}`,posKey=()=>`quiz_pos_${setId}`;
+const shuffleModeKey=()=>`quiz_manual_shuffle_${setId}`;
 const readJSON=(k,f)=>{try{return JSON.parse(localStorage.getItem(k)||"")}catch{return f}};
 const saveAnswers=()=>{localStorage.setItem(answerKey(),JSON.stringify(answers));updateChrome()};
 const saveState=()=>localStorage.setItem(stateKey(),JSON.stringify({graded,showAnswers,filterMode,typeFilter,mode,auto,checked}));
@@ -764,7 +765,29 @@ const aImgs=q=>imgBlock(mediaList(q,["answerImage","solutionImage","explanationI
 /* ---------- 列表与筛选 ---------- */
 const typeVisible=q=>typeFilter==="all"||q.type===typeFilter;
 function passFilter(q){return filterMode==="unanswered"?!isAnswered(q):filterMode==="wrong"?(judged(q)&&!isCorrect(q)):true}
-function groupQuestions(){let l=[...questions];if(setInfo?.shuffleQuestions)l=shuffleDet(l,"question-order");const g={};ORDER.forEach(t=>g[t]=l.filter(q=>q.type===t));return g}
+function groupQuestions(){let l=[...questions];if(manualShuffle||setInfo?.shuffleQuestions)l=shuffleDet(l,"question-order");const g={};ORDER.forEach(t=>g[t]=l.filter(q=>q.type===t));return g}
+function shuffleOptionCandidates(){return setInfo?.shuffleOptions===false?[]:questions.filter(q=>q.options&&Object.keys(q.options).length>1&&q.type!=="blank"&&q.type!=="short"&&(q.type!=="judge"||setInfo?.shuffleJudge===true))}
+function shuffleSignature(){
+  const g=groupQuestions();
+  return JSON.stringify([ORDER.map(t=>g[t].map(q=>q.key)),shuffleOptionCandidates().map(q=>[q.key,getOptions(q).map(o=>o.origKey)])]);
+}
+function generateDifferentShuffle(){
+  const g=groupQuestions(),choices=shuffleOptionCandidates();
+  if(!ORDER.some(t=>g[t].length>1)&&!choices.length){toast("当前题库没有可以打乱的题目或选项");return false}
+  const before=shuffleSignature(),oldSeed=seed,oldMode=manualShuffle,current=byKey(cur);
+  const currentOptions=current&&choices.includes(current)?getOptions(current).map(o=>o.origKey).join(","):null;
+  const currentPosition=current&&list.filter(q=>q.type===current.type).length>1?list.findIndex(q=>q.key===cur):-1;
+  manualShuffle=true;
+  for(let i=0;i<32;i++){
+    seed=`${Date.now()}-${Math.random()}-${i}`;
+    const nextGroups=groupQuestions();
+    const nextPosition=currentPosition<0?-1:ORDER.flatMap(t=>nextGroups[t]).filter(q=>typeVisible(q)&&passFilter(q)).findIndex(q=>q.key===cur);
+    if(shuffleSignature()!==before&&(currentPosition<0||nextPosition!==currentPosition)&&(!currentOptions||getOptions(current).map(o=>o.origKey).join(",")!==currentOptions)){
+      localStorage.setItem(seedKey(),seed);localStorage.setItem(shuffleModeKey(),"on");return true;
+    }
+  }
+  seed=oldSeed;manualShuffle=oldMode;toast("未生成不同顺序，请再试一次");return false;
+}
 function buildList(){
   groups=groupQuestions();list=[];
   ORDER.forEach(t=>groups[t].forEach((q,i)=>{noMap[q.key]=i+1;if(typeVisible(q)&&passFilter(q))list.push(q)}));
@@ -929,7 +952,8 @@ function menuHTML(){
   <p class="tip">切换模式保留作答，但会清除判分、已确认和显示答案状态。即时对错：选完马上看对错和解析；考试模式：交卷后统一判分。</p>
   <h3>选项</h3><div class="g2"><button class="sb${on(auto)}" data-act="auto" ${mode==="exam"?"disabled":""}>答对自动下一题：${auto?"开":"关"}</button><button class="sb${on(showAnswers)}" data-act="ans" ${mode==="exam"&&!graded?"disabled":""}>显示答案：${showAnswers?"开":"关"}</button></div>
   ${mode==="exam"&&!graded?`<p class="tip">考试模式在交卷前不能查看答案。</p>`:""}
-  <h3>题序</h3><div class="g2"><button class="sb" data-act="shuffle">重新乱序</button></div>
+  <h3>题序</h3><div class="g2"><button class="sb" data-act="shuffle">重新乱序</button>${manualShuffle?`<button class="sb" data-act="shuffleDefault">恢复题库默认</button>`:""}</div>
+  <p class="tip">手动乱序会打乱题目，选项顺序遵循题库设置。</p>
   <h3>页面布局</h3><div class="g2"><button class="sb${on(freeLayout.enabled)}" data-act="freeLayout">自由布局：${freeLayout.enabled?"开":"关"}</button><button class="sb" data-act="resetLayout">恢复默认布局</button></div>
   <p class="tip">开启后拖动顶部的三个小点移动、拖动边缘或角落调整大小；布局保存在当前浏览器。恢复默认会退出自由布局，不影响作答。</p>
   <h3>页面版本</h3><div class="g2"><a class="sb legacy-practice-link" href="/practice_old.html?set=${encodeURIComponent(setId)}">打开旧版逐题练习</a></div>
@@ -1043,11 +1067,12 @@ const acts={
   resetLayout(){resetFreeLayout();closeSheet();toast("已恢复默认布局")},
   auto(){auto=!auto;saveState();refreshSheet()},
   ans(){if(mode==="exam"&&!graded){toast("考试模式交卷前不能查看答案");return}showAnswers=!showAnswers;saveState();syncCurrentCard();refreshSheet()},
-  shuffle(){if(confirm("重新生成选项和题序的乱序？已选答案会保留。")){seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed);closeSheet();buildList();renderCard(false)}},
+  shuffle(){if(confirm("重新打乱题目顺序？选项遵循题库设置，作答记录和判分状态会保留。")){if(!generateDifferentShuffle())return;closeSheet();buildList();renderCard(false);toast("题序已打乱，当前题目保留")}},
+  shuffleDefault(){if(confirm("恢复题库默认的乱序设置？作答记录会保留。")){localStorage.removeItem(shuffleModeKey());manualShuffle=false;closeSheet();buildList();renderCard(false);toast("已恢复题库默认设置")}},
   clear(){if(confirm("清空本题库的所有作答？此操作不可撤销。")){answers={};checked={};graded=false;showAnswers=false;saveAnswers();saveState();closeSheet();buildList();renderCard(false);toast("已清空作答")}},
   reset(){if(confirm("确定清空本题库的作答、判分状态和乱序种子？此操作不可撤销。")){
-    [answerKey(),stateKey(),seedKey(),posKey()].forEach(k=>localStorage.removeItem(k));
-    answers={};checked={};graded=false;showAnswers=false;mode="practice";auto=true;filterMode="all";typeFilter="all";cur="";
+    [answerKey(),stateKey(),seedKey(),posKey(),shuffleModeKey()].forEach(k=>localStorage.removeItem(k));
+    answers={};checked={};graded=false;showAnswers=false;mode="practice";auto=true;filterMode="all";typeFilter="all";cur="";manualShuffle=false;
     seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed);closeSheet();buildList();renderCard(false);toast("已清空本题库保存")}}
 };
 
@@ -1116,6 +1141,7 @@ async function loadQuiz(){
     const st=readJSON(stateKey(),{});
     graded=!!st.graded;showAnswers=!!st.showAnswers;filterMode=st.filterMode||"all";typeFilter=st.typeFilter||"all";
     mode=st.mode==="exam"?"exam":"practice";auto=st.auto!==false;checked=st.checked&&typeof st.checked==="object"?st.checked:{};
+    manualShuffle=localStorage.getItem(shuffleModeKey())==="on";
     seed=localStorage.getItem(seedKey());if(!seed){seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed)}
     const title=raw.meta?.title||setInfo.title||"答题页";
     $("title").textContent=title;document.title=title;
