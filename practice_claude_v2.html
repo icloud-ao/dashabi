@@ -209,7 +209,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
  .app{width:calc(100% - 32px);max-width:840px}
 }
 @media(min-width:960px) and (min-height:560px){
- .workspace{--side-width:320px;--side-gap:20px;--workspace-inset:32px;--reading-inset:calc(clamp(96px,10vw,160px) - var(--workspace-inset));display:grid;
+ .workspace{--side-width:320px;--side-gap:20px;--workspace-inset:44px;--reading-inset:calc(clamp(104px,10.5vw,172px) - var(--workspace-inset));display:grid;
   grid-template-columns:minmax(0,1fr) var(--side-width);gap:var(--side-gap);
   align-items:stretch;width:calc(100% - var(--workspace-inset) - var(--workspace-inset));margin:0 auto;min-width:0;
   transition:grid-template-columns .22s cubic-bezier(.25,1,.5,1),gap .22s cubic-bezier(.25,1,.5,1)}
@@ -364,7 +364,7 @@ const desktopSide=()=>window.matchMedia(SIDE_QUERY).matches;
 let sideFrame=0,sideLastCurrent=null,sideDragging=null,sideSwitchFrame=0;
 function maxSideWidth(){
  const workspace=$("workspace");
- return Math.max(260,Math.min(440,(workspace.clientWidth||window.innerWidth-64)-20-470));
+ return Math.max(260,Math.min(440,(workspace.clientWidth||window.innerWidth-88)-20-470));
 }
 function shownSideWidth(){return Math.min(sidePrefs.width,maxSideWidth())}
 function saveSidePrefs(){try{localStorage.setItem(SIDEBAR_KEY,JSON.stringify(sidePrefs))}catch(e){console.warn("侧栏偏好保存失败",e)}}
