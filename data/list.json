@@ -1,5 +1,31 @@
 [
   {
+    "id": "modern-cryptography-unit-tests-cross-2026",
+    "title": "现代密码学_单元测试交叉版",
+    "desc": "三次单元测试原题70道（第一次30、第二次21、第三次19）＋课堂补充9道；保留原题号、解答、公式、表格及图示",
+    "subject": "现代密码学",
+    "semesterGroup": "current",
+    "tags": [
+      "本学期",
+      "现代密码学",
+      "单元测试交叉版",
+      "三次单元测试",
+      "课堂补充"
+    ],
+    "shuffleOptions": false,
+    "shuffleJudge": false,
+    "shuffleQuestions": false,
+    "durationMinutes": 0,
+    "enabled": true,
+    "file": "./data/questions/modern_cryptography_cross_tests_2026.json",
+    "single": 29,
+    "multi": 0,
+    "judge": 23,
+    "blank": 4,
+    "short": 23,
+    "total": 79
+  },
+  {
     "id": "modern-cryptography-oreo-2026",
     "title": "现代密码学_奥利奥版",
     "desc": "期末综合练习｜单选47、多选13、填空26、判断31、简答8、案例4、计算4｜共133题",
