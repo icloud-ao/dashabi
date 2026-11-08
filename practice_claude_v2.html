@@ -285,13 +285,77 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
  body.sh .sheet{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto}
  .sheet .grab{display:none}
 }
+/* 自由布局只在手动开启时生效，普通布局和答题控件保持原样。 */
+.free-move,.free-resize{display:none}
+.workspace.free-layout{display:block;width:100%;height:100dvh;margin:0;transition:none}
+.workspace.free-layout .app,.workspace.free-layout .sidebar{
+ position:fixed;min-width:0;min-height:0;max-width:none;margin:0;overflow:hidden;
+ border:1px solid var(--rule);border-radius:18px;background:var(--card);box-shadow:var(--shadow-card);transition:none}
+.workspace.free-layout .app{display:flex;background:var(--bg)}
+.workspace.free-layout .sidebar{display:flex;flex-direction:column}
+.workspace.free-layout.side-closed .sidebar{opacity:0;visibility:hidden;pointer-events:none}
+.workspace.free-layout .side-toggle{display:grid}
+.workspace.free-layout .side-toggle svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.workspace.free-layout .side-toggle .side-icon-panel{fill:currentColor;stroke:none;opacity:.2}
+.workspace.free-layout.side-right .side-toggle svg{transform:scaleX(-1)}
+.workspace.free-layout:not(.side-closed) #btnCard{display:none}
+.workspace.free-layout .side-grip{display:none}
+.workspace.free-layout .sidebar-head{padding:12px 17px 12px;border-bottom:.5px solid var(--rule);flex:none}
+.workspace.free-layout .sidebar-head-title{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.workspace.free-layout .sidebar-head-title strong{font-size:16px;font-weight:650;white-space:nowrap}
+.workspace.free-layout .side-controls{display:flex;gap:4px;align-items:center}
+.workspace.free-layout .side-mini{background:transparent;border:0;color:var(--mut);min-width:30px;min-height:30px;border-radius:9px;font-size:12px;font-weight:600;padding:4px;cursor:pointer}
+.workspace.free-layout .side-mini:hover{background:var(--option-hover);color:var(--ink)}
+.workspace.free-layout .side-mini.active{background:var(--selected);color:var(--tc)}
+.workspace.free-layout .side-stats{display:flex;flex-wrap:wrap;gap:6px 10px;font-size:12px;color:var(--mut);margin-top:9px;font-variant-numeric:tabular-nums}
+.workspace.free-layout .side-stats strong{color:var(--ink);font-weight:650}
+.workspace.free-layout .side-legend{display:flex;gap:8px 12px;flex-wrap:wrap;margin-top:9px;font-size:11px;color:var(--mut)}
+.workspace.free-layout .side-legend span{display:inline-flex;align-items:center;gap:5px}
+.workspace.free-layout .side-legend i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--rule-strong)}
+.workspace.free-layout .side-legend .done{background:var(--tc)}
+.workspace.free-layout .side-legend .ok{background:var(--ok)}
+.workspace.free-layout .side-legend .bad{background:var(--bad)}
+.workspace.free-layout .side-legend .cur{background:transparent;border:2px solid var(--tc)}
+.workspace.free-layout .sidebar-scroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:14px 16px 22px;scroll-padding-top:12px}
+.workspace.free-layout .sidebar-scroll .chips{flex-wrap:wrap;overflow:visible;gap:6px;padding:2px 0}
+.workspace.free-layout .sidebar-scroll .chip{font-size:12px;padding:6px 10px}
+.workspace.free-layout .sidebar-scroll h3{margin:22px 0 10px;font-size:12px;color:var(--mut);font-weight:650}
+.workspace.free-layout .sidebar-scroll .sum{margin:14px 0 6px;font-size:13px;color:var(--mut)}
+.workspace.free-layout .sidebar-scroll .sum b{font-size:22px;color:var(--ink)}
+.workspace.free-layout .sidebar-scroll .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:8px}
+.workspace.free-layout .sidebar-scroll .n{min-height:42px;aspect-ratio:1/1;padding:0}
+.workspace.free-layout .sidebar-scroll .act{min-height:42px;font-size:13px;margin-top:22px}
+.workspace.free-layout .free-move{display:flex;align-items:center;justify-content:center;gap:6px;flex:none;width:100%;min-height:30px;
+ padding:3px 22px;border:0;border-bottom:1px solid var(--rule);background:var(--card);color:var(--mut);font-size:12px;font-weight:600;
+ cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.workspace.free-layout .free-move:hover{color:var(--tc);background:var(--option-hover)}
+.workspace.free-layout .free-move:active{cursor:grabbing;transform:none}
+.workspace.free-layout .free-move span{font-size:16px;line-height:1}
+.workspace.free-layout .free-resize{display:block;position:absolute;z-index:5;border:0;padding:0;background:transparent;touch-action:none;border-radius:0}
+.workspace.free-layout .free-resize[data-edge=n],.workspace.free-layout .free-resize[data-edge=s]{height:10px;left:20px;right:20px;cursor:ns-resize}
+.workspace.free-layout .free-resize[data-edge=n]{top:0}.workspace.free-layout .free-resize[data-edge=s]{bottom:0}
+.workspace.free-layout .free-resize[data-edge=e],.workspace.free-layout .free-resize[data-edge=w]{width:10px;top:20px;bottom:20px;cursor:ew-resize}
+.workspace.free-layout .free-resize[data-edge=e]{right:0}.workspace.free-layout .free-resize[data-edge=w]{left:0}
+.workspace.free-layout .free-resize[data-edge=ne],.workspace.free-layout .free-resize[data-edge=nw],.workspace.free-layout .free-resize[data-edge=se],.workspace.free-layout .free-resize[data-edge=sw]{width:22px;height:22px}
+.workspace.free-layout .free-resize[data-edge=ne]{right:0;top:0;cursor:nesw-resize}
+.workspace.free-layout .free-resize[data-edge=nw]{left:0;top:0;cursor:nwse-resize}
+.workspace.free-layout .free-resize[data-edge=se]{right:0;bottom:0;cursor:nwse-resize}
+.workspace.free-layout .free-resize[data-edge=sw]{left:0;bottom:0;cursor:nesw-resize}
+.workspace.free-layout .free-resize[data-edge=se]::after{content:"";position:absolute;right:5px;bottom:5px;width:8px;height:8px;border-right:2px solid var(--mut);border-bottom:2px solid var(--mut);border-radius:0 0 3px 0;opacity:.7}
+body.free-dragging,body.free-dragging *{user-select:none!important;-webkit-user-select:none!important}
+@media(hover:none) and (pointer:coarse){
+ .workspace.free-layout .free-move{min-height:38px}
+ .workspace.free-layout .free-resize[data-edge=n],.workspace.free-layout .free-resize[data-edge=s]{height:16px}
+ .workspace.free-layout .free-resize[data-edge=e],.workspace.free-layout .free-resize[data-edge=w]{width:16px}
+ .workspace.free-layout .free-resize[data-edge=ne],.workspace.free-layout .free-resize[data-edge=nw],.workspace.free-layout .free-resize[data-edge=se],.workspace.free-layout .free-resize[data-edge=sw]{width:30px;height:30px}
+}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;scroll-behavior:auto!important}}
 
 </style>
 </head>
 <body data-t="single">
 <div class="workspace side-right" id="workspace">
-<div class="app">
+<div class="app" id="questionPanel">
   <header class="hd">
     <a class="ib" href="/" aria-label="返回主页">‹</a>
     <div class="ttl" id="title">答题页</div>
@@ -352,6 +416,12 @@ let toastT;function toast(m){const t=$("toast");t.textContent=m;t.classList.add(
 const SIDEBAR_KEY="dashabi_claude_sidebar_v1";
 const SIDE_QUERY="(min-width:960px) and (min-height:560px)";
 const SIDE_DEFAULT_WIDTH=320;
+const FREE_LAYOUT_KEY="dashabi_practice_free_layout_v1";
+const savedFreeLayout=readJSON(FREE_LAYOUT_KEY,{});
+const freeLayout={enabled:savedFreeLayout?.enabled===true,sidebarOpen:savedFreeLayout?.sidebarOpen!==false,
+ panels:savedFreeLayout?.panels&&typeof savedFreeLayout.panels==="object"?savedFreeLayout.panels:null,
+ viewport:savedFreeLayout?.viewport&&typeof savedFreeLayout.viewport==="object"?savedFreeLayout.viewport:null,
+ front:savedFreeLayout?.front==="question"?"question":"sidebar"};
 const sidePrefs=(()=>{
  const v=readJSON(SIDEBAR_KEY,{});
  return {
@@ -360,7 +430,8 @@ const sidePrefs=(()=>{
   width:Number.isFinite(Number(v?.width))?Math.max(260,Math.min(440,Number(v.width))):SIDE_DEFAULT_WIDTH
  };
 })();
-const desktopSide=()=>window.matchMedia(SIDE_QUERY).matches;
+const desktopSide=()=>freeLayout.enabled||window.matchMedia(SIDE_QUERY).matches;
+const sideIsExpanded=()=>freeLayout.enabled?freeLayout.sidebarOpen:sidePrefs.expanded;
 let sideFrame=0,sideLastCurrent=null,sideDragging=null,sideSwitchFrame=0;
 function maxSideWidth(){
  const workspace=$("workspace");
@@ -369,25 +440,32 @@ function maxSideWidth(){
 function shownSideWidth(){return Math.min(sidePrefs.width,maxSideWidth())}
 function saveSidePrefs(){try{localStorage.setItem(SIDEBAR_KEY,JSON.stringify(sidePrefs))}catch(e){console.warn("侧栏偏好保存失败",e)}}
 function applySidePrefs(){
- const workspace=$("workspace"),side=$("sidebar"),width=shownSideWidth();
- workspace.classList.toggle("side-left",sidePrefs.position==="left");
- workspace.classList.toggle("side-right",sidePrefs.position==="right");
- workspace.classList.toggle("side-closed",!sidePrefs.expanded);
+ const workspace=$("workspace"),side=$("sidebar"),width=shownSideWidth(),expanded=sideIsExpanded();
+ const position=freeLayout.enabled&&freeRects.sidebar?(freeRects.sidebar.x+freeRects.sidebar.w/2<freeViewport().w/2?"left":"right"):sidePrefs.position;
+ workspace.classList.toggle("side-left",position==="left");
+ workspace.classList.toggle("side-right",position==="right");
+ workspace.classList.toggle("side-closed",!expanded);
  workspace.style.setProperty("--side-width",width+"px");
- $("btnSidebar").setAttribute("aria-expanded",String(sidePrefs.expanded));
- $("btnSidebar").setAttribute("aria-label",sidePrefs.expanded?"收起答题导航":"展开答题导航");
- side.setAttribute("aria-hidden",String(!desktopSide()||!sidePrefs.expanded));
+ $("btnSidebar").setAttribute("aria-expanded",String(expanded));
+ $("btnSidebar").setAttribute("aria-label",expanded?"收起答题导航":"展开答题导航");
+ side.setAttribute("aria-hidden",String(!desktopSide()||!expanded));
  $("sideGrip").setAttribute("aria-valuenow",String(Math.round(width)));
  $("sideGrip").setAttribute("aria-valuemax",String(Math.round(maxSideWidth())));
- $("sideGrip").tabIndex=desktopSide()&&sidePrefs.expanded?0:-1;
+ $("sideGrip").tabIndex=desktopSide()&&expanded&&!freeLayout.enabled?0:-1;
  document.querySelectorAll("[data-side-position]").forEach(button=>{
-  const active=button.dataset.sidePosition===sidePrefs.position;
+  const active=button.dataset.sidePosition===position;
   button.classList.toggle("active",active);
   button.setAttribute("aria-pressed",String(active));
  });
 }
 function setSidePosition(position){
- if((position!=="left"&&position!=="right")||position===sidePrefs.position)return;
+ if(position!=="left"&&position!=="right")return;
+ if(freeLayout.enabled){
+  const rect=freeRects.sidebar;if(!rect)return;
+  putFreeRect("sidebar",{...rect,x:position==="left"?8:freeViewport().w-rect.w-8});
+  bringFreeToFront("sidebar");rememberFreeRects();applySidePrefs();return;
+ }
+ if(position===sidePrefs.position)return;
  const workspace=$("workspace");
  workspace.classList.add("side-switching");
  cancelAnimationFrame(sideSwitchFrame);
@@ -395,13 +473,15 @@ function setSidePosition(position){
  sideSwitchFrame=requestAnimationFrame(()=>{sideSwitchFrame=requestAnimationFrame(()=>workspace.classList.remove("side-switching"))});
 }
 function setSideExpanded(expanded){
- sidePrefs.expanded=!!expanded;applySidePrefs();saveSidePrefs();
- if(sidePrefs.expanded)refreshSidebar();
+ if(freeLayout.enabled){freeLayout.sidebarOpen=!!expanded;if(expanded)bringFreeToFront("sidebar");saveFreeLayout()}
+ else{sidePrefs.expanded=!!expanded;saveSidePrefs()}
+ applySidePrefs();
+ if(sideIsExpanded())refreshSidebar();
 }
-const toggleSide=()=>setSideExpanded(!sidePrefs.expanded);
+const toggleSide=()=>setSideExpanded(!sideIsExpanded());
 function resetSideWidth(){sidePrefs.width=SIDE_DEFAULT_WIDTH;applySidePrefs();saveSidePrefs()}
 function revealCurrentInSide(){
- if(!desktopSide()||!sidePrefs.expanded)return;
+ if(!desktopSide()||!sideIsExpanded())return;
  const area=$("sidebarScroll"),active=area.querySelector('.n[aria-current="step"]');
  if(!active)return;
  const host=area.getBoundingClientRect(),rect=active.getBoundingClientRect();
@@ -430,7 +510,7 @@ document.querySelectorAll('[data-side-action="toggle"]').forEach(button=>{
 });
 const sideGrip=$("sideGrip");
 sideGrip.addEventListener("pointerdown",event=>{
- if(event.button!==0||!desktopSide()||!sidePrefs.expanded)return;
+ if(event.button!==0||!desktopSide()||!sidePrefs.expanded||freeLayout.enabled)return;
  event.preventDefault();
  sideDragging={pointerId:event.pointerId,rect:$("sidebar").getBoundingClientRect()};
  sideGrip.setPointerCapture(event.pointerId);
@@ -463,7 +543,156 @@ sideGrip.addEventListener("keydown",event=>{
  sidePrefs.width=Math.max(260,Math.min(440,sidePrefs.width+(sidePrefs.position==="right"?-dx:dx)));
  applySidePrefs();saveSidePrefs();
 });
-window.addEventListener("resize",()=>{applySidePrefs();refreshSidebar()},{passive:true});
+
+/* 自由布局单独保存，不改写题库作答状态或普通侧栏布局。 */
+const freeRects={question:null,sidebar:null};
+let freeOperation=null,freeFrame=0,freePending=null,freePendingResize=false;
+const freePanel=id=>$(id==="question"?"questionPanel":"sidebar");
+const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
+function freeViewport(){return {w:document.documentElement.clientWidth||window.innerWidth,h:window.innerHeight}}
+function freeMinimum(id){const v=freeViewport();return {w:Math.min(id==="question"?280:220,v.w),h:Math.min(id==="question"?300:220,v.h)}}
+function fitFreeRect(id,rect){
+ const v=freeViewport(),min=freeMinimum(id);
+ const w=clamp(Number(rect.w)||min.w,min.w,v.w),h=clamp(Number(rect.h)||min.h,min.h,v.h);
+ return {x:clamp(Number(rect.x)||0,0,Math.max(0,v.w-w)),y:clamp(Number(rect.y)||0,0,Math.max(0,v.h-h)),w,h};
+}
+function putFreeRect(id,rect){
+ const fitted=fitFreeRect(id,rect),panel=freePanel(id);freeRects[id]=fitted;
+ for(const [property,value] of Object.entries({left:fitted.x,top:fitted.y,width:fitted.w,height:fitted.h}))panel.style[property]=`${value}px`;
+}
+function validFreeRect(r){return r&&[r.x,r.y,r.w,r.h].every(Number.isFinite)&&r.w>0&&r.h>0}
+function normalizedFreeRect(r){const v=freeViewport();return {x:r.x/v.w,y:r.y/v.h,w:r.w/v.w,h:r.h/v.h}}
+function defaultFreePanels(){
+ const v=freeViewport(),q=freePanel("question").getBoundingClientRect(),s=freePanel("sidebar").getBoundingClientRect();
+ const min=freeMinimum("question"),rect={x:q.left,y:q.top,w:q.width,h:q.height};
+ if(rect.w>v.w-16){rect.w=Math.max(min.w,v.w-16);rect.x=8}
+ if(rect.h>v.h-16){rect.h=Math.max(min.h,v.h-16);rect.y=8}
+ const question=fitFreeRect("question",rect);
+ const fallbackW=Math.min(300,v.w-16),fallbackH=Math.min(520,v.h*.7);
+ const visible=window.matchMedia(SIDE_QUERY).matches&&sidePrefs.expanded&&s.width>=freeMinimum("sidebar").w&&s.height>0;
+ const sidebar=fitFreeRect("sidebar",visible?{x:s.left,y:s.top,w:s.width,h:s.height}:
+  {x:sidePrefs.position==="left"?8:Math.max(8,v.w-fallbackW-8),y:Math.min(80,Math.max(0,v.h-fallbackH)),w:fallbackW,h:fallbackH});
+ return {question:normalizedFreeRect(question),sidebar:normalizedFreeRect(sidebar)};
+}
+function saveFreeLayout(){try{localStorage.setItem(FREE_LAYOUT_KEY,JSON.stringify(freeLayout))}catch(e){console.warn("布局保存失败",e)}}
+function rememberFreeRects(){
+ if(!freeRects.question||!freeRects.sidebar)return;
+ freeLayout.panels={question:normalizedFreeRect(freeRects.question),sidebar:normalizedFreeRect(freeRects.sidebar)};
+ freeLayout.viewport=freeViewport();saveFreeLayout();
+}
+function applyFreeRects(){
+ const v=freeViewport(),saved=freeLayout.viewport;
+ const validViewport=saved&&Number.isFinite(saved.w)&&Number.isFinite(saved.h)&&saved.w>0&&saved.h>0;
+ const widthScale=validViewport?Math.min(v.w,saved.w):v.w,heightScale=validViewport?Math.min(v.h,saved.h):v.h;
+ for(const id of ["question","sidebar"]){
+  const r=freeLayout.panels[id];putFreeRect(id,{x:r.x*v.w,y:r.y*v.h,w:r.w*widthScale,h:r.h*heightScale});
+ }
+ bringFreeToFront(freeLayout.front==="question"?"question":"sidebar");
+}
+function bringFreeToFront(id){
+ freeLayout.front=id;
+ freePanel("question").style.zIndex=id==="question"?"23":"22";
+ freePanel("sidebar").style.zIndex=id==="sidebar"?"23":"22";
+}
+function clearFreePanelStyles(){
+ for(const id of ["question","sidebar"]){const style=freePanel(id).style;for(const prop of ["left","top","width","height","z-index"])style.removeProperty(prop)}
+}
+function setFreeLayout(enabled){
+ if(enabled===freeLayout.enabled)return;
+ finishFreeOperation();freePendingResize=false;
+ if(enabled){
+  if(!validFreeRect(freeLayout.panels?.question)||!validFreeRect(freeLayout.panels?.sidebar)){freeLayout.panels=defaultFreePanels();freeLayout.viewport=freeViewport()}
+  freeLayout.enabled=true;$("workspace").classList.add("free-layout");applyFreeRects();
+ }else{freeLayout.enabled=false;$("workspace").classList.remove("free-layout");clearFreePanelStyles()}
+ applySidePrefs();if(enabled)refreshSidebar();saveFreeLayout();
+}
+function resetFreeLayout(){
+ finishFreeOperation();freePendingResize=false;freeLayout.enabled=false;freeLayout.sidebarOpen=true;freeLayout.panels=null;freeLayout.viewport=null;delete freeLayout.front;
+ $("workspace").classList.remove("free-layout");clearFreePanelStyles();applySidePrefs();
+ try{localStorage.removeItem(FREE_LAYOUT_KEY)}catch(e){console.warn("布局恢复失败",e)}
+}
+function resizeFreeRect(id,rect,edge,dx,dy){
+ const v=freeViewport(),min=freeMinimum(id);let left=rect.x,top=rect.y,right=rect.x+rect.w,bottom=rect.y+rect.h;
+ if(edge.includes("e"))right=clamp(right+dx,left+min.w,v.w);
+ if(edge.includes("w"))left=clamp(left+dx,0,right-min.w);
+ if(edge.includes("s"))bottom=clamp(bottom+dy,top+min.h,v.h);
+ if(edge.includes("n"))top=clamp(top+dy,0,bottom-min.h);
+ return {x:left,y:top,w:right-left,h:bottom-top};
+}
+function flushFreeMovement(){freeFrame=0;if(freePending){putFreeRect(freePending.id,freePending.rect);freePending=null}}
+function finishFreeOperation(event){
+ if(!freeOperation||(event&&event.pointerId!==freeOperation.pointerId))return;
+ const operation=freeOperation;freeOperation=null;
+ if(freeFrame){cancelAnimationFrame(freeFrame);freeFrame=0}flushFreeMovement();
+ document.body.classList.remove("free-dragging");
+ if(operation.control.hasPointerCapture?.(operation.pointerId))operation.control.releasePointerCapture(operation.pointerId);
+ rememberFreeRects();if(operation.id==="sidebar")applySidePrefs();
+}
+function startFreeOperation(event){
+ const control=event.target.closest("[data-layout-move],[data-layout-edge]");
+ if(!freeLayout.enabled||!control||event.button!==0||freeOperation)return;
+ const id=control.dataset.panel,rect=freeRects[id];if(!rect)return;
+ event.preventDefault();event.stopPropagation();bringFreeToFront(id);
+ freeOperation={control,id,edge:control.dataset.layoutEdge||"",pointerId:event.pointerId,x:event.clientX,y:event.clientY,rect:{...rect}};
+ control.setPointerCapture(event.pointerId);document.body.classList.add("free-dragging");
+}
+function moveFreeOperation(event){
+ if(!freeOperation||event.pointerId!==freeOperation.pointerId)return;
+ const o=freeOperation,dx=event.clientX-o.x,dy=event.clientY-o.y;
+ freePending={id:o.id,rect:o.edge?resizeFreeRect(o.id,o.rect,o.edge,dx,dy):{...o.rect,x:o.rect.x+dx,y:o.rect.y+dy}};
+ if(!freeFrame)freeFrame=requestAnimationFrame(flushFreeMovement);
+}
+function keyboardFreeOperation(event){
+ const control=event.target.closest("[data-layout-move],[data-layout-edge]");
+ if(!freeLayout.enabled||!control||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key))return;
+ event.preventDefault();event.stopPropagation();
+ const id=control.dataset.panel,rect=freeRects[id],step=event.shiftKey?24:8;
+ const dx=event.key==="ArrowRight"?step:event.key==="ArrowLeft"?-step:0;
+ const dy=event.key==="ArrowDown"?step:event.key==="ArrowUp"?-step:0;
+ const next=control.dataset.layoutEdge?resizeFreeRect(id,rect,control.dataset.layoutEdge,dx,dy):{...rect,x:rect.x+dx,y:rect.y+dy};
+ bringFreeToFront(id);putFreeRect(id,next);rememberFreeRects();if(id==="sidebar")applySidePrefs();
+}
+function setupFreeHandles(){
+ const edges={n:"上",s:"下",e:"右",w:"左",ne:"右上",nw:"左上",se:"右下",sw:"左下"};
+ for(const [id,name] of [["question","题目区域"],["sidebar","答题导航"]]){
+  const panel=freePanel(id),move=document.createElement("button");
+  move.type="button";move.className="free-move";move.dataset.layoutMove="";move.dataset.panel=id;
+  move.setAttribute("aria-label",`移动${name}，可用方向键调整`);move.title="拖动移动，方向键微调";
+  move.innerHTML=`<span aria-hidden="true">⠿</span>拖动${name}`;panel.prepend(move);
+  for(const [edge,label] of Object.entries(edges)){
+   const handle=document.createElement("button");handle.type="button";handle.className="free-resize";
+   handle.dataset.layoutEdge=edge;handle.dataset.edge=edge;handle.dataset.panel=id;
+   handle.setAttribute("aria-label",`调整${name}${label}边缘，使用方向键`);handle.title="拖动调整大小";
+   if(edge!=="se")handle.tabIndex=-1;panel.append(handle);
+  }
+ }
+ const workspace=$("workspace");
+ workspace.addEventListener("pointerdown",startFreeOperation);
+ workspace.addEventListener("pointermove",moveFreeOperation);
+ workspace.addEventListener("pointerup",finishFreeOperation);
+ workspace.addEventListener("pointercancel",finishFreeOperation);
+ workspace.addEventListener("lostpointercapture",finishFreeOperation);
+ workspace.addEventListener("keydown",keyboardFreeOperation);
+}
+setupFreeHandles();
+if(freeLayout.enabled){
+ if(!validFreeRect(freeLayout.panels?.question)||!validFreeRect(freeLayout.panels?.sidebar)){freeLayout.panels=defaultFreePanels();freeLayout.viewport=freeViewport()}
+ $("workspace").classList.add("free-layout");applyFreeRects();
+}
+window.addEventListener("resize",()=>{
+ applySidePrefs();
+ if(freeLayout.enabled&&!freeOperation){
+  if(document.activeElement?.matches("input,textarea"))freePendingResize=true;
+  else{applyFreeRects();freePendingResize=false}
+ }
+ refreshSidebar();
+},{passive:true});
+document.addEventListener("focusout",()=>{
+ if(!freePendingResize)return;
+ requestAnimationFrame(()=>{
+  if(freeLayout.enabled&&freePendingResize&&!document.activeElement?.matches("input,textarea")){applyFreeRects();freePendingResize=false}
+ });
+});
 applySidePrefs();
 
 /* ---------- 数据（格式与旧版一致）---------- */
@@ -642,7 +871,7 @@ function go(i,dir){
   cur=list[i].key;renderCard(false);
   const b=$("qbox");if(b&&dir)b.classList.add(dir>0?"inr":"inl");
 }
-const next=()=>{const i=idx();if(i<list.length-1)go(i+1,1);else if(!graded&&mode==="exam"&&filterMode==="all"&&typeFilter==="all")submit();else if(desktopSide()){if(!sidePrefs.expanded)setSideExpanded(true);else revealCurrentInSide()}else openSheet("card")};
+const next=()=>{const i=idx();if(i<list.length-1)go(i+1,1);else if(!graded&&mode==="exam"&&filterMode==="all"&&typeFilter==="all")submit();else if(desktopSide()){if(!sideIsExpanded())setSideExpanded(true);else revealCurrentInSide()}else openSheet("card")};
 const prev=()=>go(idx()-1,-1);
 
 /* ---------- 底部面板 ---------- */
@@ -670,11 +899,13 @@ function menuHTML(){
   <h3>选项</h3><div class="g2"><button class="sb${on(auto)}" data-act="auto" ${mode==="exam"?"disabled":""}>答对自动下一题：${auto?"开":"关"}</button><button class="sb${on(showAnswers)}" data-act="ans" ${mode==="exam"&&!graded?"disabled":""}>显示答案：${showAnswers?"开":"关"}</button></div>
   ${mode==="exam"&&!graded?`<p class="tip">考试模式在交卷前不能查看答案。</p>`:""}
   <h3>题序</h3><div class="g2"><button class="sb" data-act="shuffle">重新乱序</button></div>
+  <h3>页面布局</h3><div class="g2"><button class="sb${on(freeLayout.enabled)}" data-act="freeLayout">自由布局：${freeLayout.enabled?"开":"关"}</button><button class="sb" data-act="resetLayout">恢复默认布局</button></div>
+  <p class="tip">开启后拖动顶部移动、拖动边缘或角落调整大小；布局保存在当前浏览器。恢复默认会退出自由布局，不影响作答。</p>
   <h3>清除数据</h3><div class="g2"><button class="sb" data-act="clear">清空作答</button><button class="sb dg" data-act="reset">清空本题库保存</button></div>`;
 }
 function openSheet(k){$("sb").innerHTML=k==="card"?cardHTML():menuHTML();$("sheet").dataset.k=k;document.body.classList.add("sh")}
 const closeSheet=()=>document.body.classList.remove("sh");
-function openNavigation(){if(desktopSide()){if(!sidePrefs.expanded)setSideExpanded(true);else revealCurrentInSide()}else openSheet("card")}
+function openNavigation(){if(desktopSide()){if(!sideIsExpanded())setSideExpanded(true);else if(freeLayout.enabled&&freeLayout.front!=="sidebar"){bringFreeToFront("sidebar");saveFreeLayout()}else revealCurrentInSide()}else openSheet("card")}
 function refreshSheet(){if(document.body.classList.contains("sh"))openSheet($("sheet").dataset.k)}
 function jumpTo(key){
   const q=byKey(key);if(!q)return;closeSheet();
@@ -694,6 +925,8 @@ const acts={
   redo(){const q=byKey(cur);if(!q||mode!=="practice"||graded)return;delete answers[q.key];delete checked[q.key];showAnswers=false;saveAnswers();saveState();syncCurrentCard()},
   allf(){filterMode="all";typeFilter="all";applyFilter()},
   submit,
+  freeLayout(){setFreeLayout(!freeLayout.enabled);closeSheet();toast(freeLayout.enabled?"自由布局已开启":"已退出自由布局")},
+  resetLayout(){resetFreeLayout();closeSheet();toast("已恢复默认布局")},
   auto(){auto=!auto;saveState();refreshSheet()},
   ans(){if(mode==="exam"&&!graded){toast("考试模式交卷前不能查看答案");return}showAnswers=!showAnswers;saveState();syncCurrentCard();refreshSheet()},
   shuffle(){if(confirm("重新生成选项和题序的乱序？已选答案会保留。")){seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed);closeSheet();buildList();renderCard(false)}},
