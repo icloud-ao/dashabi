@@ -212,8 +212,8 @@ mark.search-mark{padding:0;border-radius:3px;background:#ffe09a;color:#382700}
   <div class="dialog-head"><span id="dialogTitle">设置</span><button class="icon" id="closeDialog" type="button" aria-label="关闭">×</button></div>
   <div class="dialog-body">
     <h3>筛选和题序</h3>
-    <div class="dialog-actions"><button id="btnShowAll" type="button">显示全部</button><button id="btnReshuffle" type="button">重新乱序</button><button id="btnShuffleDefault" type="button" hidden>恢复题库默认</button></div>
-    <p class="note">手动乱序会打乱题目，选项顺序遵循题库设置，作答记录会保留。</p>
+    <div class="dialog-actions"><button id="btnShowAll" type="button">显示全部</button><button id="btnShuffleToggle" type="button" aria-pressed="false">开启乱序</button><button id="btnReshuffle" type="button" hidden>重新乱序</button></div>
+    <p class="note">默认按原顺序显示。开启后打乱题目和选项，判断题按题库设置；作答记录不受影响。</p>
     <h3>作答记录</h3>
     <div class="dialog-actions"><button id="btnClear" type="button">清空作答</button><button class="danger" id="btnReset" type="button">清空本题库保存</button></div>
     <p class="note">作答保存在当前浏览器。</p>
@@ -320,7 +320,7 @@ function renderAnswerImages(q){
 const answerKey = () => `quiz_answers_${setId}`;
 const seedKey = () => `quiz_seed_${setId}`;
 const stateKey = () => `quiz_state_${setId}`;
-const shuffleModeKey = () => `quiz_manual_shuffle_${setId}`;
+const shuffleModeKey = () => `quiz_shuffle_enabled_${setId}`;
 function readJSON(key, fallback){try{return JSON.parse(localStorage.getItem(key) || "")}catch{return fallback}}
 function saveAnswers(){localStorage.setItem(answerKey(), JSON.stringify(answers)); updateStats();}
 function saveState(){localStorage.setItem(stateKey(), JSON.stringify({graded,showAnswers,filterMode,typeFilter}));}
@@ -353,7 +353,7 @@ function normalizeData(data){
 }
 function getOptions(q){
   const entries = Object.entries(q.options || {});
-  const shouldShuffle = setInfo?.shuffleOptions !== false && !(q.type === "judge" && setInfo?.shuffleJudge !== true);
+  const shouldShuffle = manualShuffle && !(q.type === "judge" && setInfo?.shuffleJudge !== true);
   const ordered = shouldShuffle ? shuffleDet(entries, q.key) : entries;
   return ordered.map(([origKey,text], idx)=>({origKey:String(origKey).toUpperCase(), text, display:LETTERS[idx]}));
 }
@@ -473,7 +473,7 @@ function renderQuestion(q, displayNo){
 }
 function groupQuestions(){
   let list = [...questions];
-  if(manualShuffle || setInfo?.shuffleQuestions) list = shuffleDet(list, "question-order");
+  if(manualShuffle) list = shuffleDet(list, "question-order");
   return {
     single:list.filter(q=>q.type==="single"),
     multi:list.filter(q=>q.type==="multi"),
@@ -483,7 +483,7 @@ function groupQuestions(){
   };
 }
 const SHUFFLE_TYPES = ["single","multi","judge","blank","short"];
-function shuffleOptionCandidates(){return setInfo?.shuffleOptions===false?[]:questions.filter(q=>q.options&&Object.keys(q.options).length>1&&q.type!=="blank"&&q.type!=="short"&&(q.type!=="judge"||setInfo?.shuffleJudge===true))}
+function shuffleOptionCandidates(){return questions.filter(q=>q.options&&Object.keys(q.options).length>1&&q.type!=="blank"&&q.type!=="short"&&(q.type!=="judge"||setInfo?.shuffleJudge===true))}
 function shuffleSignature(){
   const g=groupQuestions();
   return JSON.stringify([SHUFFLE_TYPES.map(t=>g[t].map(q=>q.key)),shuffleOptionCandidates().map(q=>[q.key,getOptions(q).map(o=>o.origKey)])]);
@@ -503,8 +503,10 @@ function generateDifferentShuffle(){
   seed=oldSeed;manualShuffle=oldMode;alert("未生成不同顺序，请再试一次");return false;
 }
 function updateShuffleUI(){
-  $("btnShuffleDefault").hidden=!manualShuffle;
-  const state=manualShuffle?(setInfo?.shuffleOptions!==false?"· 题目与选项乱序已开启":"· 题目乱序已开启 · 选项固定"):setInfo?.shuffleOptions!==false?"· 选项乱序已开启":"· 选项固定";
+  $("btnShuffleToggle").textContent=manualShuffle?"关闭乱序":"开启乱序";
+  $("btnShuffleToggle").setAttribute("aria-pressed",String(manualShuffle));
+  $("btnReshuffle").hidden=!manualShuffle;
+  const state=manualShuffle?"· 题目与选项乱序已开启":"· 乱序已关闭";
   $("subtitle").textContent=`${setInfo?.desc || ""} ${state}`;
 }
 function typesetMath(){
@@ -1651,8 +1653,8 @@ $("btnFilterWrong").addEventListener("click",()=>{filterMode="wrong";saveState()
 $("btnShowAll").addEventListener("click",()=>{filterMode="all";saveState();applyFilters();});
 $("btnClear").addEventListener("click",()=>{answers={};graded=false;showAnswers=false;if(filterMode === "wrong") filterMode="all";saveAnswers();saveState();render();});
 $("btnReset").addEventListener("click",()=>{if(confirm("确定清空本题库的作答、判分状态和乱序种子？")){localStorage.removeItem(answerKey());localStorage.removeItem(stateKey());localStorage.removeItem(seedKey());localStorage.removeItem(shuffleModeKey());answers={};graded=false;showAnswers=false;filterMode="all";typeFilter="all";manualShuffle=false;seed=`${Date.now()}-${Math.random()}`;localStorage.setItem(seedKey(),seed);updateShuffleUI();render();}});
-$("btnReshuffle").addEventListener("click",()=>{if(confirm("重新打乱题目顺序？选项遵循题库设置，作答记录和判分状态会保留。")){if(!generateDifferentShuffle())return;updateShuffleUI();render();closeSettings();}});
-$("btnShuffleDefault").addEventListener("click",()=>{if(confirm("恢复题库默认的乱序设置？作答记录会保留。")){localStorage.removeItem(shuffleModeKey());manualShuffle=false;updateShuffleUI();render();closeSettings();}});
+$("btnShuffleToggle").addEventListener("click",()=>{if(manualShuffle){localStorage.removeItem(shuffleModeKey());manualShuffle=false}else if(!generateDifferentShuffle())return;updateShuffleUI();render();closeSettings();});
+$("btnReshuffle").addEventListener("click",()=>{if(!generateDifferentShuffle())return;updateShuffleUI();render();closeSettings();});
 $("jumpInput").addEventListener("keydown", e=>{
   if(e.isComposing || e.keyCode === 229) return;
   if(e.key === "Escape"){e.preventDefault();closeSearchPanel();return;}
