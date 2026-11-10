@@ -41,6 +41,8 @@ a{color:inherit;text-decoration:none}
 #btnPrev{flex:1}#btnCard{flex:1.2;font-variant-numeric:tabular-nums}
 #btnNext{flex:1.5;background:var(--tc);border-color:var(--tc);color:#fff}
 .stem{font-size:18px;line-height:1.85;font-weight:500;white-space:pre-wrap;word-break:break-word}
+/* 公式宽度超过手机内容区时，仅在公式内部横向滚动，避免页面整体溢出。 */
+#qbox mjx-container[display="true"]{max-width:100%;overflow-x:auto;overflow-y:hidden}
 .stem.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.65;background:var(--rule);border-radius:12px;padding:12px}
 .hint{margin-top:8px;font-size:13px;color:var(--tc);font-weight:600}
 .qi,.ai{margin-top:12px;display:grid;gap:10px}
