@@ -13,7 +13,47 @@ window.MathJax = {
   options: {skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']}
 };
 </script>
-<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+(function(){
+  const sources=[
+    "https://cdn.bootcdn.net/ajax/libs/mathjax/3.2.2/es5/tex-chtml.js",
+    "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"
+  ];
+  const ready=new Promise((resolve,reject)=>{
+    function load(i){
+      const script=document.createElement("script");
+      script.id="MathJax-script";
+      script.src=sources[i];
+      script.onload=()=>{
+        const mj=window.MathJax, startup=mj?.startup?.promise;
+        if(!startup){reject(new Error("MathJax 未能初始化"));return}
+        Promise.resolve(startup).then(()=>{
+          if(typeof mj.typesetPromise!=="function")throw new Error("MathJax 渲染器不可用");
+          resolve(mj);
+        }).catch(reject);
+      };
+      script.onerror=()=>{
+        script.remove();
+        if(i+1<sources.length)load(i+1);
+        else reject(new Error("MathJax 加载失败"));
+      };
+      document.head.appendChild(script);
+    }
+    load(0);
+  });
+  ready.catch(()=>{});
+  let queue=Promise.resolve();
+  window.dashabiTypeset=(element,clearAll=false)=>{
+    const task=queue.then(()=>ready).then(mj=>{
+      if(!element || !element.isConnected)return;
+      if(clearAll && typeof mj.typesetClear==="function")mj.typesetClear();
+      return mj.typesetPromise([element]);
+    });
+    queue=task.catch(error=>console.warn("MathJax 渲染失败：",error));
+    return queue;
+  };
+})();
+</script>
 <style>
 
 :root{color-scheme:light dark;--font-ios:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","PingFang SC","Helvetica Neue",Helvetica,Arial,sans-serif;--bg:#f2f2f7;--card:#fff;--card-elevated:#fff;--option:#f8f8fa;--option-hover:#f0f0f4;--ink:#1c1c1e;--mut:#8e8e93;--mut-light:#aeaeb2;--line:rgba(60,60,67,.12);--line-strong:rgba(60,60,67,.2);--tc:#007aff;--tc-hover:#0066d6;--on-accent:#fff;--selected:rgba(0,122,255,.08);--selected-border:rgba(0,122,255,.35);--ok:#34c759;--okbg:rgba(52,199,89,.1);--ok-border:rgba(52,199,89,.32);--bad:#ff3b30;--badbg:rgba(255,59,48,.09);--bad-border:rgba(255,59,48,.32);--header:rgba(255,255,255,.70);--header-touch:rgba(255,255,255,.66);--header-border:rgba(60,60,67,.14);--shadow-sm:0 1px 2px rgba(0,0,0,.03),0 2px 6px rgba(0,0,0,.02);--shadow-card:0 2px 8px -1px rgba(0,0,0,.04),0 12px 24px -4px rgba(0,0,0,.03);--shadow-dialog:0 24px 64px rgba(0,0,0,.18),0 4px 16px rgba(0,0,0,.06)}
@@ -510,10 +550,7 @@ function updateShuffleUI(){
   $("subtitle").textContent=`${setInfo?.desc || ""} ${state}`;
 }
 function typesetMath(){
-  if(window.MathJax && MathJax.typesetPromise){
-    return MathJax.typesetPromise([$("app")]).catch(err => console.warn("MathJax typeset failed:", err));
-  }
-  return Promise.resolve(window.MathJax?.startup?.promise).catch(err => console.warn("MathJax startup failed:", err));
+  return window.dashabiTypeset($("app"));
 }
 function render(){
   finishPhoneReveal();
@@ -694,7 +731,7 @@ function refreshFeedback(card, q, animate = false){
       if (q.type === "blank") window.MathJax?.typesetClear?.([userAnswer]);
       userAnswer.textContent = answer;
       userAnswer.dataset.value = answer;
-      if (q.type === "blank") window.MathJax?.typesetPromise?.([userAnswer])?.catch(() => {});
+      if (q.type === "blank") window.dashabiTypeset(userAnswer);
     }
   }
 }

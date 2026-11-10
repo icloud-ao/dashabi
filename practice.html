@@ -10,7 +10,47 @@
 <script>
 window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']],processEscapes:true},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
 </script>
-<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+(function(){
+  const sources=[
+    "https://cdn.bootcdn.net/ajax/libs/mathjax/3.2.2/es5/tex-chtml.js",
+    "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"
+  ];
+  const ready=new Promise((resolve,reject)=>{
+    function load(i){
+      const script=document.createElement("script");
+      script.id="MathJax-script";
+      script.src=sources[i];
+      script.onload=()=>{
+        const mj=window.MathJax, startup=mj?.startup?.promise;
+        if(!startup){reject(new Error("MathJax 未能初始化"));return}
+        Promise.resolve(startup).then(()=>{
+          if(typeof mj.typesetPromise!=="function")throw new Error("MathJax 渲染器不可用");
+          resolve(mj);
+        }).catch(reject);
+      };
+      script.onerror=()=>{
+        script.remove();
+        if(i+1<sources.length)load(i+1);
+        else reject(new Error("MathJax 加载失败"));
+      };
+      document.head.appendChild(script);
+    }
+    load(0);
+  });
+  ready.catch(()=>{});
+  let queue=Promise.resolve();
+  window.dashabiTypeset=(element,clearAll=false)=>{
+    const task=queue.then(()=>ready).then(mj=>{
+      if(!element || !element.isConnected)return;
+      if(clearAll && typeof mj.typesetClear==="function")mj.typesetClear();
+      return mj.typesetPromise([element]);
+    });
+    queue=task.catch(error=>console.warn("MathJax 渲染失败：",error));
+    return queue;
+  };
+})();
+</script>
 <style>
 /* 一题一屏：中性底色，题型只用一个强调色体现 */
 :root{--tc:#3b5bdb;--bg:#f2f3f6;--card:#fff;--ink:#151a24;--mut:#667085;--rule:#e7eaf0;--ok:#12a150;--bad:#e5383b;--warn:#d97706;--okbg:#e6f7ee;--badbg:#fdecec}
@@ -845,7 +885,7 @@ function renderQ(q){
   h+=`<div class="redo-actions">${questionRedoHTML(q)}</div>`;
   return h;
 }
-function typesetMath(el){if(window.MathJax&&MathJax.typesetPromise){MathJax.typesetClear&&MathJax.typesetClear();MathJax.typesetPromise([el]).catch(()=>{})}}
+function typesetMath(el){return window.dashabiTypeset(el.querySelector("#qbox")||el,true)}
 const reducedMotion=window.matchMedia("(prefers-reduced-motion: reduce)");
 const independentTranslate=!!window.CSS?.supports?.("translate","1px");
 const optionShakes=new WeakMap();
@@ -892,7 +932,7 @@ function syncCurrentCard(animate=false){
     window.MathJax?.typesetClear?.([inner]);
     inner.innerHTML=resHTML(q,q.options?getOptions(q):[]);
     panel.dataset.resultSignature=signature;
-    window.MathJax?.typesetPromise?.([inner])?.catch(()=>{});
+    window.dashabiTypeset(inner);
   }
   panel.classList.toggle("open",rev);panel.setAttribute("aria-hidden",String(!rev));
 }
