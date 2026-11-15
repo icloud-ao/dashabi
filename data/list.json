@@ -157,7 +157,7 @@
   {
     "id": "probability-key-points-2026",
     "title": "概率论重点题目汇编（第一至第四章）",
-    "desc": "25道重点题＋9道公式与知识点附录（含六种常见分布均值表）｜答案与解析",
+    "desc": "27道重点题＋9道公式与知识点附录（含六种常见分布均值表）｜答案与解析",
     "subject": "概率论",
     "semesterGroup": "current",
     "tags": [
@@ -179,8 +179,8 @@
     "multi": 0,
     "judge": 0,
     "blank": 15,
-    "short": 16,
-    "total": 34
+    "short": 18,
+    "total": 36
   },
   {
     "id": "web",
