@@ -327,10 +327,19 @@ async function load(){
     const list = await res.json();
     if(!Array.isArray(list)) throw new Error("list.json 必须是数组");
     allSets = await Promise.all(list.filter(x=>x && x.enabled !== false).map(hydrate));
+    const featuredOrder = [
+      "probability-key-points-2026",
+      "network-attack-defense-selfmade-2026",
+      "network-attack-defense-combined-tests-2026",
+      "probability-9"
+    ];
     allSets.sort((a,b) => {
-      const isMath = item => item.subject === "概率论";
-      return Number(isMath(b)) - Number(isMath(a))
-        || Number(semesterGroupFor(b) === "current") - Number(semesterGroupFor(a) === "current");
+      const ai = featuredOrder.indexOf(a.id);
+      const bi = featuredOrder.indexOf(b.id);
+      if(ai !== -1 || bi !== -1) {
+        return (ai === -1 ? featuredOrder.length : ai) - (bi === -1 ? featuredOrder.length : bi);
+      }
+      return Number(semesterGroupFor(b) === "current") - Number(semesterGroupFor(a) === "current");
     });
     $("messageBox").innerHTML = "";
     updateHeroStats();
