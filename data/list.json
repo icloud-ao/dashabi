@@ -52,6 +52,33 @@
     "total": 71
   },
   {
+    "id": "probability-9",
+    "title": "概率论-9",
+    "desc": "概率论重点练习题（13题）｜第一章5题、第二章6题、第三章2题｜题目＋答案＋解析",
+    "subject": "概率论",
+    "semesterGroup": "current",
+    "tags": [
+      "本学期",
+      "概率论",
+      "概率论-9",
+      "重点练习",
+      "计算题",
+      "答案解析"
+    ],
+    "file": "./data/questions/probability_9_2026.json",
+    "shuffleOptions": false,
+    "shuffleJudge": false,
+    "shuffleQuestions": false,
+    "durationMinutes": 0,
+    "enabled": true,
+    "single": 0,
+    "multi": 0,
+    "judge": 0,
+    "blank": 0,
+    "short": 13,
+    "total": 13
+  },
+  {
     "id": "network-attack-defense-2026",
     "title": "网络攻防技术与项目实战 三次单元测试",
     "desc": "本学期三次单元测试，共292题",
