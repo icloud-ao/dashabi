@@ -1,0 +1,171 @@
+{
+  "meta": {
+    "id": "probability-9",
+    "title": "概率论-9",
+    "desc": "概率论重点练习题（13题）｜第一章5题、第二章6题、第三章2题｜题目＋答案＋解析",
+    "subject": "概率论",
+    "semesterGroup": "current",
+    "tags": [
+      "本学期",
+      "概率论",
+      "概率论-9",
+      "重点练习",
+      "计算题",
+      "答案解析"
+    ],
+    "shuffleOptions": false,
+    "shuffleJudge": false,
+    "shuffleQuestions": false,
+    "durationMinutes": 0,
+    "enabled": true
+  },
+  "single": [],
+  "multi": [],
+  "judge": [],
+  "blank": [],
+  "short": [
+    {
+      "num": 1,
+      "stem": "设事件 \\(A\\supset B\\)，且 \\(P(A)=0.8\\)，\\(P(B)=0.4\\)，求 \\(P(A-B)\\)。",
+      "answer": "\\(\\boxed{0.4}\\)",
+      "explanation": "因为 \\(A\\supset B\\)，所以 \\(AB=B\\)。\n\n由概率减法公式：\n\\[\n\\begin{aligned}\nP(A-B)&=P(A)-P(AB)\\\\\n&=P(A)-P(B)\\\\\n&=0.8-0.4\\\\\n&=\\boxed{0.4}.\n\\end{aligned}\n\\]",
+      "source": "第一章 随机事件及其概率｜第2页｜第二节",
+      "origin": "练习题第2题",
+      "chapter": "第一章 随机事件及其概率",
+      "tag": "第一章 · 第2页",
+      "sequence": 1
+    },
+    {
+      "num": 2,
+      "stem": "已知 \\(P(\\overline A)=0.5\\)，\\(P(A\\overline B)=0.2\\)，\\(P(B)=0.4\\)。\n\n求（3）\\(P(A\\cup B)\\)。",
+      "answer": "\\(\\boxed{0.6}\\)",
+      "explanation": "先由补事件公式：\n\\[\nP(A)=1-P(\\overline A)=1-0.5=0.5.\n\\]\n因为 \\(A=AB\\cup A\\overline B\\)，且两部分互不相容，所以\n\\[\n\\begin{aligned}\nP(AB)&=P(A)-P(A\\overline B)\\\\\n&=0.5-0.2=0.3.\n\\end{aligned}\n\\]\n由加法公式：\n\\[\n\\begin{aligned}\nP(A\\cup B)&=P(A)+P(B)-P(AB)\\\\\n&=0.5+0.4-0.3\\\\\n&=\\boxed{0.6}.\n\\end{aligned}\n\\]",
+      "source": "第一章 随机事件及其概率｜第2页｜第二节",
+      "origin": "练习题第3题（3）",
+      "chapter": "第一章 随机事件及其概率",
+      "tag": "第一章 · 第2页",
+      "sequence": 2
+    },
+    {
+      "num": 3,
+      "stem": "设事件 \\(A,B\\) 相互独立，且 \\(P(A)=0.2\\)，\\(P(B)=0.4\\)，求 \\(P(A\\cup B)\\)。",
+      "answer": "\\(\\boxed{0.52}\\)",
+      "explanation": "因为 \\(A,B\\) 相互独立，所以\n\\[\n\\begin{aligned}\nP(AB)&=P(A)P(B)\\\\\n&=0.2\\times0.4=0.08.\n\\end{aligned}\n\\]\n由概率加法公式：\n\\[\n\\begin{aligned}\nP(A\\cup B)&=P(A)+P(B)-P(AB)\\\\\n&=0.2+0.4-0.08\\\\\n&=\\boxed{0.52}.\n\\end{aligned}\n\\]",
+      "source": "第一章 随机事件及其概率｜第5页｜第五节",
+      "origin": "练习题第1题",
+      "chapter": "第一章 随机事件及其概率",
+      "tag": "第一章 · 第5页",
+      "sequence": 3
+    },
+    {
+      "num": 4,
+      "stem": "加工某一零件共需经过四道工序，设第一、二、三、四道工序的次品率分别是 \\(2\\%\\)、\\(3\\%\\)、\\(5\\%\\)、\\(3\\%\\)，假定各道工序是互不影响的，求加工出来的零件的次品率。",
+      "answer": "\\(\\boxed{0.1240221}\\)，约为 \\(12.40\\%\\)。",
+      "explanation": "零件成为合格品，需要四道工序均不出次品。\n\n各工序不出次品的概率分别为 \\(0.98\\)、\\(0.97\\)、\\(0.95\\)、\\(0.97\\)。\n\n四道工序均合格的概率：\n\\[\n\\begin{aligned}\nP(\\text{合格})\n&=0.98\\times0.97\\times0.95\\times0.97\\\\\n&=0.8759779.\n\\end{aligned}\n\\]\n因此：\n\\[\n\\begin{aligned}\nP(\\text{次品})&=1-P(\\text{合格})\\\\\n&=1-0.8759779\\\\\n&=\\boxed{0.1240221}.\n\\end{aligned}\n\\]\n即次品率约为 \\(12.40\\%\\)。",
+      "source": "第一章 随机事件及其概率｜第5页｜第五节",
+      "origin": "练习题第4题",
+      "chapter": "第一章 随机事件及其概率",
+      "tag": "第一章 · 第5页",
+      "sequence": 4
+    },
+    {
+      "num": 5,
+      "stem": "一批产品中，A、B 两厂生产分别占 \\(60\\%\\)、\\(40\\%\\)，其次品率分别为 \\(1\\%\\)、\\(2\\%\\)。现在从中任取一件，求：\n\n（1）取到次品的概率。\n（2）取到一件次品，该次品是哪个厂生产的可能性最大？",
+      "answer": "（1）\\(0.014\\)，即 \\(1.4\\%\\)。\n（2）B 厂生产的可能性最大。",
+      "explanation": "设 \\(D\\) 表示取到次品。\n\n（1）由全概率公式：\n\\[\n\\begin{aligned}\nP(D)&=0.6\\times0.01+0.4\\times0.02\\\\\n&=0.006+0.008\\\\\n&=\\boxed{0.014}.\n\\end{aligned}\n\\]\n\n（2）由贝叶斯公式：\n\\[\n\\begin{aligned}\nP(A\\text{厂}\\mid D)\n&=\\frac{0.6\\times0.01}{0.014}\\\\\n&=\\frac37\\approx0.4286,\\\\\nP(B\\text{厂}\\mid D)\n&=\\frac{0.4\\times0.02}{0.014}\\\\\n&=\\frac47\\approx0.5714.\n\\end{aligned}\n\\]\n因为 \\(\\frac47>\\frac37\\)，所以取到的次品来自 B 厂的可能性最大。",
+      "source": "第一章 随机事件及其概率｜第7页｜第一章检测题",
+      "origin": "计算题第1题",
+      "chapter": "第一章 随机事件及其概率",
+      "tag": "第一章 · 第7页",
+      "sequence": 5
+    },
+    {
+      "num": 6,
+      "stem": "设随机变量 \\(X\\) 的分布律为：\n\\[\n\\begin{array}{c|ccc}\nX & 1 & 2 & 3\\\\\\hline\nP & 0.3 & 0.2 & 0.5\n\\end{array}\n\\]\n求 \\(P(X\\le2)\\)。",
+      "answer": "\\(\\boxed{0.5}\\)",
+      "explanation": "满足 \\(X\\le2\\) 的取值为 \\(1\\) 和 \\(2\\)。\n\\[\n\\begin{aligned}\nP(X\\le2)&=P(X=1)+P(X=2)\\\\\n&=0.3+0.2\\\\\n&=\\boxed{0.5}.\n\\end{aligned}\n\\]",
+      "source": "第二章 随机变量及其分布｜第8页｜第二节",
+      "origin": "练习题第1题",
+      "chapter": "第二章 随机变量及其分布",
+      "tag": "第二章 · 第8页",
+      "sequence": 6
+    },
+    {
+      "num": 7,
+      "stem": "设 \\(X\\) 是连续型随机变量，求 \\(P(X=3)\\)。",
+      "answer": "\\(\\boxed{0}\\)",
+      "explanation": "连续型随机变量在任意确定点的概率均为 \\(0\\)，因此：\n\\[\nP(X=3)=\\boxed{0}.\n\\]",
+      "source": "第二章 随机变量及其分布｜第11页｜第四节",
+      "origin": "练习题第1题",
+      "chapter": "第二章 随机变量及其分布",
+      "tag": "第二章 · 第11页",
+      "sequence": 7
+    },
+    {
+      "num": 8,
+      "stem": "设随机变量 \\(X\\) 的分布律为：\n\\[\n\\begin{array}{c|ccccc}\nX & -1 & 0 & 1 & 2 & \\frac52\\\\\\hline\nP & \\frac25 & \\frac1{10} & \\frac1{10} & \\frac1{10} & \\frac3{10}\n\\end{array}\n\\]\n试求：（1）\\(2X\\) 的分布律；（2）\\(X^2\\) 的分布律。",
+      "answer": "（1）令 \\(Y=2X\\)，其分布律为：\n\\[\n\\begin{array}{c|ccccc}\nY & -2 & 0 & 2 & 4 & 5\\\\\\hline\nP & \\frac25 & \\frac1{10} & \\frac1{10} & \\frac1{10} & \\frac3{10}\n\\end{array}\n\\]\n\n（2）令 \\(Z=X^2\\)，其分布律为：\n\\[\n\\begin{array}{c|cccc}\nZ & 0 & 1 & 4 & \\frac{25}{4}\\\\\\hline\nP & \\frac1{10} & \\frac12 & \\frac1{10} & \\frac3{10}\n\\end{array}\n\\]",
+      "explanation": "（1）\\(Y=2X\\)。\n\n原随机变量取值：\\(X=-1,0,1,2,\\frac52\\)。\n\n变换后：\\(Y=-2,0,2,4,5\\)。\n\n各取值互不相同，概率直接对应。\n\n（2）\\(Z=X^2\\)。先确定所有可能取值：\\(Z=0,1,4,\\frac{25}{4}\\)。\n\n分别计算：\n\\[\n\\begin{aligned}\nP(Z=0)&=P(X=0)=\\frac1{10},\\\\\nP(Z=1)&=P(X=-1)+P(X=1)\\\\\n&=\\frac25+\\frac1{10}=\\frac12,\\\\\nP(Z=4)&=P(X=2)=\\frac1{10},\\\\\nP(Z=\\tfrac{25}{4})&=P(X=\\tfrac52)=\\frac3{10}.\n\\end{aligned}\n\\]\n注意：\\(X=-1\\) 和 \\(X=1\\) 平方后都等于 \\(1\\)，所以需要将对应概率相加。",
+      "source": "第二章 随机变量及其分布｜第13页｜第五节",
+      "origin": "练习题第2题",
+      "chapter": "第二章 随机变量及其分布",
+      "tag": "第二章 · 第13页",
+      "sequence": 8
+    },
+    {
+      "num": 9,
+      "stem": "设随机变量 \\(X\\) 的概率密度函数为：\n\\[\nf(x)=\\begin{cases}\n2x,&0\\le x<1,\\\\\n0,&\\text{其他}.\n\\end{cases}\n\\]\n求随机变量 \\(Y=2X+1\\) 的概率密度函数 \\(f_Y(y)\\)。",
+      "answer": "\\[\n\\boxed{f_Y(y)=\n\\begin{cases}\n\\dfrac{y-1}{2},&1<y<3,\\\\\n0,&\\text{其他}.\n\\end{cases}}\n\\]",
+      "explanation": "由 \\(Y=2X+1\\)，得到\n\\[\nX=\\frac{Y-1}{2}.\n\\]\n原变量范围为 \\(0\\le X<1\\)，因此 \\(1\\le Y<3\\)。\n\n由密度变换公式：\n\\[\n\\begin{aligned}\nf_Y(y)\n&=f_X\\left(\\frac{y-1}{2}\\right)\n\\left|\\frac{d}{dy}\\frac{y-1}{2}\\right|\\\\\n&=2\\times\\frac{y-1}{2}\\times\\frac12\\\\\n&=\\frac{y-1}{2}.\n\\end{aligned}\n\\]\n因此：\n\\[\nf_Y(y)=\n\\begin{cases}\n\\dfrac{y-1}{2},&1<y<3,\\\\\n0,&\\text{其他}.\n\\end{cases}\n\\]\n端点取值不影响连续型随机变量的分布。",
+      "source": "第二章 随机变量及其分布｜第13页｜第五节",
+      "origin": "练习题第3题",
+      "chapter": "第二章 随机变量及其分布",
+      "tag": "第二章 · 第13页",
+      "sequence": 9
+    },
+    {
+      "num": 10,
+      "stem": "设随机变量 \\(X\\) 的概率密度为：\n\\[\nf(x)=\\begin{cases}\nax+1,&0\\le x\\le2,\\\\\n0,&\\text{其他}.\n\\end{cases}\n\\]\n求（1）常数 \\(a\\)。",
+      "answer": "\\(a=\\boxed{-\\dfrac12}\\)",
+      "explanation": "由概率密度函数的性质：\n\\[\n\\int_{-\\infty}^{+\\infty}f(x)\\,dx=1.\n\\]\n因此：\n\\[\n\\begin{aligned}\n\\int_0^2(ax+1)\\,dx&=1,\\\\\n\\left[\\frac{ax^2}{2}+x\\right]_0^2&=1,\\\\\n2a+2&=1,\\\\\n2a&=-1,\\\\\na&=\\boxed{-\\frac12}.\n\\end{aligned}\n\\]",
+      "source": "第二章 随机变量及其分布｜第15页｜第二章检测题",
+      "origin": "计算题第3题（1）",
+      "chapter": "第二章 随机变量及其分布",
+      "tag": "第二章 · 第15页",
+      "sequence": 10
+    },
+    {
+      "num": 11,
+      "stem": "设随机变量 \\(K\\) 在 \\((0,5)\\) 上服从均匀分布，求关于 \\(x\\) 的方程\n\\[\n4x^2+4Kx+K+2=0\n\\]\n有实数解的概率。",
+      "answer": "\\(\\boxed{\\dfrac35}=0.6\\)",
+      "explanation": "一元二次方程有实根的条件为 \\(\\Delta\\ge0\\)。\n\n由判别式：\n\\[\n\\begin{aligned}\n\\Delta&=(4K)^2-4\\times4\\times(K+2)\\\\\n&=16K^2-16K-32\\\\\n&=16(K-2)(K+1).\n\\end{aligned}\n\\]\n令 \\(\\Delta\\ge0\\)，即 \\((K-2)(K+1)\\ge0\\)，得到 \\(K\\le-1\\) 或 \\(K\\ge2\\)。\n\n因为 \\(K\\) 只在 \\((0,5)\\) 上均匀分布，所以满足条件的范围为 \\(2\\le K<5\\)。\n\n因此：\n\\[\n\\begin{aligned}\nP(\\text{有实根})\n&=\\frac{5-2}{5-0}\\\\\n&=\\boxed{\\frac35}=0.6.\n\\end{aligned}\n\\]",
+      "source": "第二章 随机变量及其分布｜第15页｜第二章检测题",
+      "origin": "计算题第4题",
+      "chapter": "第二章 随机变量及其分布",
+      "tag": "第二章 · 第15页",
+      "sequence": 11
+    },
+    {
+      "num": 12,
+      "stem": "设二维随机向量 \\((X,Y)\\) 的联合分布列为：\n\\[\n\\begin{array}{c|ccc}\nY\\backslash X & 0 & 1 & 2\\\\\\hline\n1 & 0.1 & 0.2 & 0.1\\\\\n2 & a & 0.1 & 0.2\n\\end{array}\n\\]\n求（1）\\(a\\) 的值。",
+      "answer": "\\(a=\\boxed{0.3}\\)",
+      "explanation": "联合分布律所有概率之和等于 \\(1\\)：\n\\[\n\\begin{aligned}\n0.1+0.2+0.1+a+0.1+0.2&=1,\\\\\n0.7+a&=1,\\\\\na&=\\boxed{0.3}.\n\\end{aligned}\n\\]",
+      "source": "第三章 多维随机变量及其分布｜第18页｜第二节",
+      "origin": "练习题第1题（1）",
+      "chapter": "第三章 多维随机变量及其分布",
+      "tag": "第三章 · 第18页",
+      "sequence": 12
+    },
+    {
+      "num": 13,
+      "stem": "设二维连续型随机变量 \\((X,Y)\\) 的概率密度函数为：\n\\[\nf(x,y)=\n\\begin{cases}\n4xy,&0<x<1,\\quad0<y<1,\\\\\n0,&\\text{其他}.\n\\end{cases}\n\\]\n求边缘概率密度函数 \\(f_X(x)\\)、\\(f_Y(y)\\)。",
+      "answer": "（1）\\[\n\\boxed{f_X(x)=\n\\begin{cases}\n2x,&0<x<1,\\\\\n0,&\\text{其他}.\n\\end{cases}}\n\\]\n（2）\\[\n\\boxed{f_Y(y)=\n\\begin{cases}\n2y,&0<y<1,\\\\\n0,&\\text{其他}.\n\\end{cases}}\n\\]",
+      "explanation": "（1）求 \\(X\\) 的边缘概率密度函数，对 \\(y\\) 积分，\\(x\\) 视为常数：\n\\[\n\\begin{aligned}\nf_X(x)&=\\int_0^1 4xy\\,dy\\\\\n&=4x\\left[\\frac{y^2}{2}\\right]_0^1\\\\\n&=4x\\times\\frac12\\\\\n&=2x.\n\\end{aligned}\n\\]\n因此：\n\\[\nf_X(x)=\\begin{cases}\n2x,&0<x<1,\\\\\n0,&\\text{其他}.\n\\end{cases}\n\\]\n\n（2）求 \\(Y\\) 的边缘概率密度函数，对 \\(x\\) 积分，\\(y\\) 视为常数：\n\\[\n\\begin{aligned}\nf_Y(y)&=\\int_0^1 4xy\\,dx\\\\\n&=4y\\left[\\frac{x^2}{2}\\right]_0^1\\\\\n&=4y\\times\\frac12\\\\\n&=2y.\n\\end{aligned}\n\\]\n因此：\n\\[\nf_Y(y)=\\begin{cases}\n2y,&0<y<1,\\\\\n0,&\\text{其他}.\n\\end{cases}\n\\]",
+      "source": "第三章 多维随机变量及其分布｜第19页｜第二节",
+      "origin": "练习题第3题",
+      "chapter": "第三章 多维随机变量及其分布",
+      "tag": "第三章 · 第19页",
+      "sequence": 13
+    }
+  ]
+}
