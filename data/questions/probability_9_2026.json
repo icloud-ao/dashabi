@@ -2,7 +2,7 @@
   "meta": {
     "id": "probability-9",
     "title": "概率论-9",
-    "desc": "概率论重点练习题（13题）｜第一章5题、第二章6题、第三章2题｜题目＋答案＋解析",
+    "desc": "概率论重点练习题（17题）｜第一章5题、第二章6题、第三章2题、第四章4题｜题目＋答案＋解析",
     "subject": "概率论",
     "semesterGroup": "current",
     "tags": [
@@ -166,6 +166,50 @@
       "chapter": "第三章 多维随机变量及其分布",
       "tag": "第三章 · 第19页",
       "sequence": 13
+    },
+    {
+      "num": 14,
+      "stem": "设连续型随机变量 \\(X\\) 的概率密度函数为\n\\[\nf(x)=\\begin{cases}\n5x^4,&0<x<1,\\\\\n0,&\\text{其他}.\n\\end{cases}\n\\]\n求 \\(E(X)\\)。",
+      "answer": "\\(\\boxed{\\frac56}\\)",
+      "explanation": "连续型随机变量的数学期望公式：\n\\[\nE(X)=\\int_{-\\infty}^{+\\infty}x f(x)\\,dx.\n\\]\n代入题目：\n\\[\n\\begin{aligned}\nE(X)&=\\int_0^1 x\\cdot5x^4\\,dx\\\\\n&=\\int_0^1 5x^5\\,dx\\\\\n&=\\left[\\frac{5x^6}{6}\\right]_0^1\\\\\n&=\\boxed{\\frac56}.\n\\end{aligned}\n\\]\n最终答案：\\(E(X)=\\frac56\\)。",
+      "source": "用户补充｜数学期望与方差练习（未提供原始页码）",
+      "origin": "补充第1题｜连续型随机变量的数学期望",
+      "chapter": "第四章 随机变量的数字特征",
+      "tag": "第4章 · 补充练习",
+      "sequence": 14
+    },
+    {
+      "num": 15,
+      "stem": "某文具店礼盒筐中有5个文创盲盒：\n2个典藏款盲盒，每个可盈利10元；\n3个基础款盲盒，每个可盈利5元。\n\n随机抽取2个盲盒卖出，记 \\(X\\) 为卖出这两个盲盒的总利润。\n\n求：（1）\\(X\\) 的分布律；（2）卖出这两个盲盒的期望总利润。",
+      "answer": "（1）\\(X\\) 的分布律：\n\\[\n\\begin{array}{c|ccc}\nX\\ (\\text{元})&10&15&20\\\\\\hline\nP&\\frac3{10}&\\frac35&\\frac1{10}\n\\end{array}\n\\]\n（2）\\(E(X)=\\boxed{14\\text{元}}\\)。",
+      "explanation": "（1）求 \\(X\\) 的分布律。\n\n先确定可能取值：\n两个基础款：\\(5+5=10\\) 元；\n一个基础款、一个典藏款：\\(5+10=15\\) 元；\n两个典藏款：\\(10+10=20\\) 元。\n\n从5个盲盒中任取2个，总取法数：\n\\[\n\\binom52=10.\n\\]\n① \\(X=10\\)：取出两个基础款：\n\\[\nP(X=10)=\\frac{\\binom32}{\\binom52}=\\frac3{10}.\n\\]\n② \\(X=15\\)：取出一个基础款和一个典藏款：\n\\[\nP(X=15)=\\frac{\\binom31\\binom21}{\\binom52}=\\frac6{10}=\\frac35.\n\\]\n③ \\(X=20\\)：取出两个典藏款：\n\\[\nP(X=20)=\\frac{\\binom22}{\\binom52}=\\frac1{10}.\n\\]\n因此分布律为：\n\\[\n\\begin{array}{c|ccc}\nX\\ (\\text{元})&10&15&20\\\\\\hline\nP&\\frac3{10}&\\frac35&\\frac1{10}\n\\end{array}\n\\]\n概率检查：\n\\[\n\\frac3{10}+\\frac35+\\frac1{10}=1.\n\\]\n\n（2）求数学期望。离散型随机变量的数学期望公式：\n\\[\nE(X)=\\sum_i x_i P(X=x_i).\n\\]\n代入：\n\\[\n\\begin{aligned}\nE(X)&=10\\times\\frac3{10}+15\\times\\frac35+20\\times\\frac1{10}\\\\\n&=3+9+2\\\\\n&=\\boxed{14\\text{元}}.\n\\end{aligned}\n\\]\n最终答案：（1）\\(P(X=10)=\\frac3{10},\\ P(X=15)=\\frac35,\\ P(X=20)=\\frac1{10}\\)；（2）\\(E(X)=14\\) 元。",
+      "source": "用户补充｜数学期望与方差练习（未提供原始页码）",
+      "origin": "补充第2题｜平均利润问题",
+      "chapter": "第四章 随机变量的数字特征",
+      "tag": "第4章 · 补充练习",
+      "sequence": 15
+    },
+    {
+      "num": 16,
+      "stem": "设 \\(X\\) 为随机变量，且 \\(E(X)=1\\)，求 \\(E(2X-2)\\)。",
+      "answer": "\\(\\boxed{0}\\)",
+      "explanation": "数学期望的线性性质：\n\\[\nE(aX+b)=aE(X)+b.\n\\]\n所以：\n\\[\n\\begin{aligned}\nE(2X-2)&=2E(X)-2\\\\\n&=2\\times1-2\\\\\n&=\\boxed{0}.\n\\end{aligned}\n\\]\n最终答案：\\(0\\)。",
+      "source": "用户补充｜数学期望与方差练习（未提供原始页码）",
+      "origin": "补充第3题｜数学期望的性质",
+      "chapter": "第四章 随机变量的数字特征",
+      "tag": "第4章 · 补充练习",
+      "sequence": 16
+    },
+    {
+      "num": 17,
+      "stem": "设随机变量 \\(X\\sim B(6,\\frac13)\\)，求 \\(X\\) 的方差 \\(D(X)\\)。",
+      "answer": "\\(\\boxed{\\frac43}\\)",
+      "explanation": "二项分布 \\(X\\sim B(n,p)\\) 的方差公式：\n\\[\nD(X)=np(1-p).\n\\]\n已知 \\(n=6\\)，\\(p=\\frac13\\)，代入：\n\\[\n\\begin{aligned}\nD(X)&=6\\times\\frac13\\times\\left(1-\\frac13\\right)\\\\\n&=6\\times\\frac13\\times\\frac23\\\\\n&=\\boxed{\\frac43}.\n\\end{aligned}\n\\]\n最终答案：\\(D(X)=\\frac43\\)。",
+      "source": "用户补充｜数学期望与方差练习（未提供原始页码）",
+      "origin": "补充第4题｜二项分布的方差",
+      "chapter": "第四章 随机变量的数字特征",
+      "tag": "第4章 · 补充练习",
+      "sequence": 17
     }
   ]
 }
