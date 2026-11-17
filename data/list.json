@@ -54,7 +54,7 @@
   {
     "id": "probability-9",
     "title": "概率论-9",
-    "desc": "概率论重点练习题（13题）｜第一章5题、第二章6题、第三章2题｜题目＋答案＋解析",
+    "desc": "概率论重点练习题（17题）｜第一章5题、第二章6题、第三章2题、第四章4题｜题目＋答案＋解析",
     "subject": "概率论",
     "semesterGroup": "current",
     "tags": [
@@ -75,8 +75,8 @@
     "multi": 0,
     "judge": 0,
     "blank": 0,
-    "short": 13,
-    "total": 13
+    "short": 17,
+    "total": 17
   },
   {
     "id": "network-attack-defense-2026",
